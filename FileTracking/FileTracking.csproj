@@ -188,6 +188,14 @@
     <Compile Include="Migrations\201903041800103_AddSpecificLocationsToFile.Designer.cs">
       <DependentUpon>201903041800103_AddSpecificLocationsToFile.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201903041915359_PopulateDistricts.cs" />
+    <Compile Include="Migrations\201903041915359_PopulateDistricts.Designer.cs">
+      <DependentUpon>201903041915359_PopulateDistricts.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201903041936387_AddDataAnnotationsToFile.cs" />
+    <Compile Include="Migrations\201903041936387_AddDataAnnotationsToFile.Designer.cs">
+      <DependentUpon>201903041936387_AddDataAnnotationsToFile.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Models\AccountViewModels.cs" />
     <Compile Include="Models\Branch.cs" />
@@ -198,6 +206,7 @@
     <Compile Include="Models\ManageViewModels.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Startup.cs" />
+    <Compile Include="ViewModels\FileViewModel.cs" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Content\bootstrap-lumen.css" />
@@ -343,6 +352,12 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201903041800103_AddSpecificLocationsToFile.resx">
       <DependentUpon>201903041800103_AddSpecificLocationsToFile.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201903041915359_PopulateDistricts.resx">
+      <DependentUpon>201903041915359_PopulateDistricts.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201903041936387_AddDataAnnotationsToFile.resx">
+      <DependentUpon>201903041936387_AddDataAnnotationsToFile.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <PropertyGroup>
