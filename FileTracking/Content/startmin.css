@@ -13,8 +13,8 @@ body {
 }
 
 #page-wrapper {
-    padding-top: 30px;
-    min-height: 568px;
+
+    min-height: 100% !important;
     background-color: #fff;
 }
 
@@ -22,7 +22,7 @@ body {
     #page-wrapper {
         position: inherit;
         margin-left: 250px;
-        padding: 30px 15px 0 15px;
+        padding: 1px 15px 0 15px;
         border-left: 1px solid #e7e7e7;
     }
 }
@@ -109,10 +109,11 @@ body {
 .sidebar .sidebar-nav.navbar-collapse {
     padding-right: 0;
     padding-left: 0;
+    
 }
 
 .sidebar .sidebar-search {
-    padding: 15px;
+    padding: 13px;
 }
 
 .sidebar ul li {
@@ -153,7 +154,7 @@ body {
         z-index: 1;
         position: absolute;
         width: 250px;
-        margin-top: 51px;
+        margin-top: 65px;
     }
 
     .navbar-top-links .dropdown-messages,

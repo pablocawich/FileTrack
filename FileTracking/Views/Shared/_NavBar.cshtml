@@ -1,4 +1,4 @@
-﻿<div class="navbar navbar-inverse navbar-fixed-top" role="navigation">
+﻿<nav class="navbar navbar-inverse navbar-fixed-top" role="navigation">
     <div class="navbar-header">
         @Html.ActionLink("File Track", "Index", "Home", new { area = "" }, new { @class = "navbar-brand" })
     </div>
@@ -6,20 +6,20 @@
     <ul class="nav navbar-nav navbar-left navbar-top-links">
         <li><a href="https://www.dfcbelize.org/"><i class="fa fa-home fa-fw"></i> DFC Site</a></li>
     </ul>
-    
-     <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
-          <span class="sr-only">Toggle Navigation</span>
-          <span class="icon-bar"></span>
-          <span class="icon-bar"></span>
-          <span class="icon-bar"></span>
-     </button>      
-        
-     <ul class="nav navbar-nav navbar-top-links">
-         <li>@Html.ActionLink("Home", "Index", "Home")</li>
-         <li>@Html.ActionLink("About", "About", "Home")</li>
-         <li>@Html.ActionLink("Contact", "Contact", "Home")</li>
-      </ul>
-    
+
+    <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+        <span class="sr-only">Toggle Navigation</span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+    </button>
+
+    <ul class="nav navbar-nav navbar-top-links">
+        <li>@Html.ActionLink("Home", "Index", "Home")</li>
+        <li>@Html.ActionLink("About", "About", "Home")</li>
+        <li>@Html.ActionLink("Contact", "Contact", "Home")</li>
+    </ul>
+
     @Html.Partial("_LoginPartial")
 
     <div class="navbar-default sidebar" role="navigation">
@@ -37,19 +37,11 @@
                     <!-- /input-group -->
                 </li>
                 <li>
-                    <a href="#"><i class="fa fa-dashboard fa-fw"></i> Files Pending</a>
+                    <a  href="@Url.Action("Index", "Files")"><i class="fa fa-files-o fa-fw"></i> Files</a>
                 </li>
-                <li>
-                    <a href="#"><i class="fa fa-bar-chart-o fa-fw"></i> A file Icon<span class="fa arrow"></span></a>
-                    <ul class="nav nav-second-level">
-                        <li>
-                            <a href="flot.html">Add Item 1</a>
-                        </li>
-                        <li>
-                            <a href="morris.html">Add Item 2</a>
-                        </li>
-                    </ul>
-                    <!-- /.nav-second-level -->
+                <li class="nav-links">
+                    <a href="@Url.Action("Index", "Home")" ><i class="fa fa-file-text-o fa-fw"> </i> File Icon</a>
+                    
                 </li>
                 <li>
                     <a href="#"><i class="fa fa-table fa-fw"></i> Tables</a>
@@ -57,9 +49,9 @@
                 <li>
                     <a href="#"><i class="fa fa-edit fa-fw"></i> Forms</a>
                 </li>
-                
+
                 <li>
-                    <a href="#"><i class="fa fa-sitemap fa-fw"></i> History or Something<span class="fa arrow"></span></a>
+                    <a href="#"><i class="fa fa-sitemap fa-fw"></i> History or Something</a>
                     <ul class="nav nav-second-level">
                         <li>
                             <a href="#">Second Level Item</a>
@@ -67,21 +59,16 @@
                         <li>
                             <a href="#">Second Level Item</a>
                         </li>
-                        
+
                     </ul>
                     <!-- /.nav-second-level -->
                 </li>
-                <li class="active">
-                    <a href="#"><i class="fa fa-files-o fa-fw"></i> Sample Pages<span class="fa arrow"></span></a>
-                    <ul class="nav nav-second-level">
-                        <li>
-                            <a class="active" href="#">Blank Page</a>
-                        </li>
-                        <li>
-                            <a href="#">Login Page</a>
-                        </li>
-                    </ul>
-                    <!-- /.nav-second-level -->
+
+                <li>
+                    <a href="#"><i class="fa fa-file fa-fw"></i> Blank Page</a>
+                </li>
+                <li>
+                    <a href="#"><i class="fa fa-file fa-fw"></i> Login Page</a>
                 </li>
             </ul>
         </div>
@@ -89,4 +76,4 @@
     </div>
     <!-- /.navbar-static-side -->
 
-</div>
+</nav>

@@ -20,6 +20,9 @@ namespace FileTracking.Models
 
     public class ApplicationDbContext : IdentityDbContext<ApplicationUser>
     {
+        public DbSet<File> Files { get; set; }
+        //public DbSet<Districts> Districts { get; set; }
+
         public ApplicationDbContext()
             : base("DefaultConnection", throwIfV1Schema: false)
         {

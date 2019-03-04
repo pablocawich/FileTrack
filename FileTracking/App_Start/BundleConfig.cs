@@ -17,11 +17,10 @@ namespace FileTracking
                 "~/Scripts/metisMenu.min.js",
                 "~/Scripts/startmin.js",
                 "~/Scripts/raphael.min.js",
-                "~/Scripts/startmin.js",
-                "~/Scripts/morris.min.js",
-                "~/Scripts/morris-data.js"
+                "~/Scripts/startmin.js"
                ));
-
+           
+           
             bundles.Add(new ScriptBundle("~/bundles/jqueryval").Include(
                         "~/Scripts/jquery.validate*"));
 
@@ -31,13 +30,15 @@ namespace FileTracking
                         "~/Scripts/modernizr-*"));
 
             bundles.Add(new StyleBundle("~/Content/css").Include(
+                      "~/Content/bootstrap-lumen.css",
                       "~/Content/bootstrap.css",
                       "~/Content/bootstrap-social.css",
                       "~/Content/metisMenu.min.css",
-                      "~/Content/startmin.css",
+                      "~/Content/startmin.css",     
                       "~/Content/font-awesome.min.css",
                       "~/Content/timeline.css",
                       "~/Content/morris.css",
+                      
                       "~/Content/site.css"));
         }
     }

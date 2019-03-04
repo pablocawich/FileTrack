@@ -4,5 +4,18 @@
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
-<h2>@Model.FirstName</h2>
+<div class="row">
+    <div class="col-lg-12">
+        <h1 class="page-header">Files</h1>
+    </div>
+    <!-- /.col-lg-12 -->
+</div>
 
+<div class="row">
+    <!--Content goes here b -->
+    <div class="jumbotron">
+       Name: @Model.FirstName
+       File: @Model.FileType.Type
+        <p>Database not created. The above is hard coded</p>
+    </div>
+</div>
