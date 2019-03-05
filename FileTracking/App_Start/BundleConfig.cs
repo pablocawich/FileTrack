@@ -19,8 +19,10 @@ namespace FileTracking
                 "~/Scripts/raphael.min.js",
                 "~/Scripts/startmin.js"
                ));
-           
-           
+
+            bundles.Add(new ScriptBundle("~/bundles/custom-js").Include(
+                "~/Scripts/ScriptsIvor.js"));
+
             bundles.Add(new ScriptBundle("~/bundles/jqueryval").Include(
                         "~/Scripts/jquery.validate*"));
 

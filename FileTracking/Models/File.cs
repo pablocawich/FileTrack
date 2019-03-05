@@ -10,6 +10,7 @@ namespace FileTracking.Models
     {
         public int Id { get; set; }
 
+        //Basic Profile like info----------------------------------------------------------
         [Required]
         [MaxLength(54)]
         [Display(Name = "First Name")]
@@ -40,30 +41,42 @@ namespace FileTracking.Models
         [Display(Name = "District")]
         public byte DistrictsId { get; set; }
 
+        //----------End basic profile info----------------------------------------------------
+
+
         public string Comments { get; set; }
 
-        //public FileType FileType { get; set; }
-        //public int FileTypeId { get; set; }
         [Required]
         [Display(Name = "Date Created")]
         public DateTime DateCreated { get; set; }
 
+        //establishes an association to file type table----------------------------------------
         public FileType FileType { get; set; }
         
         [Required]
         [Display(Name = "File Type")]
         public byte FileTypeId { get; set; }
 
+        //establishes association to File Status table----------------------------------------
         public FileStatus FileStatus { get; set; }
 
         [Required]
         [Display(Name = "File Status")]
         public byte FileStatusId { get; set; }
 
-        public OtherIdentification OtherIdentification { get; set; }
+        // Establishes association with Identification Options ---------------------------------
 
-        [Required]
-        public int OtherIdentificationId { get; set; }
+        public IdentificationOption IdentificationOption { get; set; }
 
+        [Display(Name = "Identification Type")]
+        public byte? IdentificationOptionId { get; set; }
+
+        [Display(Name = "Identification Number")]
+        [StringLength(64)]
+        public string IdentificationNumber { get; set; }
+
+        //Establish association with volumes tables, possibly ----------------------------------
+        //public Volume Volume {get;set;}
+        //public int VolumeId { get; set;}
     }
 }
