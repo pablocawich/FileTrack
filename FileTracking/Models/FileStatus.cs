@@ -6,13 +6,12 @@ using System.Web;
 
 namespace FileTracking.Models
 {
-    public class FileType
+    public class FileStatus
     {
         public byte Id { get; set; }
 
         [Required]
-        [StringLength(24)]
-        public string Type { get; set; }
-
+        [StringLength(32)]
+        public string Status { get; set; }
     }
 }

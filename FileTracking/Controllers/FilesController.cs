@@ -33,12 +33,18 @@ namespace FileTracking.Controllers
 
         public ActionResult CreateFile()
         {
+            //retrieving table content
             var districts = _context.Districts.ToList();
-
+            var fileTypes = _context.FileTypes.ToList();
+            var fileStatuses = _context.FileStatuses.ToList();
+            //instantiating viewModel objects to the db content
             var viewModel = new FileViewModel
             {
-                Districts = districts
+                Districts = districts,
+                FileTypes = fileTypes,
+                FileStatuses = fileStatuses
             };
+            //passing db (viewModel) content to FileForm 
             return View("FileForm", viewModel);
         }
         //below function should accepts a file objects with its binded values from a form as its parameter

@@ -40,7 +40,6 @@ namespace FileTracking.Models
         [Display(Name = "District")]
         public byte DistrictsId { get; set; }
 
-
         public string Comments { get; set; }
 
         //public FileType FileType { get; set; }
@@ -48,5 +47,23 @@ namespace FileTracking.Models
         [Required]
         [Display(Name = "Date Created")]
         public DateTime DateCreated { get; set; }
+
+        public FileType FileType { get; set; }
+        
+        [Required]
+        [Display(Name = "File Type")]
+        public byte FileTypeId { get; set; }
+
+        public FileStatus FileStatus { get; set; }
+
+        [Required]
+        [Display(Name = "File Status")]
+        public byte FileStatusId { get; set; }
+
+        public OtherIdentification OtherIdentification { get; set; }
+
+        [Required]
+        public int OtherIdentificationId { get; set; }
+
     }
 }

@@ -10,5 +10,7 @@ namespace FileTracking.ViewModels
     {
         public File File { get; set; }
         public IEnumerable<Districts> Districts { get; set; }
+        public IEnumerable<FileType> FileTypes { get; set; }
+        public IEnumerable<FileStatus> FileStatuses { get; set; }
     }
 }

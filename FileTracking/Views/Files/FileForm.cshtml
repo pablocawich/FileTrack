@@ -17,25 +17,25 @@
 <div class="row">
     @using (Html.BeginForm("NewFile", "Files"))
     {
-        <div class="form-row">
-        <div class="form-group">
-            @Html.LabelFor(f => f.File.FirstName, new { @class = "control-label" })
-
-            <div class="input-group">
-                <span class="input-group-addon">
-                    <i class="glyphicon glyphicon-user"></i>
-                </span>@Html.TextBoxFor(f => f.File.FirstName, new { @class = "form-control", @placeholder = "E.g. John" })
+        <div class="col-md-4">
+            <div class="form-group">
+                @Html.LabelFor(f => f.File.FirstName, new { @class = "control-label" })
+                <div class="input-group">
+                    <span class="input-group-addon">
+                        <i class="glyphicon glyphicon-user"></i>
+                    </span>@Html.TextBoxFor(f => f.File.FirstName, new { @class = "form-control", @placeholder = "E.g. John" })
+                </div>
             </div>
-        </div>
-        <div class="form-group">
-            @Html.LabelFor(f => f.File.MiddleName, new { @class = "control-label" })
+            <div class="form-group">
+                @Html.LabelFor(f => f.File.MiddleName, new { @class = "control-label" })
 
-            <div class="input-group">
-                <span class="input-group-addon">
-                    <i class="glyphicon glyphicon-user"></i>
-                </span>@Html.TextBoxFor(f => f.File.MiddleName, new { @class = "form-control", @placeholder = "E.g. Micheal" })
+                <div class="input-group">
+                    <span class="input-group-addon">
+                        <i class="glyphicon glyphicon-user"></i>
+                    </span>@Html.TextBoxFor(f => f.File.MiddleName, new { @class = "form-control", @placeholder = "E.g. Micheal" })
+                </div>
             </div>
-        </div>
+
             <div class="form-group">
                 @Html.LabelFor(f => f.File.LastName, new { @class = "control-label" })
 
@@ -45,44 +45,61 @@
                     </span>@Html.TextBoxFor(f => f.File.LastName, new { @class = "form-control", @placeholder = "E.g. Smith" })
                 </div>
             </div>
-        </div>
-        <div class="form-group">
-            @Html.LabelFor(f => f.File.Street, new { @class = "control-label" })
-            <div class="input-group">
-                <span class="input-group-addon">
-                    <i class="glyphicon glyphicon-home"></i>
-                </span> 
-                @Html.TextBoxFor(f => f.File.Street, new { @class = "form-control", @placeholder = "E.g. 12 George Street" })
-            </div>
-        </div>
-        <div class="form-group">
-            @Html.LabelFor(f => f.File.CityOrTown, new { @class = "control-label" })
-            <div class="input-group">
-                <span class="input-group-addon">
-                    <i class="glyphicon glyphicon-home"></i>
-                </span>
-                @Html.TextBoxFor(f => f.File.CityOrTown, new { @class = "form-control", @placeholder = "E.g. Belmopan/Dangriga/Silk-Grass village" })
-            </div>
-        </div>
-        <div class="form-group">
-            @Html.LabelFor(f => f.File.Comments, new { @class = "control-label" })
-
-            <div class="input-group">
-                <span class="input-group-addon">
-                </span>@Html.TextAreaFor(f => f.File.Comments, new { @class = "form-control", @placeholder = "E.g. User is pending an a loan numbers" })
-            </div>
-        </div>
-        
             <div class="form-group">
-                @Html.LabelFor(f=>f.File.DistrictsId, new { @class = "control-label" })
+                @Html.LabelFor(f => f.File.Street, new { @class = "control-label" })
+                <div class="input-group">
+                    <span class="input-group-addon">
+                        <i class="glyphicon glyphicon-home"></i>
+                    </span>
+                    @Html.TextBoxFor(f => f.File.Street, new { @class = "form-control", @placeholder = "E.g. 12 George Street" })
+                </div>
+            </div>
+            <div class="form-group">
+                @Html.LabelFor(f => f.File.CityOrTown, new { @class = "control-label" })
+                <div class="input-group">
+                    <span class="input-group-addon">
+                        <i class="glyphicon glyphicon-home"></i>
+                    </span>
+                    @Html.TextBoxFor(f => f.File.CityOrTown, new { @class = "form-control", @placeholder = "E.g. Belmopan/Dangriga/Silk-Grass village" })
+                </div>
+            </div>
+            <div class="form-group">
+                @Html.LabelFor(f => f.File.DistrictsId, new { @class = "control-label" })
                 <div class="input-group">
                     <span class="input-group-addon" style="max-width: 100%;"><i class="glyphicon glyphicon-list"></i></span>
-                    @Html.DropDownListFor(f => f.File.DistrictsId,new SelectList(Model.Districts,"Id","District"),"Select your District :", new { @class = "form-control" })
+                    @Html.DropDownListFor(f => f.File.DistrictsId, new SelectList(Model.Districts, "Id", "District"), "Select client's district", new { @class = "form-control" })
 
                 </div>
             </div>
-  
-        <button class="btn btn-primary bottom-right">Save File</button>
-    }
+        </div>
+        <div class="col-md-4">
+            <div class="form-group">
+                @Html.LabelFor(f => f.File.FileTypeId, new { @class = "control-label" })
+                <div class="input-group">
+                    <span class="input-group-addon" style="max-width: 100%;"><i class="glyphicon glyphicon-list"></i></span>
+                    @Html.DropDownListFor(f => f.File.FileTypeId, new SelectList(Model.FileTypes, "Id", "Type"), "Select a file type", new { @class = "form-control" })
 
+                </div>
+            </div>
+            <div class="form-group">
+                @Html.LabelFor(f => f.File.FileStatusId, new { @class = "control-label" })
+                <div class="input-group">
+                    <span class="input-group-addon" style="max-width: 100%;"><i class="glyphicon glyphicon-list"></i></span>
+                    @Html.DropDownListFor(f => f.File.FileStatusId, new SelectList(Model.FileStatuses, "Id", "Status"), "Select file type status", new { @class = "form-control" })
+
+                </div>
+            </div>
+            <div class="form-group">
+                @Html.LabelFor(f => f.File.Comments, new { @class = "control-label" })
+
+                <div class="input-group">
+                    <span class="input-group-addon">
+                    </span>@Html.TextAreaFor(f => f.File.Comments, new { @class = "form-control", @placeholder = "E.g. User is pending an a loan numbers" })
+                </div>
+            </div>
+            <button class="btn btn-success btn-sm">Save File</button>
+            <button type="button" class="btn btn-danger btn-sm">Cancel</button>
+        </div>
+
+    }
 </div>

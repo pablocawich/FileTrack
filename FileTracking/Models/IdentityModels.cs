@@ -22,6 +22,8 @@ namespace FileTracking.Models
     {
         public DbSet<File> Files { get; set; }
         public DbSet<Districts> Districts { get; set; }
+        public DbSet<FileType> FileTypes { get; set; }
+        public DbSet<FileStatus> FileStatuses { get; set; }
 
         public ApplicationDbContext()
             : base("DefaultConnection", throwIfV1Schema: false)
