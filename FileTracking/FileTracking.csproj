@@ -230,9 +230,16 @@
     <Compile Include="Migrations\201903052006005_AddIdNumberToFile.Designer.cs">
       <DependentUpon>201903052006005_AddIdNumberToFile.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201903061732464_AddVolumeTables.cs" />
+    <Compile Include="Migrations\201903061732464_AddVolumeTables.Designer.cs">
+      <DependentUpon>201903061732464_AddVolumeTables.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201903062242480_DeleteVolumeTables.cs" />
+    <Compile Include="Migrations\201903062242480_DeleteVolumeTables.Designer.cs">
+      <DependentUpon>201903062242480_DeleteVolumeTables.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Models\AccountViewModels.cs" />
-    <Compile Include="Models\Branch.cs" />
     <Compile Include="Models\Districts.cs" />
     <Compile Include="Models\File.cs" />
     <Compile Include="Models\FileStatus.cs" />
@@ -419,6 +426,12 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201903052006005_AddIdNumberToFile.resx">
       <DependentUpon>201903052006005_AddIdNumberToFile.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201903061732464_AddVolumeTables.resx">
+      <DependentUpon>201903061732464_AddVolumeTables.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201903062242480_DeleteVolumeTables.resx">
+      <DependentUpon>201903062242480_DeleteVolumeTables.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>

@@ -31,7 +31,7 @@ namespace FileTracking.Controllers
             return View(file);
         }
 
-        public ActionResult CreateFile()
+        public ActionResult New()
         {
             //retrieving table content
             var districts = _context.Districts.ToList();
@@ -52,12 +52,63 @@ namespace FileTracking.Controllers
         //below function should accepts a file objects with its binded values from a form as its parameter
         //and ultimately save that value unto the database.
         [HttpPost]
-        public ActionResult NewFile(File file)
+        public ActionResult Save(File file)
         {
-            file.DateCreated = DateTime.Now;
+            if (file.Id == 0)
+            {
+                file.DateCreated = DateTime.Now;
+                // fileVol.Id = file.Id;
+                //"Getting to this page signifies you have filled the form fields with data and is now being" +
+                //" fetched in an attempt to store them into the database"
+                _context.Files.Add(file);
+            }
+            else
+            {
+                var fileInDb = _context.Files.Single(f => f.Id == file.Id);
+
+                fileInDb.FirstName = file.FirstName;
+                fileInDb.MiddleName = file.MiddleName;
+                fileInDb.LastName = file.LastName;
+                fileInDb.Street = file.Street;
+                fileInDb.CityOrTown = file.CityOrTown;
+                fileInDb.DistrictsId = file.DistrictsId;
+                fileInDb.Comments = file.Comments;
+                fileInDb.FileTypeId = file.FileTypeId;
+                fileInDb.FileStatusId = file.FileStatusId;
+                fileInDb.IdentificationOptionId = file.IdentificationOptionId;
+                fileInDb.IdentificationNumber = file.IdentificationNumber;
+
+
+            }
+
+            _context.SaveChanges();
+
+            return RedirectToAction("Index", "Files");
+            /* return Content(file.FirstName+"" +file.MiddleName+" " +file.LastName + " " +file.DateCreated
+                            + " \n" +file.Street + " " + file.CityOrTown + " " +file.DistrictsId + " " + file.Comments
+                            + " " +file.FileTypeId + " " + file.FileStatusId + " " + file.IdentificationOptionId
+                            + " " +file.IdentificationNumber);*/
+        }
+
+        public ActionResult Update(int id)
+        {
+            var fileInDb = _context.Files.SingleOrDefault(f => f.Id == id);
+            if (fileInDb == null)
+            {
+                return HttpNotFound();
+            }
             
-            return Content("Getting to this page signifies you have filled the form fields with data and is now being" +
-                           " fetched in an attempt to store them into the database" + file.DateCreated);
+            var viewModel = new FileViewModel
+            {
+                File = fileInDb,
+                Districts = _context.Districts.ToList(),
+                FileTypes = _context.FileTypes.ToList(),
+                FileStatuses = _context.FileStatuses.ToList(),
+                IdentificationOptions = _context.IdentificationOptions.ToList()
+            };
+           
+
+            return View("FileForm", viewModel);
         }
     }
 }

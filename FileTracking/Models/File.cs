@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
 using System.Web;
 
@@ -8,7 +9,12 @@ namespace FileTracking.Models
 {
     public class File
     {
+        //[DatabaseGenerated(DatabaseGeneratedOption.None)]
         public int Id { get; set; }
+
+        //File Number
+
+        //public int FileNumber { get; set; }
 
         //Basic Profile like info----------------------------------------------------------
         [Required]
@@ -75,8 +81,8 @@ namespace FileTracking.Models
         [StringLength(64)]
         public string IdentificationNumber { get; set; }
 
-        //Establish association with volumes tables, possibly ----------------------------------
-        //public Volume Volume {get;set;}
-        //public int VolumeId { get; set;}
+        //Establish association with volumes, possibly ----------------------------------
+
+       
     }
 }

@@ -14,21 +14,19 @@
 <div class="row">
     <!--Content goes here b -->
     <div class="jumbotron">
-        
-        <p>Database not created. The above is hard coded</p>
-    </div>
-    <table class="table table-bordered table-hover">
-        <thead>
-        <tr>
-            <th> File Number</th>
-            <th> First name</th>
-            <th>Last Name</th>
-            <th>City/Town/Village</th>
-            <th>District</th>
-            <th>Date Added</th>
-        </tr>
-        </thead>
-        <tbody>
+        <table class="table table-bordered table-hover">
+            <thead>
+            <tr>
+                <th> File Number</th>
+                <th> First name</th>
+                <th>Last Name</th>
+                <th>City/Town/Village</th>
+                <th>District</th>
+                <th>Date Added</th>
+                <th>Action</th>
+            </tr>
+            </thead>
+            <tbody>
             @foreach (var file in Model)
             {
                 <tr>
@@ -38,9 +36,11 @@
                     <td>@file.CityOrTown</td>
                     <td>@file.Districts.District</td>
                     <td>@file.DateCreated</td>
-               </tr>
+                    <td>@Html.ActionLink("Edit","Update", "Files",new {id = file.Id},null)</td>
+                </tr>
             }
             
-        </tbody>
-    </table>
+            </tbody>
+        </table>
+        </div>
 </div>
