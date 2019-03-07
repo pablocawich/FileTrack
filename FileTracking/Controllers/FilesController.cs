@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Data.Entity;
+using System.Data.SqlClient;
 using System.Linq;
 using System.Web;
 using System.Web.Mvc;
@@ -41,6 +42,7 @@ namespace FileTracking.Controllers
             //instantiating viewModel objects to the db content
             var viewModel = new FileViewModel
             {
+                File = new File(),//be sure to initialize this to not get that Id error
                 Districts = districts,
                 FileTypes = fileTypes,
                 FileStatuses = fileStatuses,
@@ -54,18 +56,41 @@ namespace FileTracking.Controllers
         [HttpPost]
         public ActionResult Save(File file)
         {
+            //check if data pulled from form is valid
+            if (!ModelState.IsValid)
+            {
+                var viewModel = new FileViewModel()
+                {
+                    File = file,
+                    Districts = _context.Districts.ToList(),
+                    FileTypes = _context.FileTypes.ToList(),
+                    FileStatuses = _context.FileStatuses.ToList(),
+                    IdentificationOptions = _context.IdentificationOptions.ToList()
+
+                };
+                return View("FileForm", viewModel);
+            }
+
+            //first if block is run in the event that we are creating a new file
             if (file.Id == 0)
             {
+               
                 file.DateCreated = DateTime.Now;
+                file.Volume = 1;
+                var fileNum = GetFileNumber();
+                file.FileNumber = fileNum;
+                
                 // fileVol.Id = file.Id;
                 //"Getting to this page signifies you have filled the form fields with data and is now being" +
                 //" fetched in an attempt to store them into the database"
                 _context.Files.Add(file);
+                UpdateManageFileNumber();
             }
             else
             {
+                //else block is run whenever we are editing an existing file record
                 var fileInDb = _context.Files.Single(f => f.Id == file.Id);
-
+                  
                 fileInDb.FirstName = file.FirstName;
                 fileInDb.MiddleName = file.MiddleName;
                 fileInDb.LastName = file.LastName;
@@ -78,18 +103,14 @@ namespace FileTracking.Controllers
                 fileInDb.IdentificationOptionId = file.IdentificationOptionId;
                 fileInDb.IdentificationNumber = file.IdentificationNumber;
 
-
             }
 
             _context.SaveChanges();
 
             return RedirectToAction("Index", "Files");
-            /* return Content(file.FirstName+"" +file.MiddleName+" " +file.LastName + " " +file.DateCreated
-                            + " \n" +file.Street + " " + file.CityOrTown + " " +file.DistrictsId + " " + file.Comments
-                            + " " +file.FileTypeId + " " + file.FileStatusId + " " + file.IdentificationOptionId
-                            + " " +file.IdentificationNumber);*/
         }
 
+        //update implementation
         public ActionResult Update(int id)
         {
             var fileInDb = _context.Files.SingleOrDefault(f => f.Id == id);
@@ -109,6 +130,23 @@ namespace FileTracking.Controllers
            
 
             return View("FileForm", viewModel);
+        }
+
+        //function retrieves currentFileNumber from ManageFileNumber tables in the db
+        public int GetFileNumber()
+        {
+            var getRecord = _context.ManageFileNumbers.Single(mfn => mfn.Id == 1);
+            var currentFileNum = getRecord.CurrentFileNumber;
+            return currentFileNum;
+        }
+
+        //function updates the currentFileNumber whenever called
+        public void UpdateManageFileNumber()
+        {
+            var getRecord = _context.ManageFileNumbers.Single(mfn => mfn.Id == 1);
+            getRecord.CurrentFileNumber++;
+
+            _context.SaveChanges();
         }
     }
 }

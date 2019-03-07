@@ -1,7 +1,11 @@
 ﻿$(document).ready(function () {
+   
     //Ensures Identification select list responds to the ID number text box according to input
     //if a value is selected the text box is enabled else remains disabled
+    
+   
     $("#File_IdentificationOptionId").on('change',function () {
+        
         var listVal = $(this).val();
         
         if (listVal != null)

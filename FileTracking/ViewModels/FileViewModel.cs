@@ -14,7 +14,16 @@ namespace FileTracking.ViewModels
         public IEnumerable<FileStatus> FileStatuses { get; set; }
         public IEnumerable<IdentificationOption> IdentificationOptions { get; set; }
 
-      
+        public string Title
+        {
+            get
+            {
+                if (File != null && File.Id != 0)
+                    return "Update file";
+
+                return "New File";
+            }
+        }
 
     }
 }

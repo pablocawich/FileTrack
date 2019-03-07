@@ -10,11 +10,14 @@ namespace FileTracking.Models
     public class File
     {
         //[DatabaseGenerated(DatabaseGeneratedOption.None)]
+        
         public int Id { get; set; }
-
+        
         //File Number
+        
+        public int FileNumber { get; set; }
 
-        //public int FileNumber { get; set; }
+        public byte Volume { get; set; }
 
         //Basic Profile like info----------------------------------------------------------
         [Required]
@@ -49,7 +52,7 @@ namespace FileTracking.Models
 
         //----------End basic profile info----------------------------------------------------
 
-
+        [StringLength(255)]
         public string Comments { get; set; }
 
         [Required]
@@ -79,10 +82,11 @@ namespace FileTracking.Models
 
         [Display(Name = "Identification Number")]
         [StringLength(64)]
+        [AddNumberIfIdentificationSelected]
         public string IdentificationNumber { get; set; }
 
         //Establish association with volumes, possibly ----------------------------------
+        //public static readonly byte DefaultVolume = 1;
 
-       
     }
 }

@@ -238,14 +238,44 @@
     <Compile Include="Migrations\201903062242480_DeleteVolumeTables.Designer.cs">
       <DependentUpon>201903062242480_DeleteVolumeTables.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201903070411356_AddCompositeKeyAndVolumeColumn.cs" />
+    <Compile Include="Migrations\201903070411356_AddCompositeKeyAndVolumeColumn.Designer.cs">
+      <DependentUpon>201903070411356_AddCompositeKeyAndVolumeColumn.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201903071612573_RemoveCompositeKeyFromFileNumber.cs" />
+    <Compile Include="Migrations\201903071612573_RemoveCompositeKeyFromFileNumber.Designer.cs">
+      <DependentUpon>201903071612573_RemoveCompositeKeyFromFileNumber.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201903071615196_AddNewIdentitySeedToFileNumber1.cs" />
+    <Compile Include="Migrations\201903071615196_AddNewIdentitySeedToFileNumber1.Designer.cs">
+      <DependentUpon>201903071615196_AddNewIdentitySeedToFileNumber1.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201903071623484_AddManageFileNumbers.cs" />
+    <Compile Include="Migrations\201903071623484_AddManageFileNumbers.Designer.cs">
+      <DependentUpon>201903071623484_AddManageFileNumbers.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201903071625417_PopulateManageFileNumbers.cs" />
+    <Compile Include="Migrations\201903071625417_PopulateManageFileNumbers.Designer.cs">
+      <DependentUpon>201903071625417_PopulateManageFileNumbers.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201903072018174_RemoveUselessFileRules.cs" />
+    <Compile Include="Migrations\201903072018174_RemoveUselessFileRules.Designer.cs">
+      <DependentUpon>201903072018174_RemoveUselessFileRules.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201903072045502_RemoveDataAnnotationsPossiblyCausingErrors.cs" />
+    <Compile Include="Migrations\201903072045502_RemoveDataAnnotationsPossiblyCausingErrors.Designer.cs">
+      <DependentUpon>201903072045502_RemoveDataAnnotationsPossiblyCausingErrors.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Models\AccountViewModels.cs" />
+    <Compile Include="Models\AddNumberIfIdentificationSelected.cs" />
     <Compile Include="Models\Districts.cs" />
     <Compile Include="Models\File.cs" />
     <Compile Include="Models\FileStatus.cs" />
     <Compile Include="Models\FileType.cs" />
     <Compile Include="Models\IdentificationOption.cs" />
     <Compile Include="Models\IdentityModels.cs" />
+    <Compile Include="Models\ManageFileNumber.cs" />
     <Compile Include="Models\ManageViewModels.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Startup.cs" />
@@ -432,6 +462,27 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201903062242480_DeleteVolumeTables.resx">
       <DependentUpon>201903062242480_DeleteVolumeTables.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201903070411356_AddCompositeKeyAndVolumeColumn.resx">
+      <DependentUpon>201903070411356_AddCompositeKeyAndVolumeColumn.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201903071612573_RemoveCompositeKeyFromFileNumber.resx">
+      <DependentUpon>201903071612573_RemoveCompositeKeyFromFileNumber.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201903071615196_AddNewIdentitySeedToFileNumber1.resx">
+      <DependentUpon>201903071615196_AddNewIdentitySeedToFileNumber1.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201903071623484_AddManageFileNumbers.resx">
+      <DependentUpon>201903071623484_AddManageFileNumbers.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201903071625417_PopulateManageFileNumbers.resx">
+      <DependentUpon>201903071625417_PopulateManageFileNumbers.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201903072018174_RemoveUselessFileRules.resx">
+      <DependentUpon>201903072018174_RemoveUselessFileRules.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201903072045502_RemoveDataAnnotationsPossiblyCausingErrors.resx">
+      <DependentUpon>201903072045502_RemoveDataAnnotationsPossiblyCausingErrors.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
