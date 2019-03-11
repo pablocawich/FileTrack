@@ -266,6 +266,26 @@
     <Compile Include="Migrations\201903072045502_RemoveDataAnnotationsPossiblyCausingErrors.Designer.cs">
       <DependentUpon>201903072045502_RemoveDataAnnotationsPossiblyCausingErrors.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201903072236181_AddFileVolumesToFile.cs" />
+    <Compile Include="Migrations\201903072236181_AddFileVolumesToFile.Designer.cs">
+      <DependentUpon>201903072236181_AddFileVolumesToFile.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201903080220304_AddDefaultValueToVolume.cs" />
+    <Compile Include="Migrations\201903080220304_AddDefaultValueToVolume.Designer.cs">
+      <DependentUpon>201903080220304_AddDefaultValueToVolume.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201903081546457_AddNewFiledsToVolumes.cs" />
+    <Compile Include="Migrations\201903081546457_AddNewFiledsToVolumes.Designer.cs">
+      <DependentUpon>201903081546457_AddNewFiledsToVolumes.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201903081548442_PopulateStatesTable.cs" />
+    <Compile Include="Migrations\201903081548442_PopulateStatesTable.Designer.cs">
+      <DependentUpon>201903081548442_PopulateStatesTable.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201903081621425_AddFileNumberToFileVolumes.cs" />
+    <Compile Include="Migrations\201903081621425_AddFileNumberToFileVolumes.Designer.cs">
+      <DependentUpon>201903081621425_AddFileNumberToFileVolumes.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Models\AccountViewModels.cs" />
     <Compile Include="Models\AddNumberIfIdentificationSelected.cs" />
@@ -273,13 +293,16 @@
     <Compile Include="Models\File.cs" />
     <Compile Include="Models\FileStatus.cs" />
     <Compile Include="Models\FileType.cs" />
+    <Compile Include="Models\FileVolumes.cs" />
     <Compile Include="Models\IdentificationOption.cs" />
     <Compile Include="Models\IdentityModels.cs" />
     <Compile Include="Models\ManageFileNumber.cs" />
     <Compile Include="Models\ManageViewModels.cs" />
+    <Compile Include="Models\States.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Startup.cs" />
     <Compile Include="ViewModels\FileViewModel.cs" />
+    <Compile Include="ViewModels\FileVolumeViewModel.cs" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Content\bootstrap-lumen.css" />
@@ -411,9 +434,11 @@
     <Content Include="Scripts\popper.js.map" />
     <Content Include="Scripts\popper-utils.min.js.map" />
     <Content Include="Scripts\popper-utils.js.map" />
+    <Content Include="Views\Files\AddVolume.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
+    <Folder Include="Views\FileVolumes\" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
@@ -483,6 +508,21 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201903072045502_RemoveDataAnnotationsPossiblyCausingErrors.resx">
       <DependentUpon>201903072045502_RemoveDataAnnotationsPossiblyCausingErrors.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201903072236181_AddFileVolumesToFile.resx">
+      <DependentUpon>201903072236181_AddFileVolumesToFile.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201903080220304_AddDefaultValueToVolume.resx">
+      <DependentUpon>201903080220304_AddDefaultValueToVolume.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201903081546457_AddNewFiledsToVolumes.resx">
+      <DependentUpon>201903081546457_AddNewFiledsToVolumes.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201903081548442_PopulateStatesTable.resx">
+      <DependentUpon>201903081548442_PopulateStatesTable.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201903081621425_AddFileNumberToFileVolumes.resx">
+      <DependentUpon>201903081621425_AddFileNumberToFileVolumes.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>

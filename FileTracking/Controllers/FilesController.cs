@@ -25,10 +25,13 @@ namespace FileTracking.Controllers
             _context.Dispose();
         }
 
+        //allow users to view file tables and its linked tables
         public ActionResult Index()
         {
-            var file = _context.Files.Include(f => f.Districts).ToList();
-            
+            var file = _context.Files.Include(f => f.Districts).Include(f=>f.FileVolumes).ToList();//If you want to get other data from 
+            //other tables remember to add it to the include as seen above
+           
+
             return View(file);
         }
 
@@ -54,6 +57,7 @@ namespace FileTracking.Controllers
         //below function should accepts a file objects with its binded values from a form as its parameter
         //and ultimately save that value unto the database.
         [HttpPost]
+        [ValidateAntiForgeryToken]
         public ActionResult Save(File file)
         {
             //check if data pulled from form is valid
@@ -77,14 +81,15 @@ namespace FileTracking.Controllers
                
                 file.DateCreated = DateTime.Now;
                 file.Volume = 1;
-                var fileNum = GetFileNumber();
-                file.FileNumber = fileNum;
-                
-                // fileVol.Id = file.Id;
-                //"Getting to this page signifies you have filled the form fields with data and is now being" +
-                //" fetched in an attempt to store them into the database"
+                file.FileNumber = GetFileNumber();
+
                 _context.Files.Add(file);
-                UpdateManageFileNumber();
+
+                _context.SaveChanges();
+                int thisId = file.Id;
+                //Upon that record being created, we immediately create volume one for that file based on the file number
+                AddVolumeOnCreate(thisId);
+                
             }
             else
             {
@@ -102,10 +107,10 @@ namespace FileTracking.Controllers
                 fileInDb.FileStatusId = file.FileStatusId;
                 fileInDb.IdentificationOptionId = file.IdentificationOptionId;
                 fileInDb.IdentificationNumber = file.IdentificationNumber;
-
+                _context.SaveChanges();
             }
 
-            _context.SaveChanges();
+            
 
             return RedirectToAction("Index", "Files");
         }
@@ -137,6 +142,9 @@ namespace FileTracking.Controllers
         {
             var getRecord = _context.ManageFileNumbers.Single(mfn => mfn.Id == 1);
             var currentFileNum = getRecord.CurrentFileNumber;
+
+            UpdateManageFileNumber();//update manageFileNumber to increment by 1 so as to not allow duplicate values #
+
             return currentFileNum;
         }
 
@@ -147,6 +155,72 @@ namespace FileTracking.Controllers
             getRecord.CurrentFileNumber++;
 
             _context.SaveChanges();
+        }
+
+        //volume 1 for a file is made as soon as a new file is created.
+        public void AddVolumeOnCreate(int thisId)
+        {
+           var fileInDb = _context.Files.Single(f => f.Id == thisId);
+
+           var fileVolumeRecord = new FileVolumes
+           {
+               FileId = fileInDb.Id,
+               FileNumber = fileInDb.FileNumber,
+               Volume = 1,
+               Comment = null,
+               StatesId = 1
+           };
+           _context.FileVolumes.Add(fileVolumeRecord);
+           _context.SaveChanges();
+        }
+
+        public ActionResult AddVolume(int id)
+        {
+            var fileInDb = _context.Files.SingleOrDefault(f => f.Id == id);
+            var viewModel = new FileVolumeViewModel
+            {
+                File = fileInDb,
+                FileVolumes = new FileVolumes()
+            };
+            return View(viewModel);
+        }
+
+        [HttpPost]
+        public ActionResult SaveVolume(FileVolumes fileVolumes,  File file)
+        {
+            //we get an existing record form file table, which in we only need the id
+            int i = file.Id;
+            var fileInDb = _context.Files.Single(f => f.Id == i);
+            //Check of posted information is valid
+            if (!ModelState.IsValid)
+            {
+                
+                var viewModel = new FileVolumeViewModel
+                {
+                    File = fileInDb,
+                    FileVolumes = new FileVolumes()
+                    
+                };
+                //redirect to form page if validations fails
+                return View("AddVolume", viewModel);
+            }
+            //otherwise, create a new volume record with respect to its file parent
+            if (fileVolumes.Id == 0 && file.Id != 0)
+            {
+                fileInDb.Volume++;
+                fileVolumes.FileId = file.Id;
+                fileVolumes.Volume = fileInDb.Volume;
+                fileVolumes.StatesId = 1;
+                fileVolumes.FileNumber = file.FileNumber;
+
+                _context.FileVolumes.Add(fileVolumes);
+                
+                _context.SaveChanges();
+
+
+            }
+            //redirect to table with record info
+            return RedirectToAction("Index", "Files");
         }
     }
 }

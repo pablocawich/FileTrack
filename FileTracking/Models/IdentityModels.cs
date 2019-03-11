@@ -26,6 +26,7 @@ namespace FileTracking.Models
         public DbSet<FileStatus> FileStatuses { get; set; }
         public DbSet<IdentificationOption> IdentificationOptions { get; set; }
         public DbSet<ManageFileNumber> ManageFileNumbers { get; set; }
+        public DbSet<FileVolumes> FileVolumes { get; set; }
 
         public ApplicationDbContext()
             : base("DefaultConnection", throwIfV1Schema: false)

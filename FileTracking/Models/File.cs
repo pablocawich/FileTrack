@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
@@ -17,6 +18,7 @@ namespace FileTracking.Models
         
         public int FileNumber { get; set; }
 
+        [Required]
         public byte Volume { get; set; }
 
         //Basic Profile like info----------------------------------------------------------
@@ -87,6 +89,6 @@ namespace FileTracking.Models
 
         //Establish association with volumes, possibly ----------------------------------
         //public static readonly byte DefaultVolume = 1;
-
+        public ICollection<FileVolumes> FileVolumes { get; set; }
     }
 }

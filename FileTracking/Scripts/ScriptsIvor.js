@@ -22,5 +22,6 @@
            $("#fileFormId").trigger("reset");
            $("#File_IdentificationNumber").prop("disabled", true);
            $("#File_IdentificationNumber").val("");  
-       });
+        });
+  
 });

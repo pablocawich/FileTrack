@@ -25,71 +25,71 @@
 
 
 <div class="row">
-    @using (Html.BeginForm("Save", "Files",FormMethod.Post,new{@id="fileFormId"}))
+    @using (Html.BeginForm("Save", "Files", FormMethod.Post, new { @id = "fileFormId" }))
     {
-        @Html.ValidationSummary(true,"Ensure the following errors are resolved :");
-    <div class="col-md-4">
-        <div class="form-group">
-            @Html.LabelFor(f => f.File.FirstName, new { @class = "control-label" })
-            <div class="input-group">
-                <span class="input-group-addon">
-                    <i class="glyphicon glyphicon-user"></i>
-                </span>@Html.TextBoxFor(f => f.File.FirstName, new { @class = "form-control", @placeholder = "E.g. John" })
-                    
-            </div>
-            @Html.ValidationMessageFor(f=>f.File.FirstName)
-        </div>
-        <div class="form-group">
-            @Html.LabelFor(f => f.File.MiddleName, new { @class = "control-label" })
+        @Html.ValidationSummary(true, "Ensure the following errors are resolved :");
+        <div class="col-md-4">
+            <div class="form-group">
+                @Html.LabelFor(f => f.File.FirstName, new { @class = "control-label" })
+                <div class="input-group">
+                    <span class="input-group-addon">
+                        <i class="glyphicon glyphicon-user"></i>
+                    </span>@Html.TextBoxFor(f => f.File.FirstName, new { @class = "form-control", @placeholder = "E.g. John" })
 
-            <div class="input-group">
-                <span class="input-group-addon">
-                    <i class="glyphicon glyphicon-user"></i>
-                </span>@Html.TextBoxFor(f => f.File.MiddleName, new { @class = "form-control", @placeholder = "E.g. Micheal" })
+                </div>
+                @Html.ValidationMessageFor(f => f.File.FirstName)
             </div>
-            @Html.ValidationMessageFor(f=>f.File.MiddleName)
-        </div>
+            <div class="form-group">
+                @Html.LabelFor(f => f.File.MiddleName, new { @class = "control-label" })
 
-        <div class="form-group">
-            @Html.LabelFor(f => f.File.LastName, new { @class = "control-label" })
+                <div class="input-group">
+                    <span class="input-group-addon">
+                        <i class="glyphicon glyphicon-user"></i>
+                    </span>@Html.TextBoxFor(f => f.File.MiddleName, new { @class = "form-control", @placeholder = "E.g. Micheal" })
+                </div>
+                @Html.ValidationMessageFor(f => f.File.MiddleName)
+            </div>
 
-            <div class="input-group">
-                <span class="input-group-addon">
-                    <i class="glyphicon glyphicon-user"></i>
-                </span>@Html.TextBoxFor(f => f.File.LastName, new { @class = "form-control", @placeholder = "E.g. Smith" })
-            </div>
-            @Html.ValidationMessageFor(f=>f.File.LastName)
-        </div>
-        <div class="form-group">
-            @Html.LabelFor(f => f.File.Street, new { @class = "control-label" })
-            <div class="input-group">
-                <span class="input-group-addon">
-                    <i class="glyphicon glyphicon-home"></i>
-                </span>
-                @Html.TextBoxFor(f => f.File.Street, new { @class = "form-control", @placeholder = "E.g. 12 George Street" })
-            </div>
-            @Html.ValidationMessageFor(f=>f.File.Street)
-        </div>
-        <div class="form-group">
-            @Html.LabelFor(f => f.File.CityOrTown, new { @class = "control-label" })
-            <div class="input-group">
-                <span class="input-group-addon">
-                    <i class="glyphicon glyphicon-home"></i>
-                </span>
-                @Html.TextBoxFor(f => f.File.CityOrTown, new { @class = "form-control", @placeholder = "E.g. Belmopan/Dangriga/Silk-Grass village" })
-            </div>
-            @Html.ValidationMessageFor(f=>f.File.CityOrTown)
-        </div>
-        <div class="form-group">
-            @Html.LabelFor(f => f.File.DistrictsId, new { @class = "control-label" })
-            <div class="input-group">
-                <span class="input-group-addon" style="max-width: 100%;"><i class="glyphicon glyphicon-list"></i></span>
-                @Html.DropDownListFor(f => f.File.DistrictsId, new SelectList(Model.Districts, "Id", "District"), "Select client's district", new { @class = "form-control" })
+            <div class="form-group">
+                @Html.LabelFor(f => f.File.LastName, new { @class = "control-label" })
 
+                <div class="input-group">
+                    <span class="input-group-addon">
+                        <i class="glyphicon glyphicon-user"></i>
+                    </span>@Html.TextBoxFor(f => f.File.LastName, new { @class = "form-control", @placeholder = "E.g. Smith" })
+                </div>
+                @Html.ValidationMessageFor(f => f.File.LastName)
             </div>
-            @Html.ValidationMessageFor(f=>f.File.DistrictsId)
+            <div class="form-group">
+                @Html.LabelFor(f => f.File.Street, new { @class = "control-label" })
+                <div class="input-group">
+                    <span class="input-group-addon">
+                        <i class="glyphicon glyphicon-home"></i>
+                    </span>
+                    @Html.TextBoxFor(f => f.File.Street, new { @class = "form-control", @placeholder = "E.g. 12 George Street" })
+                </div>
+                @Html.ValidationMessageFor(f => f.File.Street)
+            </div>
+            <div class="form-group">
+                @Html.LabelFor(f => f.File.CityOrTown, new { @class = "control-label" })
+                <div class="input-group">
+                    <span class="input-group-addon">
+                        <i class="glyphicon glyphicon-home"></i>
+                    </span>
+                    @Html.TextBoxFor(f => f.File.CityOrTown, new { @class = "form-control", @placeholder = "E.g. Belmopan/Dangriga/Silk-Grass village" })
+                </div>
+                @Html.ValidationMessageFor(f => f.File.CityOrTown)
+            </div>
+            <div class="form-group">
+                @Html.LabelFor(f => f.File.DistrictsId, new { @class = "control-label" })
+                <div class="input-group">
+                    <span class="input-group-addon" style="max-width: 100%;"><i class="glyphicon glyphicon-list"></i></span>
+                    @Html.DropDownListFor(f => f.File.DistrictsId, new SelectList(Model.Districts, "Id", "District"), "Select client's district", new { @class = "form-control" })
+
+                </div>
+                @Html.ValidationMessageFor(f => f.File.DistrictsId)
+            </div>
         </div>
-    </div>
         <div class="col-md-4">
             <div class="form-group">
                 @Html.LabelFor(f => f.File.FileTypeId, new { @class = "control-label" })
@@ -97,7 +97,7 @@
                     <span class="input-group-addon" style="max-width: 100%;"><i class="glyphicon glyphicon-list"></i></span>
                     @Html.DropDownListFor(f => f.File.FileTypeId, new SelectList(Model.FileTypes, "Id", "Type"), "Select a file type", new { @class = "form-control" })
                 </div>
-                @Html.ValidationMessageFor(f=>f.File.FileTypeId)
+                @Html.ValidationMessageFor(f => f.File.FileTypeId)
             </div>
             <div class="form-group">
                 @Html.LabelFor(f => f.File.FileStatusId, new { @class = "control-label" })
@@ -105,7 +105,7 @@
                     <span class="input-group-addon" style="max-width: 100%;"><i class="glyphicon glyphicon-list"></i></span>
                     @Html.DropDownListFor(f => f.File.FileStatusId, new SelectList(Model.FileStatuses, "Id", "Status"), "Select file type status", new { @class = "form-control" })
                 </div>
-                @Html.ValidationMessageFor(f=>f.File.FileStatusId)
+                @Html.ValidationMessageFor(f => f.File.FileStatusId)
             </div>
             <div class="panel panel-success">
                 <div class="panel-heading">
@@ -113,38 +113,49 @@
                 </div>
                 <div class="panel-body">
                     <div class="form-group">
-                        @Html.LabelFor(f => f.File.IdentificationOptionId, new {@class = "control-label"})
+                        @Html.LabelFor(f => f.File.IdentificationOptionId, new { @class = "control-label" })
                         <div class="input-group">
                             <span class="input-group-addon" style="max-width: 100%;"><i class="glyphicon glyphicon-list"></i></span>
-                            @Html.DropDownListFor(f => f.File.IdentificationOptionId, new SelectList(Model.IdentificationOptions, "Id", "Identification"), "Select Identification Type", new {@class = "form-control"})
+                            @Html.DropDownListFor(f => f.File.IdentificationOptionId, new SelectList(Model.IdentificationOptions, "Id", "Identification"), "Select Identification Type", new { @class = "form-control" })
                         </div>
-                        @Html.ValidationMessageFor(f=>f.File.IdentificationOptionId)
+                        @Html.ValidationMessageFor(f => f.File.IdentificationOptionId)
                     </div>
                     <div class="form-group">
-                        @Html.LabelFor(f => f.File.IdentificationNumber, new {@class = "control-label"})
+                        @Html.LabelFor(f => f.File.IdentificationNumber, new { @class = "control-label" })
 
                         <div class="input-group">
                             <span class="input-group-addon">
-                            </span>@Html.TextBoxFor(f => f.File.IdentificationNumber, new {@class = "form-control", @placeholder = "E.g. 000333138 "})
+                            </span>@Html.TextBoxFor(f => f.File.IdentificationNumber, new { @class = "form-control", @placeholder = "E.g. 000333138 " })
                         </div>
-                        @Html.ValidationMessageFor(f=>f.File.IdentificationNumber)
+                        @Html.ValidationMessageFor(f => f.File.IdentificationNumber)
                     </div>
                 </div>
             </div>
-                    <div class="form-group">
-                        @Html.LabelFor(f => f.File.Comments, new { @class = "control-label" })
+            <div class="form-group">
+                @Html.LabelFor(f => f.File.Comments, new { @class = "control-label" })
 
-                        <div class="input-group">
-                            <span class="input-group-addon">
-                            </span>@Html.TextAreaFor(f => f.File.Comments, new { @class = "form-control", @placeholder = "E.g. User is pending an a loan numbers" })
-                        </div>
-                        @Html.ValidationMessageFor(f=>f.File.Comments)
+                <div class="input-group">
+                    <span class="input-group-addon">
+                    </span>@Html.TextAreaFor(f => f.File.Comments, new { @class = "form-control", @placeholder = "E.g. User is pending an a loan numbers" })
                 </div>
-           @Html.HiddenFor(f=>f.File.Id)
-           @Html.HiddenFor(f=>f.File.FileNumber)
-                <button class="btn btn-primary btn-sm">Save File</button>
-                <button type="button" class="btn btn-danger btn-sm" id="cancelBtn">Cancel</button>
+                @Html.ValidationMessageFor(f => f.File.Comments)
             </div>
+            @Html.HiddenFor(f => f.File.Id)
+            @Html.HiddenFor(f => f.File.FileNumber)
+            @Html.HiddenFor(f => f.File.Volume)
+            
+            @Html.AntiForgeryToken()
+            <button class="btn btn-primary btn-sm">Save File</button>
+            <button type="button" class="btn btn-danger btn-sm" id="cancelBtn">Cancel</button>
+        </div>
+        <div class="col-md-4">
+            <p>Newly created file will by default be stored as volume 1</p>
+            <p>Ensure an id number that corresponds to its Identification type is provided once a identifcation type is selected</p>
+        </div>
 
-    }
+     }
 </div>
+@section scripts
+{
+    @Scripts.Render("~/bundles/jqueryval")
+}

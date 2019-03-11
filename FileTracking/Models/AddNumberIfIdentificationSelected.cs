@@ -23,7 +23,8 @@ namespace FileTracking.Models
                 }
             }
 
-            return (error == false) ? ValidationResult.Success : new ValidationResult("number field is empty");
+            return (error == false) ? ValidationResult.Success : 
+                new ValidationResult("This field is required whenever an identification type is selected");
         }
     }
 }

@@ -19,8 +19,7 @@
             <tr>
                 <th> File Number</th>
                 <th>File Id</th>
-                <th> First name</th>
-                <th>Last Name</th>
+                <th> Name</th>
                 <th>City/Town/Village</th>
                 <th>District</th>
                 <th>Date Added</th>
@@ -34,17 +33,22 @@
                 <tr>
                     <td>@file.FileNumber</td>
                     <td>@file.Id</td>
-                    <td>@file.FirstName</td>
-                    <td>@file.LastName</td>
+                    <td>@file.FirstName @file.MiddleName @file.LastName</td>
                     <td>@file.CityOrTown</td>
                     <td>@file.Districts.District</td>
                     <td>@file.DateCreated</td>
                     <td>@file.Volume</td>
-                    <td>@Html.ActionLink("Edit","Update", "Files",new {id = file.Id},null)</td>
+                    <td>@Html.ActionLink("Edit", "Update", "Files", new { id = file.Id }, null)
+                        @Html.ActionLink("Add Volume", "AddVolume","Files",new {id = file.Id}, null)
+                    </td>
                 </tr>
             }
             
             </tbody>
         </table>
-        </div>
+    </div>
 </div>
+
+@section scripts{
+   
+}
