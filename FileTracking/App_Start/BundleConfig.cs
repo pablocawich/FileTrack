@@ -19,7 +19,8 @@ namespace FileTracking
                 "~/Scripts/raphael.min.js",
                 "~/Scripts/startmin.js",
                 "~/Scripts/DataTables/jquery.dataTables.js",
-                "~/Scripts/DataTables/dataTables.bootstrap.js"
+                "~/Scripts/DataTables/dataTables.bootstrap.js",
+                "~/Scripts/bootbox.js"
                ));
 
             bundles.Add(new ScriptBundle("~/bundles/custom-js").Include(

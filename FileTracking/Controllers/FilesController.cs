@@ -240,12 +240,14 @@ namespace FileTracking.Controllers
 
             int totalFiles = FileList.Count;
             //We check if search value if null or otherwise
-            if (!string.IsNullOrEmpty(searchValue))//filter
+            if (!string.IsNullOrEmpty(searchValue) && !string.IsNullOrWhiteSpace(searchValue)
+)//filter
             {
                 FileList = FileList.Where(x => x.FileNumber.ToString().Contains(searchValue) ||
                                                x.FirstName.ToLower().Contains(searchValue.ToLower())||
                                                x.LastName.ToLower().Contains(searchValue.ToLower())||
-                                               x.Volume.ToString().Contains(searchValue.ToLower())).ToList<File>();
+                                               x.Volume.ToString().Contains(searchValue)||
+                                               x.Districts.District.ToLower().Contains(searchValue.ToLower())).ToList<File>();
             }
 
             int totalFileAfterFilter = FileList.Count;
@@ -261,6 +263,7 @@ namespace FileTracking.Controllers
             }, JsonRequestBehavior.AllowGet);
         }
 
+        
         
     }
 }
