@@ -7,6 +7,7 @@ using System.Web;
 using System.Web.Mvc;
 using FileTracking.Models;
 using FileTracking.ViewModels;
+using System.Linq.Dynamic;
 
 namespace FileTracking.Controllers
 {
@@ -124,7 +125,7 @@ namespace FileTracking.Controllers
                 return HttpNotFound();
             }
             
-            var viewModel = new FileViewModel
+            var viewModel = new FileViewModel 
             {
                 File = fileInDb,
                 Districts = _context.Districts.ToList(),
@@ -222,5 +223,44 @@ namespace FileTracking.Controllers
             //redirect to table with record info
             return RedirectToAction("Index", "Files");
         }
+
+        //[HttpPost]
+        public ActionResult GetFiles()
+        {
+            //Server side parameters
+            int start = Convert.ToInt32(Request["start"]);
+            int length = Convert.ToInt32(Request["length"]);
+            string searchValue = Request["search[value]"];
+            string sortColumnName = Request["columns["+Request["order[0][column]"]+"][name]"];
+            string sortDirection = Request["order[0][dir]"];
+
+            //We retrieve the data from the file database with respect to its table relationships
+            List<File> FileList = new List<File>();
+            FileList = _context.Files.Include(f => f.Districts).ToList<File>();
+
+            int totalFiles = FileList.Count;
+            //We check if search value if null or otherwise
+            if (!string.IsNullOrEmpty(searchValue))//filter
+            {
+                FileList = FileList.Where(x => x.FileNumber.ToString().Contains(searchValue) ||
+                                               x.FirstName.ToLower().Contains(searchValue.ToLower())||
+                                               x.LastName.ToLower().Contains(searchValue.ToLower())||
+                                               x.Volume.ToString().Contains(searchValue.ToLower())).ToList<File>();
+            }
+
+            int totalFileAfterFilter = FileList.Count;
+            //sort Operation
+            FileList = FileList.OrderBy(sortColumnName + " " + sortDirection).ToList<File>();
+
+            //Paging Operation
+            FileList = FileList.Skip(start).Take(length).ToList<File>();
+            return Json(new
+            {
+                data = FileList, draw = Request["draw"], recordsTotal = totalFiles, recordsFiltered = totalFileAfterFilter
+
+            }, JsonRequestBehavior.AllowGet);
+        }
+
+        
     }
 }

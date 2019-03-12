@@ -14,41 +14,70 @@
 <div class="row">
     <!--Content goes here b -->
     <div class="jumbotron">
-        <table class="table table-bordered table-hover">
+        <table id="fileTable" class="table table-bordered table-hover">
             <thead>
-            <tr>
-                <th> File Number</th>
-                <th>File Id</th>
-                <th> Name</th>
-                <th>City/Town/Village</th>
-                <th>District</th>
-                <th>Date Added</th>
-                <th>Volumes</th>
-                <th>Action</th>
-            </tr>
+                <tr>
+                    <th> File Number</th>
+                    <th>First Name</th>
+                    <th>Last Name </th>
+                    <th>City/Town/Village</th>
+                    <th>District</th>
+                    <th>Volumes</th>
+                    <th>Date Added</th>
+                    <th>Actions</th>
+
+                </tr>
             </thead>
             <tbody>
-            @foreach (var file in Model)
-            {
-                <tr>
-                    <td>@file.FileNumber</td>
-                    <td>@file.Id</td>
-                    <td>@file.FirstName @file.MiddleName @file.LastName</td>
-                    <td>@file.CityOrTown</td>
-                    <td>@file.Districts.District</td>
-                    <td>@file.DateCreated</td>
-                    <td>@file.Volume</td>
-                    <td>@Html.ActionLink("Edit", "Update", "Files", new { id = file.Id }, null)
-                        @Html.ActionLink("Add Volume", "AddVolume","Files",new {id = file.Id}, null)
-                    </td>
-                </tr>
-            }
-            
+               
             </tbody>
         </table>
     </div>
 </div>
 
 @section scripts{
-   
+    <script>
+        $(document).ready(function() {
+            $("#fileTable").DataTable({
+                "ajax": {
+                    "url": "/Files/GetFiles",
+                    "data": "POST",
+                    "datatype": "json"
+                },
+                "columns": [
+                    { "data": "FileNumber", "name": "FileNumber" },
+                    { "data": "FirstName", "name": "FirstName" },
+                    { "data": "LastName", "name": "LastName" },
+                    { "data": "CityOrTown", "name": "CityOrTown" },
+                    { "data": "Districts.District", "name": "Districts.District" },
+                    { "data": "Volume", "name": "Volume" },
+                    {
+                        "data": "DateCreated",
+                        "name": "DateCreated",
+                        "render": function(value) {
+                            if (value === null) return "";
+
+                            var pattern = /Date\(([^)]+)\)/;
+                            var results = pattern.exec(value);
+                            var dt = new Date(parseFloat(results[1]));
+
+                            return (dt.getMonth() + 1) + "/" + dt.getDate() + "/" + dt.getFullYear();
+                        }
+                    },
+                    {
+                        data: "Id",
+                        "render": function(data) {
+                            return "<a href='/Files/Update/" + data + "'>" + "Edit" + "</a>";
+                        }
+                    }
+                ],
+                "serverSide": "true",
+                "order": [0, "asc"],
+                "processing": "true",
+                "language": {
+                    "processing":"Processing Files... Kindly hold"
+                }
+            });
+        });
+    </script>
 }

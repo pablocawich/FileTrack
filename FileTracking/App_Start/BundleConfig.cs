@@ -17,7 +17,9 @@ namespace FileTracking
                 "~/Scripts/metisMenu.min.js",
                 "~/Scripts/startmin.js",
                 "~/Scripts/raphael.min.js",
-                "~/Scripts/startmin.js"
+                "~/Scripts/startmin.js",
+                "~/Scripts/DataTables/jquery.dataTables.js",
+                "~/Scripts/DataTables/dataTables.bootstrap.js"
                ));
 
             bundles.Add(new ScriptBundle("~/bundles/custom-js").Include(
@@ -40,7 +42,7 @@ namespace FileTracking
                       "~/Content/font-awesome.min.css",
                       "~/Content/timeline.css",
                       "~/Content/morris.css",
-                      
+                      "~/Content/DataTables/css/dataTales.bootstrap.css",
                       "~/Content/site.css"));
         }
     }
