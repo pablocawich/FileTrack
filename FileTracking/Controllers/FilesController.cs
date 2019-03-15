@@ -27,8 +27,10 @@ namespace FileTracking.Controllers
         }
 
         //allow users to view file tables and its linked tables
+        
         public ActionResult Index()
         {
+         
             var file = _context.Files.Include(f => f.Districts).Include(f=>f.FileVolumes).ToList();//If you want to get other data from 
             //other tables remember to add it to the include as seen above
            

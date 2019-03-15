@@ -24,5 +24,17 @@ namespace FileTracking.Models
 
         [Required]
         public byte StatesId { get; set; }
+
+        //public Branches Branches { get; set; }
+        //public byte BranchesId { get; set; }
+
+        //public string LocationOfOrigin { get; set; }
+
+        //public string CurrentLocation { get; set; }
+
+        //public User User {get;set;}
+        //public UserId {get;set;}
+
+
     }
 }

@@ -14,8 +14,7 @@ namespace FileTracking.Models
         
         public int Id { get; set; }
         
-        //File Number
-        
+        //File Number 
         public int FileNumber { get; set; }
 
         [Required]
@@ -32,7 +31,6 @@ namespace FileTracking.Models
         [Display(Name = "Last Name")]
         public string LastName { get; set; }
 
-        [Required]
         [MaxLength(54)]
         [Display(Name = "Middle Name")]
         public string MiddleName { get; set; }
@@ -87,6 +85,7 @@ namespace FileTracking.Models
         [AddNumberIfIdentificationSelected]
         public string IdentificationNumber { get; set; }
 
+        
         //Establish association with volumes, possibly ----------------------------------
         //public static readonly byte DefaultVolume = 1;
         public ICollection<FileVolumes> FileVolumes { get; set; }

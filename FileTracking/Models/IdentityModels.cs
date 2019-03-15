@@ -9,6 +9,8 @@ namespace FileTracking.Models
     // You can add profile data for the user by adding more properties to your ApplicationUser class, please visit https://go.microsoft.com/fwlink/?LinkID=317594 to learn more.
     public class ApplicationUser : IdentityUser
     {
+       // public File File { get; set; }
+
         public async Task<ClaimsIdentity> GenerateUserIdentityAsync(UserManager<ApplicationUser> manager)
         {
             // Note the authenticationType must match the one defined in CookieAuthenticationOptions.AuthenticationType
@@ -27,6 +29,7 @@ namespace FileTracking.Models
         public DbSet<IdentificationOption> IdentificationOptions { get; set; }
         public DbSet<ManageFileNumber> ManageFileNumbers { get; set; }
         public DbSet<FileVolumes> FileVolumes { get; set; }
+        public DbSet<Branches> Branches { get; set; }
 
         public ApplicationDbContext()
             : base("DefaultConnection", throwIfV1Schema: false)

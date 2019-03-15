@@ -300,11 +300,25 @@
     <Compile Include="Migrations\201903081621425_AddFileNumberToFileVolumes.Designer.cs">
       <DependentUpon>201903081621425_AddFileNumberToFileVolumes.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201903121914181_RemoveRequiredAnnotationFromMiddleName.cs" />
+    <Compile Include="Migrations\201903121914181_RemoveRequiredAnnotationFromMiddleName.Designer.cs">
+      <DependentUpon>201903121914181_RemoveRequiredAnnotationFromMiddleName.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201903121938563_AddBranchesTable.cs" />
+    <Compile Include="Migrations\201903121938563_AddBranchesTable.Designer.cs">
+      <DependentUpon>201903121938563_AddBranchesTable.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201903131906254_PopulateBranchesTable.cs" />
+    <Compile Include="Migrations\201903131906254_PopulateBranchesTable.Designer.cs">
+      <DependentUpon>201903131906254_PopulateBranchesTable.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Models\AccountViewModels.cs" />
     <Compile Include="Models\AddNumberIfIdentificationSelected.cs" />
+    <Compile Include="Models\Branches.cs" />
     <Compile Include="Models\Districts.cs" />
     <Compile Include="Models\File.cs" />
+    <Compile Include="Models\FileLoanCategory.cs" />
     <Compile Include="Models\FileStatus.cs" />
     <Compile Include="Models\FileType.cs" />
     <Compile Include="Models\FileVolumes.cs" />
@@ -762,6 +776,15 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201903081621425_AddFileNumberToFileVolumes.resx">
       <DependentUpon>201903081621425_AddFileNumberToFileVolumes.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201903121914181_RemoveRequiredAnnotationFromMiddleName.resx">
+      <DependentUpon>201903121914181_RemoveRequiredAnnotationFromMiddleName.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201903121938563_AddBranchesTable.resx">
+      <DependentUpon>201903121938563_AddBranchesTable.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201903131906254_PopulateBranchesTable.resx">
+      <DependentUpon>201903131906254_PopulateBranchesTable.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
