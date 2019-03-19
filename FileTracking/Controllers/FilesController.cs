@@ -11,6 +11,7 @@ using System.Linq.Dynamic;
 
 namespace FileTracking.Controllers
 {
+    
     public class FilesController : Controller
     {
         // GET: Files
@@ -27,17 +28,22 @@ namespace FileTracking.Controllers
         }
 
         //allow users to view file tables and its linked tables
-        
         public ActionResult Index()
         {
          
-            var file = _context.Files.Include(f => f.Districts).Include(f=>f.FileVolumes).ToList();//If you want to get other data from 
-            //other tables remember to add it to the include as seen above
-           
+            //var file = _context.Files.Include(f => f.Districts).Include(f=>f.FileVolumes).ToList();
+            if (User.IsInRole(Role.Registry))
+                return View("RegistryView");
 
-            return View(file);
+            if (User.IsInRole(Role.RegularUser))
+                return View("UserView");
+
+            return Content("You do not have permissions to visit this page. Please see or contact admin for further information");
+
         }
 
+
+        [Authorize(Roles = Role.Registry)]
         public ActionResult New()
         {
             //retrieving table content
@@ -177,6 +183,8 @@ namespace FileTracking.Controllers
            _context.SaveChanges();
         }
 
+        //directs to the volumes page for a specific file based on the id parameter
+        [Authorize(Roles = Role.Registry)]
         public ActionResult AddVolume(int id)
         {
             var fileInDb = _context.Files.SingleOrDefault(f => f.Id == id);
@@ -242,8 +250,7 @@ namespace FileTracking.Controllers
 
             int totalFiles = FileList.Count;
             //We check if search value if null or otherwise
-            if (!string.IsNullOrEmpty(searchValue) && !string.IsNullOrWhiteSpace(searchValue)
-)//filter
+            if (!string.IsNullOrEmpty(searchValue) && !string.IsNullOrWhiteSpace(searchValue))//filter
             {
                 FileList = FileList.Where(x => x.FileNumber.ToString().Contains(searchValue) ||
                                                x.FirstName.ToLower().Contains(searchValue.ToLower())||
@@ -263,9 +270,7 @@ namespace FileTracking.Controllers
                 data = FileList, draw = Request["draw"], recordsTotal = totalFiles, recordsFiltered = totalFileAfterFilter
 
             }, JsonRequestBehavior.AllowGet);
-        }
-
-        
+        }        
         
     }
 }

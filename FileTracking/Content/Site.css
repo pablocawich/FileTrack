@@ -28,3 +28,11 @@ textarea {
 .input-validation-error {
     border: 1px solid greenyellow;
 }
+thead {
+    background-color: #3F433E;
+    color: white;
+}
+#dfcNav {
+    background-color: #2C3B6B;
+    border-color: #928e8b;
+}

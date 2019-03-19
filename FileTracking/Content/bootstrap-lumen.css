@@ -4329,7 +4329,7 @@ tbody.collapse.in {
         clear: both;
         font-weight: 400;
         line-height: 1.42857143;
-        color: #999999;
+        color: #ff2c2c;
         white-space: nowrap;
     }
 
@@ -5588,14 +5588,14 @@ select[multiple].input-group-sm > .input-group-btn > .btn {
 
         .navbar-inverse .navbar-nav > li > a:hover,
         .navbar-inverse .navbar-nav > li > a:focus {
-            color: #333333;
+            color: #f6f7f9;
             background-color: transparent;
         }
 
     .navbar-inverse .navbar-nav > .active > a,
     .navbar-inverse .navbar-nav > .active > a:hover,
     .navbar-inverse .navbar-nav > .active > a:focus {
-        color: #333333;
+        color: #ffffff;
         background-color: transparent;
     }
 
@@ -5609,7 +5609,7 @@ select[multiple].input-group-sm > .input-group-btn > .btn {
     .navbar-inverse .navbar-nav > .open > a,
     .navbar-inverse .navbar-nav > .open > a:hover,
     .navbar-inverse .navbar-nav > .open > a:focus {
-        color: #333333;
+        color: #ff4040;
         background-color: transparent;
     }
 

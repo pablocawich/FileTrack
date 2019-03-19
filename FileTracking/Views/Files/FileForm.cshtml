@@ -76,7 +76,7 @@
                     <span class="input-group-addon">
                         <i class="glyphicon glyphicon-home"></i>
                     </span>
-                    @Html.TextBoxFor(f => f.File.CityOrTown, new { @class = "form-control", @placeholder = "E.g. Belmopan/Dangriga/Silk-Grass village" })
+                    @Html.TextBoxFor(f => f.File.CityOrTown, new { @class = "form-control", @placeholder = "E.g. Belmopan/Dangriga/Silk-Grass" })
                 </div>
                 @Html.ValidationMessageFor(f => f.File.CityOrTown)
             </div>
@@ -84,7 +84,7 @@
                 @Html.LabelFor(f => f.File.DistrictsId, new { @class = "control-label" })
                 <div class="input-group">
                     <span class="input-group-addon" style="max-width: 100%;"><i class="glyphicon glyphicon-list"></i></span>
-                    @Html.DropDownListFor(f => f.File.DistrictsId, new SelectList(Model.Districts, "Id", "District"), "Select client's district", new { @class = "form-control" })
+                    @Html.DropDownListFor(f => f.File.DistrictsId, new SelectList(Model.Districts, "Id", "District"), "Select client's district :", new { @class = "form-control" })
 
                 </div>
                 @Html.ValidationMessageFor(f => f.File.DistrictsId)
@@ -95,7 +95,7 @@
                 @Html.LabelFor(f => f.File.FileTypeId, new { @class = "control-label" })
                 <div class="input-group">
                     <span class="input-group-addon" style="max-width: 100%;"><i class="glyphicon glyphicon-list"></i></span>
-                    @Html.DropDownListFor(f => f.File.FileTypeId, new SelectList(Model.FileTypes, "Id", "Type"), "Select a file type", new { @class = "form-control" })
+                    @Html.DropDownListFor(f => f.File.FileTypeId, new SelectList(Model.FileTypes, "Id", "Type"), "Select a file type :", new { @class = "form-control" })
                 </div>
                 @Html.ValidationMessageFor(f => f.File.FileTypeId)
             </div>
@@ -103,11 +103,11 @@
                 @Html.LabelFor(f => f.File.FileStatusId, new { @class = "control-label" })
                 <div class="input-group">
                     <span class="input-group-addon" style="max-width: 100%;"><i class="glyphicon glyphicon-list"></i></span>
-                    @Html.DropDownListFor(f => f.File.FileStatusId, new SelectList(Model.FileStatuses, "Id", "Status"), "Select file type status", new { @class = "form-control" })
+                    @Html.DropDownListFor(f => f.File.FileStatusId, new SelectList(Model.FileStatuses, "Id", "Status"), "Select file type status :", new { @class = "form-control" })
                 </div>
                 @Html.ValidationMessageFor(f => f.File.FileStatusId)
             </div>
-            <div class="panel panel-success">
+            <div class="panel panel-info">
                 <div class="panel-heading">
                     <h2 class="panel-title">Optional</h2>
                 </div>
@@ -116,7 +116,7 @@
                         @Html.LabelFor(f => f.File.IdentificationOptionId, new { @class = "control-label" })
                         <div class="input-group">
                             <span class="input-group-addon" style="max-width: 100%;"><i class="glyphicon glyphicon-list"></i></span>
-                            @Html.DropDownListFor(f => f.File.IdentificationOptionId, new SelectList(Model.IdentificationOptions, "Id", "Identification"), "Select Identification Type", new { @class = "form-control" })
+                            @Html.DropDownListFor(f => f.File.IdentificationOptionId, new SelectList(Model.IdentificationOptions, "Id", "Identification"), "Select Identification Type :", new { @class = "form-control" })
                         </div>
                         @Html.ValidationMessageFor(f => f.File.IdentificationOptionId)
                     </div>
@@ -150,7 +150,7 @@
         </div>
         <div class="col-md-4">
             <p>Newly created file will by default be stored as volume 1</p>
-            <p>Ensure an id number that corresponds to its Identification type is provided once a identifcation type is selected</p>
+            <p>Ensure an id number that corresponds to its Identification type is provided once a identification type is selected</p>
         </div>
 
      }
@@ -158,4 +158,40 @@
 @section scripts
 {
     @Scripts.Render("~/bundles/jqueryval")
+    <script>
+        $(document).ready(function() {
+            if ($("#File_IdentificationOptionId").val() == 0)
+                $("#File_IdentificationNumber").prop("disabled", true);
+
+            //Ensures Identification select list responds to the ID number text box according to input
+            //if a value is selected the text box is enabled else remains disabled
+
+            $("#File_IdentificationOptionId").on('change',
+                function() {
+
+                    var listVal = $(this).val();
+
+                    if (listVal != null)
+                        $("#File_IdentificationNumber").prop("disabled", false);
+
+                    if ($("#File_IdentificationOptionId").val() == 0) {
+                        $("#File_IdentificationNumber").prop("disabled", true);
+                        $("#File_IdentificationNumber").val("");
+                    }
+                });
+            //form cancel button. Simply resets all fields
+            $("#cancelBtn").on('click',
+                () => {
+                    bootbox.confirm("Are you sure you want to cancel and return to viewing files",
+                        function(result) {
+                            if (result) {
+                                window.location.href = "/Files";
+                            }
+                        });
+
+                });
+           
+        });
+    </script>
+
 }

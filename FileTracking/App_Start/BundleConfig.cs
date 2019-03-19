@@ -36,7 +36,7 @@ namespace FileTracking
 
             bundles.Add(new StyleBundle("~/Content/css").Include(
                       "~/Content/bootstrap-lumen.css",
-                      "~/Content/bootstrap.css",
+                      
                       "~/Content/bootstrap-social.css",
                       "~/Content/metisMenu.min.css",
                       "~/Content/startmin.css",     

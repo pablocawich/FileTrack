@@ -1,4 +1,4 @@
-﻿@model IEnumerable<FileTracking.Models.File>
+﻿
 @{
     ViewBag.Title = "Index";
     Layout = "~/Views/Shared/_Layout.cshtml";
@@ -14,7 +14,7 @@
 <div class="row">
     <!--Content goes here b -->
    
-        <table id="fileTable" class="table table-striped table-bordered" style="width:100%">
+        <table id="fileTable" class="table table-striped table-bordered table-hover" style="width:100%">
             <thead>
                 <tr>
                     <th> File Number</th>
@@ -68,8 +68,8 @@
                         "render": function (data) {
                             var buttonAddVol = "<button class='btn btn-info btn-xs js-addVol' data-file-id='" + data + "'>Add Volume</button>";
                             var buttonEditFile = "<button class='btn btn-success btn-xs js-editFile' data-edit-file-id='" + data + "'>Edit</button>";
-                            var buttonRequest = "<button class='btn btn-warning btn-xs js-requestFile' data-request-file-id='" + data + "'>Request</button>";
-                            return buttonEditFile +" "+ buttonAddVol+" "+buttonRequest;
+
+                            return buttonEditFile + " " + buttonAddVol;
                         }
                     }
                 ],

@@ -22,7 +22,9 @@ namespace FileTracking.Controllers
         {
             _context.Dispose();
         }
+
         // GET: FileVolumes for a specific file identified by the id parameter
+        [Authorize(Roles = Role.RegularUser)]
         public ActionResult RequestFile(int id)
         {
             var volFileId = _context.FileVolumes.Include(fv=>fv.States).Where(fv => fv.FileId == id).ToList();
