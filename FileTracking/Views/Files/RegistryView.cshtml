@@ -12,8 +12,7 @@
 </div>
 
 <div class="row">
-    <!--Content goes here b -->
-   
+    <!--Content goes here b -->  
         <table id="fileTable" class="table table-striped table-bordered table-hover" style="width:100%">
             <thead>
                 <tr>
@@ -29,8 +28,7 @@
                 </tr>
             </thead>
             <tbody></tbody>
-        </table>
-   
+        </table>  
 </div>
 
 @section scripts{
@@ -66,8 +64,8 @@
                         data: "Id",
                         
                         "render": function (data) {
-                            var buttonAddVol = "<button class='btn btn-info btn-xs js-addVol' data-file-id='" + data + "'>Add Volume</button>";
-                            var buttonEditFile = "<button class='btn btn-success btn-xs js-editFile' data-edit-file-id='" + data + "'>Edit</button>";
+                            var buttonAddVol = "<button class='btn btn-instagram btn-xs js-addVol' data-file-id='" + data + "'>Add Volume</button>";
+                            var buttonEditFile = "<button class='btn btn-flickr btn-xs js-editFile' data-edit-file-id='" + data + "'>Edit</button>";
 
                             return buttonEditFile + " " + buttonAddVol;
                         }
@@ -82,8 +80,8 @@
             });
 
             //-------------------------End dataTables implementation ---------------------------------------
-
-            
+            // refer to Scripts/ScriptsIvor if you wish to view the code that follows the above. Consists of button implementation
+            // i moved it because i honestly hate seeing too much code on one page          
         });
     </script>
 }

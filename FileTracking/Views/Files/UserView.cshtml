@@ -66,9 +66,9 @@
                     {
                         data: "Id",
 
-                        "render": function (data) {
+                        "render": function (data, type, vol) {
                             
-                            var buttonRequest = "<button class='btn btn-warning btn-xs js-requestFile' data-request-file-id='" + data + "'>Request</button>";
+                            var buttonRequest = "<button class='btn btn-warning btn-xs js-requestFile' data-request-name='" + vol.FirstName + "' data-request-file-id='" + data + "'>Request</button>";
                             return buttonRequest;
                         }
                     }

@@ -13,63 +13,85 @@
 </div>
 
 <div class="row">
-    <table class="table  table-bordered table-hover">
-        <thead>
-        <tr>
-            <th>File Number</th>
-            <th>Volume</th>
-            <th>Comment</th>
-            <th>State</th>
-            <th>Location Origin</th>
-            <th>Current location</th>
-            <th>Action</th>
-        </tr>
-        </thead>
-        <tbody>
-            @foreach (var fileVol in Model.FileVolumes)
-            {
-                <tr>
-                    <td>@Model.File.FileNumber</td>
-                    <td>@fileVol.Volume</td>
-                    @if (fileVol.Comment == null)
-                    {
-                        <td>Comment not provided</td>
-                    }
-                    else
-                    {
-                        <td>@fileVol.Comment</td>
-                    }                 
-                    <td>@fileVol.States.State</td>
-                    <td></td>
-                    <td></td>
-                    <td>
-                        <button type="button" class="btn btn-info" data-toggle="modal" data-target="#myModal">Make request</button>
-
-                        <!-- Modal -->
-                        <div id="myModal" class="modal fade" role="dialog">
-                            <div class="modal-dialog">
-
-                                <!-- Modal content-->
-                                <div class="modal-content">
-                                    <div class="modal-header">
-                                        <button type="button" class="close" data-dismiss="modal">&times;</button>
-                                        <h4 class="modal-title">Volume Request</h4>
-                                    </div>
-                                    <div class="modal-body">
-                                        <p>Your request has been sent to registry. Kindly await approval</p>
-                                    </div>
-                                    <div class="modal-footer">
-                                        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-                                    </div>
-                                </div>
-
-                            </div>
-                        </div>
-                      
-                    </td>
-
+        <table id="volumetable" class="table  table-bordered table-hover">
+            <thead>
+                <tr class="row100 head">
+                    <th>File Number</th>
+                    <th>Volume</th>
+                    <th>Comment</th>
+                    <th>State</th>
+                    <th>Location Origin</th>
+                    <th>Current location</th>
+                    <th>Action</th>
                 </tr>
-            }
-        </tbody>
-    </table>
+            </thead>
+            <tbody>
+                @foreach (var fileVol in Model.FileVolumes)
+                {
+                    <tr>
+                        <td>@Model.File.FileNumber</td>
+                        <td>@fileVol.Volume</td>
+                        @if (fileVol.Comment == null)
+                        {
+                            <td>Comment not provided</td>
+                        }
+                        else
+                        {
+                            <td>@fileVol.Comment</td>
+                        }
+                        <td class="tdState">@fileVol.States.State</td>
+                        <td></td>
+                        <td></td>
+                        <td class="tdBtn">
+                            <button type="button" file-data-id="@fileVol.FileId" vol-state="@fileVol.States.State" vol-data-id="@fileVol.Id" file-name="@Model.File.FirstName" class="btn btn-block btn-sm js-req-vol">Request</button>
+
+                        </td>
+
+                    </tr>
+                }
+            </tbody>
+        </table>        
 </div>
+@section scripts
+{
+<script>
+    $(document).ready(function () {
+        $("#volumetable").on("click",
+            ".js-req-vol",
+            function () {
+                var button = $(this);
+                var state = button.attr("vol-state");
+                if (state === "Stored" || state === "Requested") {
+                    bootbox.confirm({
+                        message: "If you proceed your request will be sent to registry and you must await approval",
+                        buttons: {
+                            confirm: {
+                                label: 'Proceed',
+                                className: 'btn-success'
+                            },
+                            cancel: {
+                                label: 'Never mind',
+                                className: 'btn-danger'
+                            }
+                        },
+                        callback: function (result) {
+                            if (result) {
+                                //write code tht routes volumes id to an action result in volumes controller
+                                // window.location.href = "/FileVolumes/RequestFile/" + button.attr("data-request-file-id");
+                                window.location.href = "/Requests/Index/" + button.attr("vol-data-id") + "/" + button.attr("file-data-id");
+                            }
+                        }
+                    });
+                } else {
+                    bootbox.alert({
+                        message:
+                            "<p class='invalidStateMssg'>As of this moment, this volume <strong>CANNOT</strong> be requested. Kindly wait for file to be in another state.</p>",
+                        className: 'error rubberBand animated'
+                    });
+                }
+
+            });
+
+    });
+</script>
+}

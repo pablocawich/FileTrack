@@ -30,6 +30,8 @@ namespace FileTracking.Models
         public DbSet<ManageFileNumber> ManageFileNumbers { get; set; }
         public DbSet<FileVolumes> FileVolumes { get; set; }
         public DbSet<Branches> Branches { get; set; }
+        public DbSet<AdUser> AdUsers { get; set; }
+        public DbSet<Request> Requests { get; set; }
 
         public ApplicationDbContext()
             : base("DefaultConnection", throwIfV1Schema: false)

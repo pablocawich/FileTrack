@@ -197,6 +197,7 @@
     <Compile Include="Controllers\HomeController.cs" />
     <Compile Include="Controllers\ManageController.cs" />
     <Compile Include="Controllers\ProfilesController.cs" />
+    <Compile Include="Controllers\RequestsController.cs" />
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
@@ -316,6 +317,22 @@
     <Compile Include="Migrations\201903131906254_PopulateBranchesTable.Designer.cs">
       <DependentUpon>201903131906254_PopulateBranchesTable.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201903191920534_AddAdUser.cs" />
+    <Compile Include="Migrations\201903191920534_AddAdUser.Designer.cs">
+      <DependentUpon>201903191920534_AddAdUser.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201903192030153_DropAdditionalFKinAdUser.cs" />
+    <Compile Include="Migrations\201903192030153_DropAdditionalFKinAdUser.Designer.cs">
+      <DependentUpon>201903192030153_DropAdditionalFKinAdUser.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201903202203494_AddRequestTable.cs" />
+    <Compile Include="Migrations\201903202203494_AddRequestTable.Designer.cs">
+      <DependentUpon>201903202203494_AddRequestTable.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201903202209254_PopulateRequestStatus.cs" />
+    <Compile Include="Migrations\201903202209254_PopulateRequestStatus.Designer.cs">
+      <DependentUpon>201903202209254_PopulateRequestStatus.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Models\AccountViewModels.cs" />
     <Compile Include="Models\AddNumberIfIdentificationSelected.cs" />
@@ -332,6 +349,8 @@
     <Compile Include="Models\ManageFileNumber.cs" />
     <Compile Include="Models\ManageViewModels.cs" />
     <Compile Include="Models\Profile.cs" />
+    <Compile Include="Models\Request.cs" />
+    <Compile Include="Models\RequestStatus.cs" />
     <Compile Include="Models\Role.cs" />
     <Compile Include="Models\States.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -700,6 +719,7 @@
     <Content Include="Views\Files\UserView.cshtml" />
     <Content Include="Views\Profiles\Index.cshtml" />
     <Content Include="Views\AdUsers\TestUsers.cshtml" />
+    <Content Include="Views\Requests\Index.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
@@ -796,6 +816,18 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201903131906254_PopulateBranchesTable.resx">
       <DependentUpon>201903131906254_PopulateBranchesTable.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201903191920534_AddAdUser.resx">
+      <DependentUpon>201903191920534_AddAdUser.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201903192030153_DropAdditionalFKinAdUser.resx">
+      <DependentUpon>201903192030153_DropAdditionalFKinAdUser.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201903202203494_AddRequestTable.resx">
+      <DependentUpon>201903202203494_AddRequestTable.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201903202209254_PopulateRequestStatus.resx">
+      <DependentUpon>201903202209254_PopulateRequestStatus.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>

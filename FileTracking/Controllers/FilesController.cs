@@ -42,7 +42,6 @@ namespace FileTracking.Controllers
 
         }
 
-
         [Authorize(Roles = Role.Registry)]
         public ActionResult New()
         {
@@ -63,6 +62,7 @@ namespace FileTracking.Controllers
             //passing db (viewModel) content to FileForm 
             return View("FileForm", viewModel);
         }
+       
         //below function should accepts a file objects with its binded values from a form as its parameter
         //and ultimately save that value unto the database.
         [HttpPost]
@@ -183,7 +183,7 @@ namespace FileTracking.Controllers
            _context.SaveChanges();
         }
 
-        //directs to the volumes page for a specific file based on the id parameter
+        //directs users to the volumes page for a specific file based on the id parameter
         [Authorize(Roles = Role.Registry)]
         public ActionResult AddVolume(int id)
         {
@@ -196,6 +196,7 @@ namespace FileTracking.Controllers
             return View(viewModel);
         }
 
+        //saves a volume with its associated file infomation 
         [HttpPost]
         public ActionResult SaveVolume(FileVolumes fileVolumes,  File file)
         {
@@ -234,7 +235,7 @@ namespace FileTracking.Controllers
             return RedirectToAction("Index", "Files");
         }
 
-        //[HttpPost]
+        //[HttpPost]. Sends our file objects as a set of JSON objects. Enables the possibility of server side processing on our datatable.
         public ActionResult GetFiles()
         {
             //Server side parameters
