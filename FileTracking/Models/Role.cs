@@ -9,8 +9,10 @@ namespace FileTracking.Models
     {
         //Constant values used to reference the different roles a user can have within the system
 
+        //FMS_Registry
         public const string Registry = "FMS_Registry";
 
+        //FMS_Regular
         public const string RegularUser = "FMS_Regular";
     }
 }

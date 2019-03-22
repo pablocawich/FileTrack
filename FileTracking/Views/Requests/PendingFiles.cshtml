@@ -1,0 +1,124 @@
+﻿
+@{
+    ViewBag.Title = "PendingFiles";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="row">
+    <div class="col-lg-12">
+        <h2 class="page-header">Pending Files</h2>
+    </div>
+    <!-- /.col-lg-12 -->
+</div>
+
+<link rel="stylesheet" href="https://cdn.datatables.net/1.10.19/css/dataTables.bootstrap.min.css">
+<div class="row">
+    <table id="pendingTable" class="table  table-bordered table-hover">
+        <thead>
+            <tr>
+                <th>Id</th>
+                <th>File Number</th>
+                <th>Volume</th>
+                <th>Requester</th>
+                <th>Requester Branch</th>
+                <th>Requested Date</th>
+                <th>Action</th>
+            </tr>
+        </thead>
+
+    </table>
+   
+</div>
+@section scripts
+{
+    <script>
+        $(document).ready(function() {
+            var table = $("#pendingTable").DataTable({
+                "ajax": {
+                    "url": "/Requests/GetPendingFiles",
+                    "data": "GET",
+                    "datatype": "json"
+                },
+                "columns": [
+                    { "data": "Id" },
+                    { "data": "FileVolumes.FileNumber" },
+                    { "data": "FileVolumes.Volume" },
+                    { "data": "User.Name" },
+                    { "data": "User.Branches.Branch" },
+                    { "data": "RequestDate" },
+                    {
+                        data: "Id",
+
+                        "render": function(data, type, req) {
+                            var buttonAccept = "<button class='btn btn-success btn-xs js-accept' request-object='" +
+                                req +
+                                "' data-accept-pending-id='" +
+                                data +
+                                "'>Accept</button>";
+                            var buttonDeny = "<button class='btn btn-danger btn-xs js-reject' object='" +
+                                req +
+                                "' data-deny-pending-id='" +
+                                data +
+                                "'>Reject</button>";
+
+                            return buttonAccept + " " + buttonDeny;
+                        }
+                    }
+                ]
+            });
+            //--------------accepting file volume implementation----------------------------------
+            $("#pendingTable").on("click",
+                '.js-accept',
+                function() {
+                    var button = $(this);
+                    var id = button.attr("data-accept-pending-id");
+                    bootbox.confirm("You are about to accept request for: ",
+                        function(result) {
+                            if (result) {
+                                $.ajax({
+                                    url: '/Requests/AcceptRequest/' + id,
+                                    success: function(reqObj) {
+
+                                        toastr.success("Accepted", "Request", { positionClass: "toast-bottom-right" });
+
+                                        //removes row from client side perspective. Not on server side thus 
+                                        //if a refresh is made it will be reloaded since we have not done any server side processing
+                                        table.row(button.parents('tr')).remove().draw();
+                                    },
+                                    statusCode: {
+                                        404: function(content) { alert('cannot find resource'); },
+                                        500: function(content) { alert('internal server error'); }
+                                    }
+                                });
+                            }
+
+                        });
+                });
+
+            $("#pendingTable").on("click",
+                '.js-reject',
+                function() {
+                    var button = $(this);
+                    var id = button.attr("data-deny-pending-id");
+                    bootbox.confirm("You are about to decline request from user: ",
+                        function(result) {
+                            if (result) {
+                                $.ajax({
+                                    url: '/Requests/DeclineRequest/' + id,
+                                    success: function(data) {
+                                        toastr.success("Successfully Declined", "Request", { positionClass: "toast-bottom-right" });
+                                        table.row(button.parents('tr')).remove().draw();
+                                    },
+                                    statusCode: {
+                                        404: function(content) { alert('cannot find resource'); },
+                                        500: function(content) { alert('internal server error'); }
+                                    }
+                                });
+                            }
+                        });
+                    
+                });
+
+        });
+    </script>
+}

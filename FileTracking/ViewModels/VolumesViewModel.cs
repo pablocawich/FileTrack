@@ -10,5 +10,6 @@ namespace FileTracking.ViewModels
     {
         public File File { get; set; }
         public ICollection<FileVolumes> FileVolumes { get; set; }
+        public AdUser AdUser { get; set; }
     }
 }

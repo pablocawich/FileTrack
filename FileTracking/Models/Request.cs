@@ -18,9 +18,9 @@ namespace FileTracking.Models
         [Required]
         public int UserId { get; set; }
 
-        public File File { get; set; }
+        /*public File File { get; set; }
         [Required]
-        public int FileId { get; set; }
+        public int FileId { get; set; }*/
 
         public Branches Branches { get; set; }
         [Required]

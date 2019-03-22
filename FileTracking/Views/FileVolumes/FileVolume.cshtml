@@ -13,7 +13,7 @@
 </div>
 
 <div class="row">
-        <table id="volumetable" class="table  table-bordered table-hover">
+        <table id="volumeTable" class="table  table-bordered table-hover">
             <thead>
                 <tr class="row100 head">
                     <th>File Number</th>
@@ -40,10 +40,11 @@
                             <td>@fileVol.Comment</td>
                         }
                         <td class="tdState">@fileVol.States.State</td>
-                        <td></td>
-                        <td></td>
+                        <td>@fileVol.Branches.Branch</td>
+                        <td class="currentLoc" currLoc-data="@fileVol.CurrentLocation"></td>
                         <td class="tdBtn">
-                            <button type="button" file-data-id="@fileVol.FileId" vol-state="@fileVol.States.State" vol-data-id="@fileVol.Id" file-name="@Model.File.FirstName" class="btn btn-block btn-sm js-req-vol">Request</button>
+                            <button type="button" vol-state="@fileVol.States.State" user-loc="@Model.AdUser.BranchesId" originLoc="@fileVol.BranchesId" currLoc-attr="@fileVol.CurrentLocation" 
+                                    vol-data-id="@fileVol.Id" file-name="@Model.File.FirstName" class="btn btn-yahoo btn-sm js-req-vol">Request</button>
 
                         </td>
 
@@ -54,44 +55,74 @@
 </div>
 @section scripts
 {
-<script>
-    $(document).ready(function () {
-        $("#volumetable").on("click",
-            ".js-req-vol",
-            function () {
-                var button = $(this);
-                var state = button.attr("vol-state");
-                if (state === "Stored" || state === "Requested") {
-                    bootbox.confirm({
-                        message: "If you proceed your request will be sent to registry and you must await approval",
-                        buttons: {
-                            confirm: {
-                                label: 'Proceed',
-                                className: 'btn-success'
-                            },
-                            cancel: {
-                                label: 'Never mind',
-                                className: 'btn-danger'
-                            }
-                        },
-                        callback: function (result) {
-                            if (result) {
-                                //write code tht routes volumes id to an action result in volumes controller
-                                // window.location.href = "/FileVolumes/RequestFile/" + button.attr("data-request-file-id");
-                                window.location.href = "/Requests/Index/" + button.attr("vol-data-id") + "/" + button.attr("file-data-id");
-                            }
-                        }
-                    });
-                } else {
-                    bootbox.alert({
-                        message:
-                            "<p class='invalidStateMssg'>As of this moment, this volume <strong>CANNOT</strong> be requested. Kindly wait for file to be in another state.</p>",
-                        className: 'error rubberBand animated'
-                    });
-                }
+    <script>
+        $(document).ready(function() {
+            $("#volumeTable").on("click",
+                ".js-req-vol",
+                function () {      
+                    var button = $(this);
+                    var state = button.attr("vol-state");
+                    var originalLoc = button.attr("originLoc");
+                    var currentLoc = button.attr("currLoc-attr");
+                    var userLoc = button.attr("user-loc");
+                    console.log(" whom is currently requesting is from " + userLoc);
 
+                    if (originalLoc == currentLoc)
+                        if (state === "Stored" || state === "Requested") {
+                            bootbox.confirm({
+                                message: "Volume with the vicinity thus if you proceed your request will be sent to registry and you must await approval",
+                                buttons: {
+                                    confirm: {
+                                        label: 'Proceed',
+                                        className: 'btn-success'
+                                    },
+                                    cancel: {
+                                        label: 'Never mind',
+                                        className: 'btn-danger'
+                                    }
+                                },
+                                callback: function(result) {
+                                    if (result) {
+                                        //write code tht routes volumes id to an action result in volumes controller
+                                        // window.location.href = "/FileVolumes/RequestFile/" + button.attr("data-request-file-id");
+                                        window.location.href =
+                                            "/Requests/Index/" + button.attr("vol-data-id");
+                                    }
+                                }
+                            });
+                        } else {
+                            toastr.error("Volume CANNOT be requested. Currently being tranferred or has already been checked-out", "Volume Request", { positionClass: "toast-bottom-right" });
+                            $(this).prop("disabled", true)
+                        }
+                    if (!(userLoc == currentLoc))
+                        toastr.error("File volume is not within your respective branch. Cannot request at this time.", "Volume Request", { positionClass: "toast-bottom-right" });
+                });
+            //inserting a string value for current location
+            $(".currentLoc").each(function() {
+                var locNum = $(this).attr("currLoc-data");
+                var num = parseInt(locNum);         
+                switch(num) {
+                case 1:
+                    $(this).text("Corozal");
+                    break;
+                case 2:
+                    $(this).text("Orange Walk");
+                    break;
+                case 3:
+                    $(this).text("Belize City");
+                    break;
+                case 4:
+                    $(this).text("San Pedro");
+                    break;
+                case 5:
+                    $(this).text("Belmopan");
+                    break;
+                case 6:
+                    $(this).text("Dangriga");
+                    break;  
+                }
             });
 
-    });
-</script>
+        });
+    </script>
 }

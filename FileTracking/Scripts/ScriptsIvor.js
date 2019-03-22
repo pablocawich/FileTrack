@@ -5,6 +5,7 @@
        var button = $(this);
        bootbox.confirm("Are you sure you want to add volume to this file?", function (result) {
            if (result) {
+               toastr.success("Volume successfully added.");
                window.location.href = "/Files/AddVolume/" + button.attr("data-file-id");
            }
        });
@@ -13,6 +14,7 @@
        var button = $(this);
        bootbox.confirm("Are you sure you want to edit this file?", function (result) {
            if (result) {
+             
                window.location.href = "/Files/Update/" + button.attr("data-edit-file-id");
            }
        });

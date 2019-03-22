@@ -170,6 +170,7 @@ namespace FileTracking.Controllers
         public void AddVolumeOnCreate(int thisId)
         {
            var fileInDb = _context.Files.Single(f => f.Id == thisId);
+           byte thisUserBranchId = GetAdUserBranch();
 
            var fileVolumeRecord = new FileVolumes
            {
@@ -177,12 +178,30 @@ namespace FileTracking.Controllers
                FileNumber = fileInDb.FileNumber,
                Volume = 1,
                Comment = null,
+               BranchesId = thisUserBranchId,
+               CurrentLocation = thisUserBranchId,
                StatesId = 1
            };
            _context.FileVolumes.Add(fileVolumeRecord);
            _context.SaveChanges();
         }
 
+        //we need this function
+        public string ParseUsername(string adName)
+        {
+            string newName = "";
+            if (adName.Contains("DEVFINCO"))
+                newName = adName.Remove(0, 9);
+            return newName;
+        }
+
+        //
+        public byte GetAdUserBranch()
+        {
+            string user = ParseUsername(User.Identity.Name);
+            var userRecord = _context.AdUsers.Single(a => a.Username == user);
+            return userRecord.BranchesId;
+        }
         //directs users to the volumes page for a specific file based on the id parameter
         [Authorize(Roles = Role.Registry)]
         public ActionResult AddVolume(int id)
@@ -201,8 +220,8 @@ namespace FileTracking.Controllers
         public ActionResult SaveVolume(FileVolumes fileVolumes,  File file)
         {
             //we get an existing record form file table, which in we only need the id
-            int i = file.Id;
-            var fileInDb = _context.Files.Single(f => f.Id == i);
+            //int i = file.Id;
+            var fileInDb = _context.Files.Single(f => f.Id == file.Id);
             //Check of posted information is valid
             if (!ModelState.IsValid)
             {
@@ -213,22 +232,25 @@ namespace FileTracking.Controllers
                     FileVolumes = new FileVolumes()
                     
                 };
-                //redirect to form page if validations fails
+                //redirect to form page if validations fails with the same file vol objects redirected
                 return View("AddVolume", viewModel);
             }
+
+            byte thisUserBranchId = GetAdUserBranch();
             //otherwise, create a new volume record with respect to its file parent
             if (fileVolumes.Id == 0 && file.Id != 0)
             {
                 fileInDb.Volume++;
                 fileVolumes.FileId = file.Id;
                 fileVolumes.Volume = fileInDb.Volume;
-                fileVolumes.StatesId = 1;
-                fileVolumes.FileNumber = file.FileNumber;
+                fileVolumes.BranchesId = thisUserBranchId;//based on where the user is situated we add the location of origin
+                fileVolumes.CurrentLocation = thisUserBranchId;//Similarly, given the file is being created, the current location will have to match the above
+                fileVolumes.StatesId = 1; //default for every new file vol's state is 1 which indicates a stored state
+                fileVolumes.FileNumber = file.FileNumber;//not necessary but relevant, i think. 
 
                 _context.FileVolumes.Add(fileVolumes);
                 
                 _context.SaveChanges();
-
 
             }
             //redirect to table with record info

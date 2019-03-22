@@ -333,6 +333,18 @@
     <Compile Include="Migrations\201903202209254_PopulateRequestStatus.Designer.cs">
       <DependentUpon>201903202209254_PopulateRequestStatus.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201903202257390_AddBranchToVolumes.cs" />
+    <Compile Include="Migrations\201903202257390_AddBranchToVolumes.Designer.cs">
+      <DependentUpon>201903202257390_AddBranchToVolumes.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201903210126549_AddCurrentLocToVolumes.cs" />
+    <Compile Include="Migrations\201903210126549_AddCurrentLocToVolumes.Designer.cs">
+      <DependentUpon>201903210126549_AddCurrentLocToVolumes.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201903212041318_RemoveFileFromRequest.cs" />
+    <Compile Include="Migrations\201903212041318_RemoveFileFromRequest.Designer.cs">
+      <DependentUpon>201903212041318_RemoveFileFromRequest.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Models\AccountViewModels.cs" />
     <Compile Include="Models\AddNumberIfIdentificationSelected.cs" />
@@ -517,6 +529,8 @@
     <Content Include="Content\morris.css" />
     <Content Include="Content\startmin.css" />
     <Content Include="Content\timeline.css" />
+    <Content Include="Content\toastr.css" />
+    <Content Include="Content\toastr.min.css" />
     <Content Include="favicon.ico" />
     <Content Include="fonts\fontawesome-webfont.svg" />
     <Content Include="fonts\glyphicons-halflings-regular.svg" />
@@ -624,6 +638,8 @@
     <Content Include="Content\DataTables\css\semanticui.scss" />
     <Content Include="Content\DataTables\css\mixins.scss" />
     <Content Include="Content\DataTables\css\common.scss" />
+    <Content Include="Content\toastr.scss" />
+    <Content Include="Content\toastr.less" />
     <None Include="Scripts\jquery-3.3.1.intellisense.js" />
     <Content Include="Scripts\flot-data.js" />
     <Content Include="Scripts\flot\excanvas.min.js" />
@@ -664,6 +680,8 @@
     <Content Include="Scripts\raphael.min.js" />
     <Content Include="Scripts\ScriptsIvor.js" />
     <Content Include="Scripts\startmin.js" />
+    <Content Include="Scripts\toastr.js" />
+    <Content Include="Scripts\toastr.min.js" />
     <Content Include="Scripts\umd\popper-utils.js" />
     <Content Include="Scripts\umd\popper-utils.min.js" />
     <Content Include="Scripts\umd\popper.js" />
@@ -720,6 +738,8 @@
     <Content Include="Views\Profiles\Index.cshtml" />
     <Content Include="Views\AdUsers\TestUsers.cshtml" />
     <Content Include="Views\Requests\Index.cshtml" />
+    <Content Include="Views\Requests\PendingFiles.cshtml" />
+    <Content Include="Views\Requests\AlreadyRequested.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
@@ -828,6 +848,15 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201903202209254_PopulateRequestStatus.resx">
       <DependentUpon>201903202209254_PopulateRequestStatus.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201903202257390_AddBranchToVolumes.resx">
+      <DependentUpon>201903202257390_AddBranchToVolumes.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201903210126549_AddCurrentLocToVolumes.resx">
+      <DependentUpon>201903210126549_AddCurrentLocToVolumes.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201903212041318_RemoveFileFromRequest.resx">
+      <DependentUpon>201903212041318_RemoveFileFromRequest.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>

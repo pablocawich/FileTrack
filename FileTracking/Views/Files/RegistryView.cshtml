@@ -17,9 +17,8 @@
             <thead>
                 <tr>
                     <th> File Number</th>
-                    <th>First Name</th>
-                    <th>Last Name </th>
-                    <th>City/Town/Village</th>
+                    <th>Name</th>
+                    <th>Address</th>
                     <th>District</th>
                     <th>Volumes</th>
                     <th>Date Added</th>
@@ -33,7 +32,7 @@
 
 @section scripts{
     <script>
-        $(document).ready(function () {
+        $(document).ready(function() {
             $("#fileTable").DataTable({
                 "ajax": {
                     "url": "/Files/GetFiles",
@@ -41,16 +40,33 @@
                     "datatype": "json"
                 },
                 "columns": [
-                    { "data": "FileNumber", "name": "FileNumber" },
-                    { "data": "FirstName", "name": "FirstName" },
-                    { "data": "LastName", "name": "LastName" },
+                    {
+                        "data": "FileNumber",
+                        "name": "FileNumber",
+                        render: function(data,type,file) {
+                            return "<a href='#'> <span class='glyphicon glyphicon-file'></span></a> "+file.FileNumber;
+
+                        }
+                    },
+                    {
+                        "data": "FirstName",
+                        "name": "FirstName",
+                        render: function (data, type, file) {
+                            var mName = file.MiddleName;
+                            if (file.MiddleName == null)
+                                mName = "";
+
+                            return file.FirstName + " " + mName + " " + file.LastName;
+                        }
+                    },
+
                     { "data": "CityOrTown", "name": "CityOrTown" },
                     { "data": "Districts.District", "name": "Districts.District" },
                     { "data": "Volume", "name": "Volume" },
                     {
                         "data": "DateCreated",
                         "name": "DateCreated",
-                        "render": function (value) {
+                        "render": function(value) {
                             if (value === null) return "";
 
                             var pattern = /Date\(([^)]+)\)/;
@@ -62,10 +78,15 @@
                     },
                     {
                         data: "Id",
-                        
-                        "render": function (data) {
-                            var buttonAddVol = "<button class='btn btn-instagram btn-xs js-addVol' data-file-id='" + data + "'>Add Volume</button>";
-                            var buttonEditFile = "<button class='btn btn-flickr btn-xs js-editFile' data-edit-file-id='" + data + "'>Edit</button>";
+
+                        "render": function(data) {
+                            var buttonAddVol = "<button class='btn btn-instagram btn-xs js-addVol' data-file-id='" +
+                                data +
+                                "'>Add Volume</button>";
+                            var buttonEditFile =
+                                "<button class='btn btn-flickr btn-xs js-editFile' data-edit-file-id='" +
+                                    data +
+                                    "'>Edit</button>";
 
                             return buttonEditFile + " " + buttonAddVol;
                         }

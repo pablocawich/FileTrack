@@ -20,7 +20,8 @@ namespace FileTracking
                 "~/Scripts/startmin.js",
                 "~/Scripts/DataTables/jquery.dataTables.js",
                 "~/Scripts/DataTables/dataTables.bootstrap.js",
-                "~/Scripts/bootbox.js"
+                "~/Scripts/bootbox.js",
+                "~/Scripts/toastr.js"
                ));
 
             bundles.Add(new ScriptBundle("~/bundles/custom-js").Include(
@@ -36,7 +37,7 @@ namespace FileTracking
 
             bundles.Add(new StyleBundle("~/Content/css").Include(
                       "~/Content/bootstrap-lumen.css",
-                      
+                      "~/Content/toastr.css",
                       "~/Content/bootstrap-social.css",
                       "~/Content/metisMenu.min.css",
                       "~/Content/startmin.css",     

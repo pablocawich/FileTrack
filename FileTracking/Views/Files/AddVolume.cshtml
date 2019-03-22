@@ -37,6 +37,8 @@
         @Html.HiddenFor(v => v.FileVolumes.Volume)
         @Html.HiddenFor(v => v.FileVolumes.FileNumber)
         @Html.HiddenFor(v => v.FileVolumes.StatesId)
+        @Html.HiddenFor(v => v.FileVolumes.BranchesId)
+        @Html.HiddenFor(v => v.FileVolumes.CurrentLocation)
 
         @Html.HiddenFor(v => v.File.Id)
         @Html.HiddenFor(v => v.File.FileNumber)
@@ -50,7 +52,7 @@
 
         <button class="btn btn-primary btn-sm">Save File</button>
         <a href="@Url.Action("Index", "Files")" class="btn btn-danger">Cancel</a>
-        
+
     </div>
 
     }
