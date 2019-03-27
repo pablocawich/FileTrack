@@ -26,8 +26,8 @@
 
 <div class="row">
     @using (Html.BeginForm("Save", "Files", FormMethod.Post, new { @id = "fileFormId" }))
-    {
-        @Html.ValidationSummary(true, "Ensure the following errors are resolved :");
+    { 
+        @Html.ValidationSummary( true,"Ensure the following errors are resolved:");
         <div class="col-md-4">
             <div class="form-group">
                 @Html.LabelFor(f => f.File.FirstName, new { @class = "control-label" })

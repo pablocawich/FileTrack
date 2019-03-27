@@ -1,0 +1,74 @@
+﻿@model IEnumerable<FileTracking.Models.Request>
+@{
+    ViewBag.Title = "UserVolumes";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="row">
+    <div class="col-lg-12 ">
+        <h2 class="page-header">My Files</h2>
+    </div>
+    <!-- /.col-lg-12 -->
+</div>
+
+<div class="row">   
+    <div class="alert alert-info alert-dismissible">
+        <p style="color: black">
+            Files here are for the user currently signed on if they have requested, retrieved and approved file check out.
+            Also, this feature should have a return file action to direct a file back to registry.
+        </p>
+    </div>
+    
+    <table id="myFiles" class="table table-bordered table-hover">
+        <thead>
+            <tr>
+                <th>File Number</th>
+                <th>Volume #</th>
+                <th>Accepted By</th>
+                <th>Action</th>
+            </tr>
+        </thead>
+        <tbody>
+        @foreach (var req in Model)
+        {
+            <tr>
+                <td>@req.FileVolumes.FileNumber</td>
+                <td>@req.FileVolumes.Volume</td>
+                <td>@req.AcceptedBy</td>
+                <td><button class="btn btn-adn js-return" data-return-id="@req.Id">Return</button></td>
+            </tr>
+        }      
+        </tbody>
+    </table>
+
+</div>
+@section scripts{
+    <script>
+        $(document).ready(function () {
+     
+                $("#myFiles").on('click',
+                    '.js-return',
+                    function () {
+                        var $btn = $(this);
+                        var requestId = $btn.attr("data-return-id");
+                        bootbox.confirm("You are sending a return request to registry, Do you wish to continue",
+                            function(result) {
+                                if (result) {
+                                    $.ajax({
+                                        url: '/FileVolumes/ReturnVolume/' + requestId,
+                                        success: function() {
+                                            toastr.success("Return Request Sent to registry", "Return", { positionClass: "toast-bottom-right" });
+
+                                            $($btn).closest("tr").remove();
+                                        },
+                                        statusCode: {
+                                            404: function(content) { alert('cannot find resource'); },
+                                            500: function(content) { alert('internal server error'); }
+                                        }
+                                    });
+                                }
+                            });
+                    });
+        });
+    </script>
+}

@@ -33,6 +33,7 @@
 {
     <script>
         $(document).ready(function() {
+            //gets json objects from the request controller in order to populate the dataTable
             var table = $("#pendingTable").DataTable({
                 "ajax": {
                     "url": "/Requests/GetPendingFiles",
@@ -45,19 +46,20 @@
                     { "data": "FileVolumes.Volume" },
                     { "data": "User.Name" },
                     { "data": "User.Branches.Branch" },
-                    { "data": "RequestDate" },
+                    {
+                        data: "RequestDate",
+                        "render": function(data) {
+                            return getDateString(data);
+                        }
+                    },
                     {
                         data: "Id",
-
                         "render": function(data, type, req) {
-                            var buttonAccept = "<button class='btn btn-success btn-xs js-accept' request-object='" +
-                                req +
-                                "' data-accept-pending-id='" +
-                                data +
-                                "'>Accept</button>";
-                            var buttonDeny = "<button class='btn btn-danger btn-xs js-reject' object='" +
-                                req +
-                                "' data-deny-pending-id='" +
+                            var buttonAccept =
+                                "<button class='btn btn-success btn-xs js-accept' data-accept-pending-id='" +
+                                    data +
+                                    "'>Check out</button>";
+                            var buttonDeny = "<button class='btn btn-danger btn-xs js-reject'  data-deny-pending-id='" +
                                 data +
                                 "'>Reject</button>";
 
@@ -106,7 +108,9 @@
                                 $.ajax({
                                     url: '/Requests/DeclineRequest/' + id,
                                     success: function(data) {
-                                        toastr.success("Successfully Declined", "Request", { positionClass: "toast-bottom-right" });
+                                        toastr.success("Successfully Declined",
+                                            "Request",
+                                            { positionClass: "toast-bottom-right" });
                                         table.row(button.parents('tr')).remove().draw();
                                     },
                                     statusCode: {
@@ -116,8 +120,12 @@
                                 });
                             }
                         });
-                    
+
                 });
+            function getDateString(date) {
+                var dateObj = new Date(parseInt(date.substr(6)));
+                return dateObj.toDateString();
+            }
 
         });
     </script>

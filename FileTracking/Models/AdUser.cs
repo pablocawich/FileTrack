@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Web;
 
+
 namespace FileTracking.Models
 {
     public class AdUser
@@ -17,6 +18,8 @@ namespace FileTracking.Models
 
         public Branches Branches { get; set; }
         public byte BranchesId { get; set; }
-        
+
+       
+
     }
 }

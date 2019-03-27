@@ -22,7 +22,7 @@
 
     @Html.Partial("_LoginPartial")
 
-    <div id ="sideNav" class="navbar-default sidebar" role="navigation">
+    <div id="sideNav" class="navbar-default sidebar" role="navigation">
         <div class="sidebar-nav navbar-collapse">
             <ul class="nav">
                 <li class="sidebar-search">
@@ -37,17 +37,17 @@
                     <!-- /input-group -->
                 </li>
                 <li class="nav-links">
-                    <a href="@Url.Action("New", "Files")"><i class="fa fa-edit fa-fw"></i>Create File</a>
-                </li>
-                <li class="nav-links">
                     <a href="@Url.Action("Index", "Files")"><i class="fa fa-files-o fa-fw"></i>Files</a>
-
-                </li>
-                <li class="nav-links">
-                    <a href="@Url.Action("PendingFiles","Requests")"><i class="fa fa-hourglass-2 fa-fw"></i>Pending Files</a>
                 </li>
                 <li>
-                    <a href="@Url.Action("ReturnApproval", "FileVolumes")"><i class="fa fa-sitemap fa-fw"></i> Approve Returns</a>
+                    <a href="@Url.Action("ConfirmCheckout","Requests")"><i class="fa fa-check fa-fw"></i>Confirm Checkout</a>
+                </li>
+                <li>
+                    <a href="@Url.Action("UserVolumes","FileVolumes")"><i class="fa fa-file-text-o fa-fw"> </i>My Files</a>
+                </li>
+
+                <li>
+                    <a href="#"><i class="fa fa-sitemap fa-fw"></i> Something</a>
                 </li>
 
 
@@ -58,3 +58,4 @@
     <!-- /.navbar-static-side -->
 
 </nav>
+

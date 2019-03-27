@@ -1,41 +1,41 @@
 ﻿body {
-    padding-top: 50px;
-    padding-bottom: 20px;
+	padding-top: 50px;
+	padding-bottom: 20px;
 }
 
 /* Set padding to keep content from hitting the edges */
 .body-content {
-    padding-left: 15px;
-    padding-right: 15px;
+	padding-left: 15px;
+	padding-right: 15px;
 }
 
 /* Override the default bootstrap behavior where horizontal description lists 
    will truncate terms that are too long to fit in the left column 
 */
 .dl-horizontal dt {
-    white-space: normal;
+	white-space: normal;
 }
 
 /* Set width on the form input elements since they're 100% wide by default */
 input,
 select,
 textarea {
-    max-width: 280px;
+	max-width: 280px;
 }
 .field-validation-error, .validation-summary-errors {
-    color: red;
+	color: red;
 }
 .input-validation-error {
-    border: 1px solid greenyellow;
+	border: 1px solid greenyellow;
 }
 thead {
-    background-color: #3F433E;
-    color: white;
+	background-color: #3F433E;
+	color: white;
 }
 #dfcNav {
-    background-color: #2C3B6B;
-    border-color: #928e8b;
+	background-color: #2C3B6B;
+	border-color: #928e8b;
 }
 .invalidStateMssg {
-    color: red;
+	color: red;
 }

@@ -32,6 +32,8 @@ namespace FileTracking.Models
         public DbSet<Branches> Branches { get; set; }
         public DbSet<AdUser> AdUsers { get; set; }
         public DbSet<Request> Requests { get; set; }
+        public DbSet<ReturnState> ReturnStates { get; set; }
+
 
         public ApplicationDbContext()
             : base("DefaultConnection", throwIfV1Schema: false)

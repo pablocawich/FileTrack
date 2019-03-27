@@ -1,0 +1,98 @@
+﻿
+@{
+    ViewBag.Title = "ReturnApproval";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<link rel="stylesheet" href="https://cdn.datatables.net/1.10.19/css/dataTables.bootstrap.min.css">
+<div class="row">
+    <div class="col-lg-12">
+        <h2 class="page-header">Approve Return</h2>
+    </div>
+    <!-- /.col-lg-12 -->
+</div>
+
+<div class="row">
+    <table id="returnedTable" class="table  table-bordered table-hover">
+        <thead>
+        <tr>
+            <th>File Number</th>
+            <th>Volume</th>
+            <th>Requester</th>
+            <th>Requester Branch</th>
+            <th>Requested Date</th>
+            <th>Action</th>
+        </tr>
+        </thead>
+        <tbody>
+
+        </tbody>
+
+    </table>
+</div>
+@section scripts
+{
+    <script>
+        $(document).ready(function() {
+            //gets json objects from the request controller in order to populate the dataTable
+            var table = $("#returnedTable").DataTable({
+                "ajax": {
+                    "url": "/FileVolumes/GetReturnedRequests",
+                    "data": "GET",
+                    "datatype": "json"
+                },
+                "columns": [
+                    { "data": "FileVolumes.FileNumber" },
+                    { "data": "FileVolumes.Volume" },
+                    { "data": "User.Name" },
+                    { "data": "User.Branches.Branch" },
+                    {
+                        data: "RequestDate",
+                        "render": function(data) {
+                            return getDateString(data);
+                        }
+                    },
+                    {
+                        data: "Id",
+                        "render": function(data, type, req) {
+                            var buttonAccept =   "<button class='btn btn-success js-return' data-return-id='" + data + "'>Check In</button>";
+                          
+                            return buttonAccept;
+                        }
+                    }
+                ]
+            });
+            //--------------accepting file volume implementation----------------------------------
+            $("#returnedTable").on("click",
+                '.js-return',
+                function () {
+                    var button = $(this);
+                    var id = button.attr("data-return-id");
+                    bootbox.confirm("You are about to confirm request for this user: ",
+                        function (result) {
+                            if (result) {
+                                $.ajax({
+                                    url: '/FileVolumes/AcceptReturn/' + id,
+                                    success: function () {
+
+                                        toastr.success("Accepted return for client", "Return", { positionClass: "toast-bottom-right" });
+
+                                        //removes row from client side perspective. Not on server side thus 
+                                        //if a refresh is made it will be reloaded since we have not done any server side processing
+                                        table.row(button.parents('tr')).remove().draw();
+                                    },
+                                    statusCode: {
+                                        404: function (content) { alert('cannot find resource'); },
+                                        500: function (content) { alert('internal server error'); }
+                                    }
+                                });
+                            }
+
+                        });
+                });
+            function getDateString(date) {
+                var dateObj = new Date(parseInt(date.substr(6)));
+                return dateObj.toDateString();
+            }
+         });
+    </script>
+}
