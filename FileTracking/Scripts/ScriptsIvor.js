@@ -5,8 +5,10 @@
        var button = $(this);
        bootbox.confirm("Are you sure you want to add volume to this file?", function (result) {
            if (result) {
-               toastr.success("Volume successfully added.");
-               window.location.href = "/Files/AddVolume/" + button.attr("data-file-id");
+               var url = "/Files/AddNewVolume/" + button.attr("data-file-id");
+              
+               $('#modelContent').load(url);
+               $('#myModal').modal('show');
            }
        });
    });
@@ -19,15 +21,14 @@
            }
        });
     });
-   $("#fileTable").on("click", ".js-requestFile", function () {
+    $("#fileTable").on("click", ".js-viewVolumes", function () {
        var button = $(this);
-       var name = button.attr("data-request-name");
-       bootbox.confirm("You are to request a file for "+name.toUpperCase()+". To request this file you need to specify a volume. Do you wish to proceed", function (result) {
+       bootbox.confirm("You are about to view volumes for this file. Continue", function (result) {
            if (result) {
-               window.location.href = "/FileVolumes/RequestFile/" + button.attr("data-request-file-id");
+
+               window.location.href = "/Files/FileVolumes/" + button.attr("data-view-vol-id");
            }
        });
-    });
- 
+   });
   
 });

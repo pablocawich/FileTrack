@@ -369,6 +369,14 @@
     <Compile Include="Migrations\201903271748396_AddIsRequestActiveToRequests.Designer.cs">
       <DependentUpon>201903271748396_AddIsRequestActiveToRequests.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201903291629188_RemoveIsReturned.cs" />
+    <Compile Include="Migrations\201903291629188_RemoveIsReturned.Designer.cs">
+      <DependentUpon>201903291629188_RemoveIsReturned.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201903292000125_AddUserToVolumes.cs" />
+    <Compile Include="Migrations\201903292000125_AddUserToVolumes.Designer.cs">
+      <DependentUpon>201903292000125_AddUserToVolumes.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Models\AccountViewModels.cs" />
     <Compile Include="Models\AddNumberIfIdentificationSelected.cs" />
@@ -758,18 +766,21 @@
     <Content Include="Scripts\popper.js.map" />
     <Content Include="Scripts\popper-utils.min.js.map" />
     <Content Include="Scripts\popper-utils.js.map" />
-    <Content Include="Views\Files\AddVolume.cshtml" />
     <Content Include="Views\FileVolumes\FileVolume.cshtml" />
     <Content Include="Views\Files\UserView.cshtml" />
     <Content Include="Views\Profiles\Index.cshtml" />
     <Content Include="Views\AdUsers\TestUsers.cshtml" />
-    <Content Include="Views\Requests\Index.cshtml" />
     <Content Include="Views\Requests\PendingFiles.cshtml" />
     <Content Include="Views\Requests\AlreadyRequested.cshtml" />
     <Content Include="Views\Requests\ConfirmCheckout.cshtml" />
     <Content Include="Views\FileVolumes\UserVolumes.cshtml" />
     <Content Include="Views\Shared\_UserNavBar.cshtml" />
     <Content Include="Views\FileVolumes\ReturnApproval.cshtml" />
+    <Content Include="Views\Files\FileDetails.cshtml" />
+    <Content Include="Views\Files\AddNewVolume.cshtml" />
+    <Content Include="Views\Files\FileVolumes.cshtml" />
+    <Content Include="Views\Requests\UserNotification.cshtml" />
+    <Content Include="Views\Requests\Index.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
@@ -905,6 +916,12 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201903271748396_AddIsRequestActiveToRequests.resx">
       <DependentUpon>201903271748396_AddIsRequestActiveToRequests.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201903291629188_RemoveIsReturned.resx">
+      <DependentUpon>201903291629188_RemoveIsReturned.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201903292000125_AddUserToVolumes.resx">
+      <DependentUpon>201903292000125_AddUserToVolumes.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>

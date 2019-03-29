@@ -40,9 +40,6 @@ namespace FileTracking.Models
         [DefaultValue(false)]
         public bool IsConfirmed { get; set; }
 
-        [DefaultValue(false)]
-        public bool IsReturned { get; set; }
-
         public ReturnState ReturnState { get; set; }
         [Required]
         [DefaultValue(1)]

@@ -42,6 +42,14 @@ namespace FileTracking.Controllers
 
         }
 
+        //Will show details for a specific file
+        public ActionResult FileDetails(int id)
+        {
+            var file = _context.Files.Include(f=>f.Districts).Include(f => f.FileType).
+                Include(f => f.IdentificationOption).Single(f => f.Id == id);
+            return PartialView(file);
+        }
+
         [Authorize(Roles = Role.Registry)]
         public ActionResult New()
         {
@@ -180,7 +188,8 @@ namespace FileTracking.Controllers
                Comment = null,
                BranchesId = thisUserBranchId,
                CurrentLocation = thisUserBranchId,
-               StatesId = 1
+               StatesId = 1,
+               AdUserId = null
            };
            _context.FileVolumes.Add(fileVolumeRecord);
            _context.SaveChanges();
@@ -202,20 +211,21 @@ namespace FileTracking.Controllers
             var userRecord = _context.AdUsers.Single(a => a.Username == user);
             return userRecord.BranchesId;
         }
-        //directs users to the volumes page for a specific file based on the id parameter
-        [Authorize(Roles = Role.Registry)]
-        public ActionResult AddVolume(int id)
-        {
-            var fileInDb = _context.Files.SingleOrDefault(f => f.Id == id);
-            var viewModel = new FileVolumeViewModel
-            {
-                File = fileInDb,
-                FileVolumes = new FileVolumes()
-            };
-            return View(viewModel);
-        }
 
-        //saves a volume with its associated file infomation 
+        //directs users to the volumes modal view for a specific file based on the id parameter
+      [Authorize(Roles = Role.Registry)]
+      public ActionResult AddNewVolume(int id)
+          {
+              var fileInDb = _context.Files.SingleOrDefault(f => f.Id == id);
+              var viewModel = new FileVolumeViewModel
+              {
+                  File = fileInDb,
+                  FileVolumes = new FileVolumes()
+              };
+            return PartialView(viewModel);
+          }
+
+      //saves a volume with its associated file infomation 
         [HttpPost]
         public ActionResult SaveVolume(FileVolumes fileVolumes,  File file)
         {
@@ -255,6 +265,27 @@ namespace FileTracking.Controllers
             }
             //redirect to table with record info
             return RedirectToAction("Index", "Files");
+        }
+
+        //view volumes as it pertains to the chosen file
+        public ActionResult FileVolumes(int id)
+        {
+            string uName = ParseUsername(User.Identity.Name);
+
+            var volFileId = _context.FileVolumes.Include(fv => fv.States).
+                Include(fv => fv.Branches).Include(fv=>fv.AdUser).Where(fv => fv.FileId == id).ToList();
+
+            var file = _context.Files.Include(f => f.FileVolumes).SingleOrDefault(f => f.Id == id);
+
+            var user = _context.AdUsers.Single(u => u.Username == uName);
+
+            var viewModel = new VolumesViewModel()
+            {
+                File = file,
+                FileVolumes = volFileId,
+                AdUser = user
+            };
+            return View(viewModel);
         }
 
         //[HttpPost]. Sends our file objects as a set of JSON objects. Enables the possibility of server side processing on our datatable.

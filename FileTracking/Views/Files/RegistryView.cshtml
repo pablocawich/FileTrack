@@ -28,12 +28,19 @@
                 </tr>
             </thead>
             <tbody></tbody>
-        </table>  
+    </table>  
+    <div class="modal fade" id="myModal" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" data-backdrop="static" data-keyboard="true">
+        <div class="modal-dialog">
+            <div class="modal-content" id="modelContent">
+            </div>
+        </div>
+    </div>
 </div>
 
 @section scripts{
     <script>
         $(document).ready(function() {
+
             $("#fileTable").DataTable({
                 "ajax": {
                     "url": "/Files/GetFiles",
@@ -44,15 +51,16 @@
                     {
                         "data": "FileNumber",
                         "name": "FileNumber",
-                        render: function(data,type,file) {
-                            return "<a href='#'> <span class='glyphicon glyphicon-file'></span></a> "+file.FileNumber;
+                        render: function(data, type, file) {
+
+                            return "<span data-url='"+file.Id+" 'class='glyphicon glyphicon-file btn btn-sm btn-primary spanModal'>" + file.FileNumber+"</span>";
 
                         }
                     },
                     {
                         "data": "FirstName",
                         "name": "FirstName",
-                        render: function (data, type, file) {
+                        render: function(data, type, file) {
                             var mName = file.MiddleName;
                             if (file.MiddleName == null)
                                 mName = "";
@@ -60,7 +68,6 @@
                             return file.FirstName + " " + mName + " " + file.LastName;
                         }
                     },
-
                     { "data": "CityOrTown", "name": "CityOrTown" },
                     { "data": "Districts.District", "name": "Districts.District" },
                     { "data": "Volume", "name": "Volume" },
@@ -81,9 +88,13 @@
                             var buttonEditFile =
                                 "<button class='btn btn-flickr btn-xs js-editFile' data-edit-file-id='" +
                                     data +
-                                    "'>Edit</button>";
+                                "'>Edit</button>";
+                            var buttonViewVolumes =
+                                "<button class='btn btn-success btn-xs js-viewVolumes' data-view-vol-id='" +
+                                    data +
+                                    "'>Volumes</button>";
 
-                            return buttonEditFile + " " + buttonAddVol;
+                            return buttonEditFile + " | " + buttonViewVolumes+" | "+buttonAddVol ;
                         }
                     }
                 ],
@@ -102,6 +113,17 @@
                 var dateObj = new Date(parseInt(date.substr(6)));
                 return dateObj.toDateString();
             }
+            //opens modal that displays file information for a specif file
+            $("#fileTable").on("click",
+                ".spanModal",
+                function() {
+                    var id = $(this).attr("data-url");
+                    var url = "/Files/FileDetails/" + id;
+                    // alert(url);
+
+                    $('#modelContent').load(url);
+                    $('#myModal').modal('show');
+                });
         });
     </script>
 }

@@ -37,15 +37,15 @@ namespace FileTracking.Controllers
             string uName = ParseUsername(User.Identity.Name);
 
             var volFileId = _context.FileVolumes.Include(fv=>fv.States).
-                Include(fv=>fv.Branches).Where(fv => fv.FileId == id).ToList();
+                Include(fv=>fv.Branches).Include(fv=>fv.AdUser).Where(fv => fv.FileId == id).ToList();
 
-            var volumes = _context.Files.Include(f => f.FileVolumes).SingleOrDefault(f => f.Id == id );
+            var file = _context.Files.Include(f => f.FileVolumes).SingleOrDefault(f => f.Id == id );
 
             var user = _context.AdUsers.Single(u=>u.Username == uName);
 
             var viewModel = new VolumesViewModel()
             {
-                File = volumes,
+                File = file,
                 FileVolumes = volFileId,
                 AdUser = user
             };
@@ -98,6 +98,7 @@ namespace FileTracking.Controllers
         {
             var req = _context.Requests.Single(r => r.Id == id);
             req.ReturnStateId = 3;
+            req.IsRequestActive = false;
 
             _context.SaveChanges();
             ChangeStateToStored(req.FileVolumesId);
@@ -109,6 +110,7 @@ namespace FileTracking.Controllers
             var vol = _context.FileVolumes.Single(v => v.Id == id);
 
             vol.StatesId = storedState;
+            vol.AdUserId = null;
 
             _context.SaveChanges();
         }

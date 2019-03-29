@@ -15,12 +15,11 @@
 <div class="row">
     <!--Content goes here b -->
 
-    <table id="fileTable" class="table table-striped table-bordered table-hover" style="width:100%">
+    <table id="userFileTable" class="table table-striped table-bordered table-hover" style="width:100%">
         <thead>
             <tr>
                 <th> File Number</th>
-                <th>First Name</th>
-                <th>Last Name </th>
+                <th>Name</th>
                 <th>City/Town/Village</th>
                 <th>District</th>
                 <th>Volumes</th>
@@ -31,22 +30,44 @@
         </thead>
         <tbody></tbody>
     </table>
+    <div class="modal fade" id="myModal" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" data-backdrop="static" data-keyboard="false">
+        <div class="modal-dialog">
+            <div class="modal-content" id="modelContent">
+            </div>
+        </div>
+    </div>
 
 </div>
 
 @section scripts{
     <script>
         $(document).ready(function () {
-            $("#fileTable").DataTable({
+            $("#userFileTable").DataTable({
                 "ajax": {
                     "url": "/Files/GetFiles",
                     "data": "POST",
                     "datatype": "json"
                 },
                 "columns": [
-                    { "data": "FileNumber", "name": "FileNumber" },
-                    { "data": "FirstName", "name": "FirstName" },
-                    { "data": "LastName", "name": "LastName" },
+                    {
+                        "data": "FileNumber", "name": "FileNumber",
+                        render: function(data, type, file) {
+
+                            return "<span data-url='"+file.Id+" 'class='glyphicon glyphicon-file btn btn-xs btn-primary spanModal'>" + file.FileNumber+"</span>";
+
+                        }
+                    },
+                    {
+                        "data": "FirstName", "name": "FirstName",
+                        render: function (data, type, file) {
+                            var mName = file.MiddleName;
+                            if (file.MiddleName == null)
+                                mName = "";
+
+                            return file.FirstName + " " + mName + " " + file.LastName;
+                        }
+                    },
+                   
                     { "data": "CityOrTown", "name": "CityOrTown" },
                     { "data": "Districts.District", "name": "Districts.District" },
                     { "data": "Volume", "name": "Volume" },
@@ -54,13 +75,7 @@
                         "data": "DateCreated",
                         "name": "DateCreated",
                         "render": function (value) {
-                            if (value === null) return "";
-
-                            var pattern = /Date\(([^)]+)\)/;
-                            var results = pattern.exec(value);
-                            var dt = new Date(parseFloat(results[1]));
-
-                            return (dt.getMonth() + 1) + "/" + dt.getDate() + "/" + dt.getFullYear();
+                            return getDateString(value);
                         }
                     },
                     {
@@ -68,7 +83,7 @@
 
                         "render": function (data, type, vol) {
                             
-                            var buttonRequest = "<button class='btn btn-warning btn-xs js-requestFile' data-request-name='" + vol.FirstName + "' data-request-file-id='" + data + "'>Request</button>";
+                            var buttonRequest = "<button class='btn btn-warning btn-sm js-requestFile' data-request-name='" + vol.FirstName + "' data-request-file-id='" + data + "'>Request</button>";
                             return buttonRequest;
                         }
                     }
@@ -82,7 +97,31 @@
             });
 
             //-------------------------End dataTables implementation ---------------------------------------
+            function getDateString(date) {
+                var dateObj = new Date(parseInt(date.substr(6)));
+                return dateObj.toDateString();
+            }
+            //opens modal that displays file information for a specif file
+            $("#userFileTable").on("click",
+                ".spanModal",
+                function() {
+                    var id = $(this).attr("data-url");
+                    var url = "/Files/FileDetails/" + id;
+                    // alert(url);
 
+                    $('#modelContent').load(url);
+                    $('#myModal').modal('show');
+                });
+            //sends user to the volumes page to be able specify and request a volume
+            $("#userFileTable").on("click", ".js-requestFile", function () {
+                var button = $(this);
+                var name = button.attr("data-request-name");
+                bootbox.confirm("You are to request a file for "+name.toUpperCase()+". To request this file you need to specify a volume. Do you wish to proceed", function (result) {
+                    if (result) {
+                        window.location.href = "/FileVolumes/RequestFile/" + button.attr("data-request-file-id");
+                    }
+                });
+            });
 
         });
     </script>

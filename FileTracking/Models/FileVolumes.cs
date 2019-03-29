@@ -20,6 +20,7 @@ namespace FileTracking.Models
         public byte Volume { get; set; }
 
         [StringLength(255)]
+        [Display(Name = "Description")]
         public string Comment { get; set; }
 
         public States States { get; set; }
@@ -34,8 +35,9 @@ namespace FileTracking.Models
         [Required]
         public byte CurrentLocation { get; set; }
         //public string LocationOfOrigin { get; set; }
-
-
+        public AdUser AdUser { get; set; }
+        [Display(Name = "Volume Holder")]
+        public int? AdUserId { get; set; }
 
     }
 }

@@ -22,6 +22,7 @@
                     <th>State</th>
                     <th>Location Origin</th>
                     <th>Current location</th>
+                    <th>Holding user</th>
                     <th>Action</th>
                 </tr>
             </thead>
@@ -33,7 +34,7 @@
                         <td>@fileVol.Volume</td>
                         @if (fileVol.Comment == null)
                         {
-                            <td>Comment not provided</td>
+                            <td>Empty</td>
                         }
                         else
                         {
@@ -42,6 +43,15 @@
                         <td class="tdState">@fileVol.States.State</td>
                         <td>@fileVol.Branches.Branch</td>
                         <td class="currentLoc" currLoc-data="@fileVol.CurrentLocation"></td>
+                        @if (@fileVol.AdUserId == null)
+                        {
+                            <td>At registry</td>
+                        }
+                        else
+                        {
+                            <td>@fileVol.AdUser.Username</td>
+                        }
+                      
                         <td class="tdBtn">
                             <button type="button" vol-state="@fileVol.States.State" user-loc="@Model.AdUser.BranchesId" originLoc="@fileVol.BranchesId" currLoc-attr="@fileVol.CurrentLocation" 
                                     vol-data-id="@fileVol.Id" file-name="@Model.File.FirstName" class="btn btn-yahoo btn-sm js-req-vol">Request</button>
@@ -51,7 +61,13 @@
                     </tr>
                 }
             </tbody>
-        </table>        
+        </table> 
+    <div class="modal fade" id="volumeModal" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" data-backdrop="static" data-keyboard="true">
+        <div class="modal-dialog">
+            <div class="modal-content" id="modelContent">
+            </div>
+        </div>
+    </div>
 </div>
 @section scripts
 {
@@ -124,5 +140,6 @@
             });
 
         });
+      
     </script>
 }

@@ -1,0 +1,61 @@
+﻿@model FileTracking.Models.File
+<div class="modal-header" style="background-color: #dae8cd">
+    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+        <span aria-hidden="true"><i class="fa fa-times-circle"></i></span>
+    </button>
+    <h4 class="modal-title" style="color: #358e59">Details Record for file: @Model.FileNumber</h4>
+</div>
+<div class="modal-body container-fluid">
+    <div class="col-md-6">
+        <div class="form-group">
+            <label>Full Name:</label>
+            <input class="form-control" type="text" placeholder="@Model.FirstName @Model.MiddleName @Model.LastName" readonly>
+        </div>
+        <div class="form-group">
+            <label>File Number:</label>
+            <input class="form-control" type="text" placeholder="@Model.FileNumber" readonly>
+        </div>
+        <div class="form-group">
+            <label>Street:</label>
+            <input class="form-control" type="text" placeholder="@Model.Street" readonly>
+        </div>
+
+        <div class="form-group">
+            <label >File Address:</label>
+            <input class="form-control" type="text" placeholder="@Model.CityOrTown" readonly>
+        </div>
+        <div class="form-group">
+            <label>District:</label>
+            <input class="form-control" type="text" placeholder="@Model.Districts.District" readonly>
+        </div>
+    </div>
+    <div class="col-md-6">
+        <div class="form-group">
+            <label>@Model.IdentificationOption.Identification:</label>
+            <input class="form-control" type="text" placeholder=" @Model.IdentificationNumber" readonly>
+        </div>
+        <div class="form-group">
+            <label>Comment:</label>
+            <input class="form-control" type="text" placeholder="@Model.Comments" readonly>
+        </div>
+        <div class="form-group">
+            <label>Date Created:</label>
+            <input class="form-control" type="text" placeholder=" @Model.DateCreated" readonly>
+        </div>
+        <div class="form-group">
+            <label>File type:</label>
+            <input class="form-control" type="text" placeholder="  @Model.FileType.Type" readonly>
+        </div>
+        <div class="form-group">
+            <label>Volume/s:</label>
+            <input class="form-control" type="text" placeholder="  @Model.Volume" readonly>
+        </div>
+    </div>
+   
+</div>
+<div class="modal-footer">
+    <button type="button" class="btn btn-github"
+            data-dismiss="modal">
+        Close
+    </button>
+</div>

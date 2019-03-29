@@ -27,7 +27,14 @@ namespace FileTracking.Controllers
         {
             _context.Dispose();
         }
-       
+
+        //will check if user's branch matches the files current location
+        public bool CheckBranchValidity(AdUser u, FileVolumes v)
+        {
+            if (u.BranchesId == v.CurrentLocation)
+                return true;
+            return false;
+        }
 
         [Route("Requests/Index/{volId}")]
         public ActionResult Index(int volId)
@@ -54,7 +61,7 @@ namespace FileTracking.Controllers
             if (PopulateRequest(volume, user))
             {
                 UpdateVolumeState(volume);
-                return View("Index");
+                return View();
             }
             else
             {
@@ -62,6 +69,8 @@ namespace FileTracking.Controllers
             }            
                                       
         }
+
+       
 
         public bool HasBeenRequested(FileVolumes v, AdUser u)
         {
@@ -72,6 +81,39 @@ namespace FileTracking.Controllers
                 return true;
             return false;
         }
+        //populates request table with data
+        public bool PopulateRequest(FileVolumes v, AdUser u)
+        {
+            var requestRecord = new Request()
+            {
+                //FileId = f.Id,
+                UserId = u.Id,
+                FileVolumesId = v.Id,
+                BranchesId = u.BranchesId,
+                RequestStatusId = 1, //1 signifies pending
+                ReturnStateId = 1,//1 signifies idle state, meaning the return process is not in order
+                IsRequestActive = true,//meaning this request has been initiated, switched to false when file is returned and back to stored state
+                RequestDate = DateTime.Now,//assigns immediate date as the request was made in this moment of time
+            };
+            _context.Requests.Add(requestRecord);
+
+            if (_context.SaveChanges() > 0)
+            {
+                return true;
+            }
+            return false;
+        }
+        //updates the state of the volume being requested
+        public void UpdateVolumeState(FileVolumes v)
+        {
+            if (v.StatesId == 1) //1 meaning state is at stored
+            {
+                v.StatesId = 2; //state should now be changed to 2 (requested state) since file request is made
+                _context.SaveChanges();
+            }
+            //if it is not in STORED state, it should already be in request state as other user may have already requested thus changing 
+            //the state then. In that case we should simply do nothing
+        }
 
         // GET pendingFiles
         [Authorize(Roles = Role.Registry)]
@@ -80,6 +122,7 @@ namespace FileTracking.Controllers
             return View();
         }
 
+        //sends all request records with a Request status of pending to be approved by registry
         [Authorize(Roles = Role.Registry)]
         public ActionResult GetPendingFiles()
         {
@@ -99,46 +142,20 @@ namespace FileTracking.Controllers
                 newName = adName.Remove(0, 9);
             return newName;
         }
-
-        //populates request table with data
-        public bool PopulateRequest(FileVolumes v, AdUser u) {
-            var requestRecord = new Request()
-            {
-                //FileId = f.Id,
-                UserId = u.Id,
-                FileVolumesId = v.Id,
-                BranchesId = u.BranchesId,
-                RequestStatusId = 1, //1 signifies pending
-                ReturnStateId = 1,
-                RequestDate = DateTime.Now,
-            };
-            _context.Requests.Add(requestRecord);
-
-            if (_context.SaveChanges() > 0) {
-                return true;
-            }
-            return false;
-        }
-
-        //updates the state of the volume being requested
-        public void UpdateVolumeState(FileVolumes v)
-        {
-            if (v.StatesId == 1) //1 meaning state is at stored
-            {
-                v.StatesId = 2; //state should now be changed to 2 (requested state) since file request is made
-                _context.SaveChanges();
-            }
-            //if it is not in STORED state, it should already be in request state as other user may have already requested thus changing 
-            //the state then. In that case we should simply do nothing
-        }
-
+       
+        //function is invoked when a registry user accepts a file, changing it to check out
         public void AcceptRequest(int id)
         {
-            
+            string currentUser = ParseUsername(User.Identity.Name);
+            //recall that a person from registry accepts this request so get person name
           const byte acceptedState = 2;
            var request = _context.Requests.Single(r => r.Id == id);
+         
 
             request.RequestStatusId = acceptedState;
+            request.AcceptedBy = currentUser;
+            request.AcceptedDate = DateTime.Now;
+            //request.UserId = 
             //request.AcceptedBy
             int volId = request.FileVolumesId;
 
@@ -148,6 +165,16 @@ namespace FileTracking.Controllers
             // Here's where you do stuff.
 
         }
+        //note tha once a file vol is accepted by reg that vol should no longer be in a stored or requested state but
+        //rather a transferred state
+        public void UpdateVolumeState(int volumeId)
+        {
+            const byte transferState = 4;
+            var volume = _context.FileVolumes.Single(v => v.Id == volumeId);
+            volume.StatesId = transferState;
+
+            _context.SaveChanges();
+        }
 
         //here we accept the request id and change its status to Deny/reject
         public void DeclineRequest(int id)
@@ -156,6 +183,7 @@ namespace FileTracking.Controllers
             var request = _context.Requests.Single(r => r.Id == id);
 
             request.RequestStatusId = rejectedState;
+            request.IsRequestActive = false;
 
             _context.SaveChanges();
             //say for instance registry rejects a file, recall the request nonetheless changed the volume state to 
@@ -163,50 +191,9 @@ namespace FileTracking.Controllers
             //after a volume's been rejected, better yet, let all request for that specific volume be denied.
             //What do we do then? since the state will remain at requested and never changed due to it never being accepted.
             //does this affect the flow of things
-           /* if (CheckVolumesIfAllRejected(request.FileVolumesId))
-            {
-                ChangeVolStateToStored(request.FileVolumesId);
-            }*/
 
         }
 
-       /* public bool CheckVolumesIfAllRejected(int volumeId)
-        {
-            var requestsForVol = _context.Requests.Where(r => r.FileVolumesId == volumeId).ToList();
-
-            var requestForVolWithRejected = _context.Requests.Where(r => r.FileVolumesId == volumeId)
-                .Where(r => r.RequestStatusId == 3).ToList();
-            if (requestsForVol.Count == requestForVolWithRejected.Count)
-                return true;
-            return false;
-        }
-
-        public void ChangeVolStateToStored(int volId)
-        {
-            const byte storedState = 1;
-            var vol = _context.FileVolumes.Single(v => v.Id == volId);
-            vol.StatesId = storedState;
-
-            _context.SaveChanges();
-        }
-        */
-        //note tha once a file vol is accepted by reg that vol should no longer be in a stored or requested state but
-        //rather a transferred state
-        public void UpdateVolumeState(int volumeId)
-        {
-           const byte transferState = 4;
-           var volume =  _context.FileVolumes.Single(v => v.Id == volumeId);
-           volume.StatesId = transferState;
-
-           _context.SaveChanges();
-        }
-
-        //will check if user's branch matches the files current location
-        public bool CheckBranchValidity(AdUser u, FileVolumes v) {
-            if (u.BranchesId == v.CurrentLocation)
-                return true;
-            return false;
-        }
         [Authorize(Roles = Role.RegularUser)]
         public ActionResult ConfirmCheckout()
         {
@@ -236,17 +223,32 @@ namespace FileTracking.Controllers
             _context.SaveChanges();
 
             CheckoutVolume(requestRecord.FileVolumesId);
+            //perhaps here we create a function that performs notifications
 
         }
 
         public void CheckoutVolume(int volId)
         {
+            string user = ParseUsername(User.Identity.Name);
+            var currUser = _context.AdUsers.Single(u => u.Username == user);
+
             const byte checkoutState = 5;
             var volume = _context.FileVolumes.Single(v => v.Id == volId);
             volume.StatesId = checkoutState;
-
+            volume.AdUserId = currUser.Id; 
             _context.SaveChanges();
         }
+        public ActionResult UserNotification()
+        {
+            string currentUser = ParseUsername(User.Identity.Name);
+            var user = _context.AdUsers.Single(u => u.Username == currentUser);
+            var Notifications = _context.Requests.Include(r => r.FileVolumes).Where(r => r.UserId == user.Id).Where(r => r.IsRequestActive == true)
+                .Where(r => r.RequestStatusId == 2).Where(r => r.IsConfirmed == false).ToList();
+
+            return View("UserNotification", Notifications);
+        }
+       
+
     }
-    
+
 }
