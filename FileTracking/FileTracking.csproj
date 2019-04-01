@@ -377,12 +377,29 @@
     <Compile Include="Migrations\201903292000125_AddUserToVolumes.Designer.cs">
       <DependentUpon>201903292000125_AddUserToVolumes.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201904011459033_AddLoanNumber.cs" />
+    <Compile Include="Migrations\201904011459033_AddLoanNumber.Designer.cs">
+      <DependentUpon>201904011459033_AddLoanNumber.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201904011621187_AddLocationTable.cs" />
+    <Compile Include="Migrations\201904011621187_AddLocationTable.Designer.cs">
+      <DependentUpon>201904011621187_AddLocationTable.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201904011622597_PopulateLocations.cs" />
+    <Compile Include="Migrations\201904011622597_PopulateLocations.Designer.cs">
+      <DependentUpon>201904011622597_PopulateLocations.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201904011708005_AddLocationToFiles.cs" />
+    <Compile Include="Migrations\201904011708005_AddLocationToFiles.Designer.cs">
+      <DependentUpon>201904011708005_AddLocationToFiles.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Models\AccountViewModels.cs" />
     <Compile Include="Models\AddNumberIfIdentificationSelected.cs" />
     <Compile Include="Models\AdUser.cs" />
     <Compile Include="Models\Branches.cs" />
     <Compile Include="Models\Districts.cs" />
+    <Compile Include="Models\DistrictToLocationValidation.cs" />
     <Compile Include="Models\File.cs" />
     <Compile Include="Models\FileLoanCategory.cs" />
     <Compile Include="Models\FileStatus.cs" />
@@ -390,6 +407,7 @@
     <Compile Include="Models\FileVolumes.cs" />
     <Compile Include="Models\IdentificationOption.cs" />
     <Compile Include="Models\IdentityModels.cs" />
+    <Compile Include="Models\Location.cs" />
     <Compile Include="Models\ManageFileNumber.cs" />
     <Compile Include="Models\ManageViewModels.cs" />
     <Compile Include="Models\Profile.cs" />
@@ -922,6 +940,18 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201903292000125_AddUserToVolumes.resx">
       <DependentUpon>201903292000125_AddUserToVolumes.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201904011459033_AddLoanNumber.resx">
+      <DependentUpon>201904011459033_AddLoanNumber.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201904011621187_AddLocationTable.resx">
+      <DependentUpon>201904011621187_AddLocationTable.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201904011622597_PopulateLocations.resx">
+      <DependentUpon>201904011622597_PopulateLocations.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201904011708005_AddLocationToFiles.resx">
+      <DependentUpon>201904011708005_AddLocationToFiles.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>

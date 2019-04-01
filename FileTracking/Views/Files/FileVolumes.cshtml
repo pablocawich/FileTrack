@@ -30,7 +30,7 @@
             @foreach (var fileVol in Model.FileVolumes)
             {
                 <tr>
-                    <td>@Model.File.FileNumber</td>
+                    <td>@fileVol.File.FileNumber</td>
                     <td>@fileVol.Volume</td>
                     @if (fileVol.Comment == null)
                     {

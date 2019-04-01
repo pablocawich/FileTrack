@@ -33,6 +33,7 @@ namespace FileTracking.Models
         public DbSet<AdUser> AdUsers { get; set; }
         public DbSet<Request> Requests { get; set; }
         public DbSet<ReturnState> ReturnStates { get; set; }
+        public DbSet<Location> Locations { get; set; }
 
 
         public ApplicationDbContext()

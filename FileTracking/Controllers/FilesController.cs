@@ -46,7 +46,7 @@ namespace FileTracking.Controllers
         public ActionResult FileDetails(int id)
         {
             var file = _context.Files.Include(f=>f.Districts).Include(f => f.FileType).
-                Include(f => f.IdentificationOption).Single(f => f.Id == id);
+                Include(f => f.IdentificationOption).Include(f=>f.Location).Single(f => f.Id == id);
             return PartialView(file);
         }
 
@@ -58,6 +58,7 @@ namespace FileTracking.Controllers
             var fileTypes = _context.FileTypes.ToList();
             var fileStatuses = _context.FileStatuses.ToList();
             var identificationStatuses = _context.IdentificationOptions.ToList();
+            var locations = _context.Locations.ToList();
             //instantiating viewModel objects to the db content
             var viewModel = new FileViewModel
             {
@@ -65,7 +66,8 @@ namespace FileTracking.Controllers
                 Districts = districts,
                 FileTypes = fileTypes,
                 FileStatuses = fileStatuses,
-                IdentificationOptions = identificationStatuses
+                IdentificationOptions = identificationStatuses,
+                Locations = locations
             };
             //passing db (viewModel) content to FileForm 
             return View("FileForm", viewModel);
@@ -86,7 +88,8 @@ namespace FileTracking.Controllers
                     Districts = _context.Districts.ToList(),
                     FileTypes = _context.FileTypes.ToList(),
                     FileStatuses = _context.FileStatuses.ToList(),
-                    IdentificationOptions = _context.IdentificationOptions.ToList()
+                    IdentificationOptions = _context.IdentificationOptions.ToList(),
+                    Locations = _context.Locations.ToList()
 
                 };
                 return View("FileForm", viewModel);
@@ -99,13 +102,14 @@ namespace FileTracking.Controllers
                 file.DateCreated = DateTime.Now;
                 file.Volume = 1;
                 file.FileNumber = GetFileNumber();
+                file.LoanNumber = "";
 
                 _context.Files.Add(file);
 
                 _context.SaveChanges();
-                int thisId = file.Id;
+                
                 //Upon that record being created, we immediately create volume one for that file based on the file number
-                AddVolumeOnCreate(thisId);
+                AddVolumeOnCreate(file.Id);
                 
             }
             else
@@ -117,13 +121,14 @@ namespace FileTracking.Controllers
                 fileInDb.MiddleName = file.MiddleName;
                 fileInDb.LastName = file.LastName;
                 fileInDb.Street = file.Street;
-                fileInDb.CityOrTown = file.CityOrTown;
                 fileInDb.DistrictsId = file.DistrictsId;
+                fileInDb.LocationId = file.LocationId;
                 fileInDb.Comments = file.Comments;
                 fileInDb.FileTypeId = file.FileTypeId;
                 fileInDb.FileStatusId = file.FileStatusId;
                 fileInDb.IdentificationOptionId = file.IdentificationOptionId;
                 fileInDb.IdentificationNumber = file.IdentificationNumber;
+                fileInDb.LoanNumber = file.LoanNumber;
                 _context.SaveChanges();
             }
 
@@ -147,7 +152,8 @@ namespace FileTracking.Controllers
                 Districts = _context.Districts.ToList(),
                 FileTypes = _context.FileTypes.ToList(),
                 FileStatuses = _context.FileStatuses.ToList(),
-                IdentificationOptions = _context.IdentificationOptions.ToList()
+                IdentificationOptions = _context.IdentificationOptions.ToList(),
+                Locations = _context.Locations.ToList()
             };
            
 
@@ -272,7 +278,7 @@ namespace FileTracking.Controllers
         {
             string uName = ParseUsername(User.Identity.Name);
 
-            var volFileId = _context.FileVolumes.Include(fv => fv.States).
+            var volFileId = _context.FileVolumes.Include(fv=>fv.File).Include(fv => fv.States).
                 Include(fv => fv.Branches).Include(fv=>fv.AdUser).Where(fv => fv.FileId == id).ToList();
 
             var file = _context.Files.Include(f => f.FileVolumes).SingleOrDefault(f => f.Id == id);
@@ -300,7 +306,7 @@ namespace FileTracking.Controllers
 
             //We retrieve the data from the file database with respect to its table relationships
             List<File> FileList = new List<File>();
-            FileList = _context.Files.Include(f => f.Districts).ToList<File>();
+            FileList = _context.Files.Include(f=>f.Location).Include(f => f.Districts).ToList<File>();
 
             int totalFiles = FileList.Count;
             //We check if search value if null or otherwise
@@ -309,7 +315,7 @@ namespace FileTracking.Controllers
                 FileList = FileList.Where(x => x.FileNumber.ToString().Contains(searchValue) ||
                                                x.FirstName.ToLower().Contains(searchValue.ToLower())||
                                                x.LastName.ToLower().Contains(searchValue.ToLower())||
-                                               x.Volume.ToString().Contains(searchValue)||
+                                              x.LoanNumber.ToString().Contains(searchValue)||
                                                x.Districts.District.ToLower().Contains(searchValue.ToLower())).ToList<File>();
             }
 

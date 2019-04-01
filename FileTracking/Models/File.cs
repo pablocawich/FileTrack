@@ -39,15 +39,16 @@ namespace FileTracking.Models
         [MaxLength(64)]
         public string Street { get; set; }
 
+        public Location Location { get; set; }
         [Required]
-        [MaxLength(82)]
-        [Display(Name = "City/Town/Village")]
-        public string CityOrTown { get; set; }
+        [Display(Name = "Address")]
+        public string LocationId { get; set; }
 
         public Districts Districts { get; set; }
 
         [Required]
         [Display(Name = "District")]
+        [DistrictToLocationValidation]
         public byte DistrictsId { get; set; }
 
         //----------End basic profile info----------------------------------------------------
@@ -85,7 +86,10 @@ namespace FileTracking.Models
         [AddNumberIfIdentificationSelected]
         public string IdentificationNumber { get; set; }
 
-        
+        [Display(Name = "Loan Number/s")]
+        [StringLength(164)]
+        public string LoanNumber { get; set; }
+
         //Establish association with volumes, possibly ----------------------------------
         //public static readonly byte DefaultVolume = 1;
         public ICollection<FileVolumes> FileVolumes { get; set; }

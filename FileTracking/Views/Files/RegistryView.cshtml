@@ -21,6 +21,7 @@
                     <th>Name</th>
                     <th>Address</th>
                     <th>District</th>
+                    <th>Loan Number/s</th>
                     <th>Volumes</th>
                     <th>Date Added</th>
                     <th>Actions</th>
@@ -68,8 +69,9 @@
                             return file.FirstName + " " + mName + " " + file.LastName;
                         }
                     },
-                    { "data": "CityOrTown", "name": "CityOrTown" },
+                    { "data": "Location.Name", "name": "Location.Name" },
                     { "data": "Districts.District", "name": "Districts.District" },
+                    { "data": "LoanNumber", "name": "LoanNumber" },
                     { "data": "Volume", "name": "Volume" },
                     {
                         "data": "DateCreated",
