@@ -9,9 +9,19 @@
     </div>
     <!-- /.col-lg-12 -->
 </div>
-
+@{
+    bool empty = !Model.UsersInRole.Any();
+}
 <div class="row">
-    <button class="btn btn-flickr" onclick="location.href = '@Url.Action("SaveAdUsers", "AdUsers")'" disabled>Pull From AD</button>
+    @if (empty)
+    {
+        <button class="btn btn-flickr" onclick="location.href = '@Url.Action("SaveAdUsers", "AdUsers")'" disabled>Pull From AD</button>
+    }
+    else
+    {
+        <button class="btn btn-flickr" onclick="location.href = '@Url.Action("SaveAdUsers", "AdUsers")'">Pull From AD</button>
+    }
+   
     <table class="table table-hover">
         <thead>
         <tr>
@@ -23,16 +33,26 @@
         </tr>
         </thead>
         <tbody>
-        @foreach (var user in Model.UsersInRole)
+        @if (empty)
         {
             <tr>
-                <th scope="row">@user.Name</th>
-                <td>@user.Email</td>
-                <td>@user.Username</td>
-                <td>@user.BranchesId</td>
-                <td>@user.Role</td>
+                <td colspan="5">There are no new users added to the active directory for this group</td>
             </tr>
         }
+        else
+        {
+            foreach (var user in Model.UsersInRole)
+            {
+                <tr>
+                    <th scope="row">@user.Name</th>
+                    <td>@user.Email</td>
+                    <td>@user.Username</td>
+                    <td>@user.BranchesId</td>
+                    <td>@user.Role</td>
+                </tr>
+            }
+        }
+
 
 
         </tbody>

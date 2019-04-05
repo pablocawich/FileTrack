@@ -4329,7 +4329,7 @@ tbody.collapse.in {
         clear: both;
         font-weight: 400;
         line-height: 1.42857143;
-        color: #ff2c2c;
+        color: #6c9a44;
         white-space: nowrap;
     }
 
@@ -5609,7 +5609,7 @@ select[multiple].input-group-sm > .input-group-btn > .btn {
     .navbar-inverse .navbar-nav > .open > a,
     .navbar-inverse .navbar-nav > .open > a:hover,
     .navbar-inverse .navbar-nav > .open > a:focus {
-        color: #ff4040;
+        color: #f3f3f3;
         background-color: transparent;
     }
 

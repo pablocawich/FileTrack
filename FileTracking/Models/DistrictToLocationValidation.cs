@@ -16,9 +16,7 @@ namespace FileTracking.Models
         {
             _context = new ApplicationDbContext();
         }
-       
         
-
         //our customer validation
         protected override ValidationResult IsValid(object value, ValidationContext validationContext)
         {

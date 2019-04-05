@@ -43,7 +43,8 @@
          @Html.HiddenFor(v => v.File.LastName)
          @Html.HiddenFor(v => v.File.MiddleName)
          @Html.HiddenFor(v => v.File.Street)
-         @Html.HiddenFor(v => v.File.CityOrTown)
+         @Html.HiddenFor(f => f.File.LocationId)
+        
 </div>
 
 <div class="modal-footer">

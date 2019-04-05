@@ -51,7 +51,7 @@ namespace FileTracking.Controllers
                     " to be our focus now. For a later time.");
 
             //check if this volume number has not already been requested by this user
-            if (volume.StatesId != 1)
+            if (volume.StatesId == 1)
             {
                 if (HasBeenRequested(volume, user))
                     return View("AlreadyRequested");
@@ -74,10 +74,11 @@ namespace FileTracking.Controllers
 
         public bool HasBeenRequested(FileVolumes v, AdUser u)
         {
-          //inspect
-            var userReq = _context.Requests.Where(r => r.FileVolumesId == v.Id).Where(r=>r.UserId == u.Id).ToList();
+          //First we query based in current user, then we get the volume id, and finally if the request is active.
+            var userReq = _context.Requests.Where(r => r.UserId == u.Id).Where(r => r.FileVolumesId == v.Id)
+                .Where(r=>r.IsRequestActive == true).ToList();
 
-            if (userReq.Count >= 1)
+            if (userReq.Any())
                 return true;
             return false;
         }
@@ -106,9 +107,9 @@ namespace FileTracking.Controllers
         //updates the state of the volume being requested
         public void UpdateVolumeState(FileVolumes v)
         {
-            if (v.StatesId == 1) //1 meaning state is at stored
+            if (v.StatesId != 1) //1 meaning state is at stored
             {
-                v.StatesId = 2; //state should now be changed to 2 (requested state) since file request is made
+                v.StatesId = 1; //state should now be changed to 2 (requested state) since file request is made
                 _context.SaveChanges();
             }
             //if it is not in STORED state, it should already be in request state as other user may have already requested thus changing 
@@ -238,6 +239,7 @@ namespace FileTracking.Controllers
             volume.AdUserId = currUser.Id; 
             _context.SaveChanges();
         }
+
         public ActionResult UserNotification()
         {
             string currentUser = ParseUsername(User.Identity.Name);
@@ -247,7 +249,8 @@ namespace FileTracking.Controllers
 
             return View("UserNotification", Notifications);
         }
-       
+
+        
 
     }
 

@@ -29,8 +29,7 @@ namespace FileTracking.Controllers
 
         //allow users to view file tables and its linked tables
         public ActionResult Index()
-        {
-         
+        {        
             //var file = _context.Files.Include(f => f.Districts).Include(f=>f.FileVolumes).ToList();
             if (User.IsInRole(Role.Registry))
                 return View("RegistryView");
@@ -48,6 +47,14 @@ namespace FileTracking.Controllers
             var file = _context.Files.Include(f=>f.Districts).Include(f => f.FileType).
                 Include(f => f.IdentificationOption).Include(f=>f.Location).Single(f => f.Id == id);
             return PartialView(file);
+        }
+        
+        public ActionResult FileDetailsForConfirm(int id)
+        {
+            var file = _context.Files.Include(f => f.Districts).Include(f => f.FileType).
+                Include(f => f.IdentificationOption).Include(f => f.Location).Single(f => f.Id == id);
+            return PartialView(file);
+
         }
 
         [Authorize(Roles = Role.Registry)]
@@ -102,14 +109,15 @@ namespace FileTracking.Controllers
                 file.DateCreated = DateTime.Now;
                 file.Volume = 1;
                 file.FileNumber = GetFileNumber();
-                file.LoanNumber = "";
+                if(file.LoanNumber == null)
+                    file.LoanNumber = "";
 
                 _context.Files.Add(file);
 
                 _context.SaveChanges();
                 
                 //Upon that record being created, we immediately create volume one for that file based on the file number
-                AddVolumeOnCreate(file.Id);
+                AddVolumeOnCreate(file.Id, file.VolumeOneDescription);
                 
             }
             else
@@ -180,8 +188,15 @@ namespace FileTracking.Controllers
             _context.SaveChanges();
         }
 
+        //to be used for jquery to handle and determine what to place in the dropdown list
+        public ActionResult GetLocationsByDistrict(int id)
+        {
+            var locations = _context.Locations.Where(l => l.DistrictsId == id).ToList();           
+            return Json(locations, JsonRequestBehavior.AllowGet);
+        }
+
         //volume 1 for a file is made as soon as a new file is created.
-        public void AddVolumeOnCreate(int thisId)
+        public void AddVolumeOnCreate(int thisId, string volumeOneDescription)
         {
            var fileInDb = _context.Files.Single(f => f.Id == thisId);
            byte thisUserBranchId = GetAdUserBranch();
@@ -191,7 +206,7 @@ namespace FileTracking.Controllers
                FileId = fileInDb.Id,
                FileNumber = fileInDb.FileNumber,
                Volume = 1,
-               Comment = null,
+               Comment = volumeOneDescription,
                BranchesId = thisUserBranchId,
                CurrentLocation = thisUserBranchId,
                StatesId = 1,
@@ -221,15 +236,15 @@ namespace FileTracking.Controllers
         //directs users to the volumes modal view for a specific file based on the id parameter
       [Authorize(Roles = Role.Registry)]
       public ActionResult AddNewVolume(int id)
+      {
+          var fileInDb = _context.Files.SingleOrDefault(f => f.Id == id);
+          var viewModel = new FileVolumeViewModel
           {
-              var fileInDb = _context.Files.SingleOrDefault(f => f.Id == id);
-              var viewModel = new FileVolumeViewModel
-              {
-                  File = fileInDb,
-                  FileVolumes = new FileVolumes()
-              };
-            return PartialView(viewModel);
-          }
+              File = fileInDb,
+              FileVolumes = new FileVolumes()
+          };
+        return PartialView(viewModel);
+      }
 
       //saves a volume with its associated file infomation 
         [HttpPost]
@@ -249,7 +264,7 @@ namespace FileTracking.Controllers
                     
                 };
                 //redirect to form page if validations fails with the same file vol objects redirected
-                return View("AddVolume", viewModel);
+                return PartialView("AddNewVolume", viewModel);
             }
 
             byte thisUserBranchId = GetAdUserBranch();
@@ -300,7 +315,7 @@ namespace FileTracking.Controllers
             //Server side parameters
             int start = Convert.ToInt32(Request["start"]);
             int length = Convert.ToInt32(Request["length"]);
-            string searchValue = Request["search[value]"];
+           // string searchValue = Request["search[value]"];
             string sortColumnName = Request["columns["+Request["order[0][column]"]+"][name]"];
             string sortDirection = Request["order[0][dir]"];
 
@@ -310,14 +325,27 @@ namespace FileTracking.Controllers
 
             int totalFiles = FileList.Count;
             //We check if search value if null or otherwise
-            if (!string.IsNullOrEmpty(searchValue) && !string.IsNullOrWhiteSpace(searchValue))//filter
+            /*if (!string.IsNullOrEmpty(searchValue) && !string.IsNullOrWhiteSpace(searchValue))//filter
             {
                 FileList = FileList.Where(x => x.FileNumber.ToString().Contains(searchValue) ||
                                                x.FirstName.ToLower().Contains(searchValue.ToLower())||
                                                x.LastName.ToLower().Contains(searchValue.ToLower())||
                                               x.LoanNumber.ToString().Contains(searchValue)||
                                                x.Districts.District.ToLower().Contains(searchValue.ToLower())).ToList<File>();
-            }
+            }*/
+            // we no longer need the above since we will implement our custom filter
+            if (!string.IsNullOrEmpty(Request["columns[0][search][value]"]))
+                FileList = FileList.Where(x => x.FileNumber.ToString().Contains(Request["columns[0][search][value]"])).ToList<File>();
+
+            if (!string.IsNullOrEmpty(Request["columns[1][search][value]"]))
+                FileList = FileList.Where(x => x.FirstName.ToLower().Contains(Request["columns[1][search][value]"].ToLower()) ||
+                                               x.LastName.ToLower().Contains(Request["columns[1][search][value]"].ToLower())).ToList<File>();
+
+            if (!string.IsNullOrEmpty(Request["columns[2][search][value]"]))
+                FileList = FileList.Where(x => x.Districts.District.ToLower().Contains(Request["columns[2][search][value]"].ToLower())).ToList<File>();
+
+            if (!string.IsNullOrEmpty(Request["columns[3][search][value]"]))
+                FileList = FileList.Where(x => x.LoanNumber.ToString().Contains(Request["columns[3][search][value]"])).ToList<File>();
 
             int totalFileAfterFilter = FileList.Count;
             //sort Operation
@@ -330,7 +358,7 @@ namespace FileTracking.Controllers
                 data = FileList, draw = Request["draw"], recordsTotal = totalFiles, recordsFiltered = totalFileAfterFilter
 
             }, JsonRequestBehavior.AllowGet);
-        }        
+        }               
         
     }
 }

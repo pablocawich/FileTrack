@@ -37,17 +37,20 @@
                     <!-- /input-group -->
                 </li>
                 <li class="nav-links">
-                    <a href="@Url.Action("New", "Files")"><i class="fa fa-edit fa-fw"></i>Create File</a>
+                    <a href="@Url.Action("New", "Files")" id="createFile"><i class="fa fa-edit fa-fw"></i>Create File</a>
                 </li>
                 <li class="nav-links">
-                    <a href="@Url.Action("Index", "Files")"><i class="fa fa-files-o fa-fw"></i>Files</a>
+                    <a href="@Url.Action("Index", "Files")" id="indexFile"><i class="fa fa-files-o fa-fw"></i>Search</a>
 
                 </li>
                 <li class="nav-links">
-                    <a href="@Url.Action("PendingFiles","Requests")"><i class="fa fa-hourglass-2 fa-fw"></i>Pending Files</a>
+                    <a href="@Url.Action("PendingFiles","Requests")" id="pendingFiles"><i class="fa fa-hourglass-2 fa-fw"></i>Pending Files</a>
                 </li>
                 <li>
-                    <a href="@Url.Action("ReturnApproval", "FileVolumes")"><i class="fa fa-sitemap fa-fw"></i> Approve Returns</a>
+                    <a href="@Url.Action("ReturnApproval", "FileVolumes")"><i class="fa fa-reply fa-fw"></i> Approve Returns</a>
+                </li>
+                <li>
+                    <a href="@Url.Action("ConfirmCheckout", "Requests")"><i class="fa fa-users fa-fw"></i>Sign in as other user</a>
                 </li>
 
             </ul>

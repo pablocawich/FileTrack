@@ -1,4 +1,5 @@
-﻿
+﻿@using FileTracking.Models
+
 @{
     ViewBag.Title = "PendingFiles";
     Layout = "~/Views/Shared/_Layout.cshtml";
@@ -10,7 +11,7 @@
     </div>
     <!-- /.col-lg-12 -->
 </div>
-
+<p id="showCount"></p>
 <link rel="stylesheet" href="https://cdn.datatables.net/1.10.19/css/dataTables.bootstrap.min.css">
 <div class="row">
     <table id="pendingTable" class="table  table-bordered table-hover">
@@ -85,7 +86,12 @@
 
                                         //removes row from client side perspective. Not on server side thus 
                                         //if a refresh is made it will be reloaded since we have not done any server side processing
+                                        console.log(table.data().count());
                                         table.row(button.parents('tr')).remove().draw();
+                                        if (table.data().count() == 0) {
+                                            $("#notifIcon").css('color', 'white');
+                                        }
+
                                     },
                                     statusCode: {
                                         404: function(content) { alert('cannot find resource'); },
@@ -112,6 +118,9 @@
                                             "Request",
                                             { positionClass: "toast-bottom-right" });
                                         table.row(button.parents('tr')).remove().draw();
+                                        if (table.data().count() == 0) {
+                                            $("#notifIcon").css('color', 'white');
+                                        }
                                     },
                                     statusCode: {
                                         404: function(content) { alert('cannot find resource'); },
@@ -122,6 +131,7 @@
                         });
 
                 });
+
             function getDateString(date) {
                 var dateObj = new Date(parseInt(date.substr(6)));
                 return dateObj.toDateString();

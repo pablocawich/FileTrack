@@ -14,8 +14,8 @@
 <div class="row">
     <p>File has been accepted by registry and requires you to confirm physical retrieval to end the checkout process.
         Kindly approve from the table below</p>
-    @if (Model != null)
-    {
+ 
+    
         <table id="confirmTable" class="table table-hover">
             <thead>
             <tr>
@@ -24,7 +24,7 @@
                 <th>Confirmation Status</th>
                 <th>Accepted By</th>
                 <th>Accepted Date</th>
-                <th>Action</th>
+                <th><span class="glyphicon glyphicon-hand-down" style="color: aliceblue">Action</span></th>
             </tr>
             </thead>
             <tbody>
@@ -32,21 +32,23 @@
             @foreach (var req in Model)
             {
                 <tr>
-                    <td>@req.FileVolumes.FileNumber</td>
+                    <td><span data-confirm-id="@req.FileVolumes.FileId" class="glyphicon glyphicon-file btn btn-success btn-sm confirmModal"> @req.FileVolumes.FileNumber</span></td>
                     <td>@req.FileVolumes.Volume</td>
                     <td>@req.IsConfirmed</td>
-                    <td>@req.AcceptedBy</td>
-                    <td>@req.AcceptedDate</td>
+                    <td><span class="glyphicon glyphicon-user"> @req.AcceptedBy</span></td>
+                    <td><span class="glyphicon glyphicon-time"> @req.AcceptedDate</span></td>
                     <td><button approve-data-id="@req.Id" class="btn js-approve">Approve checkout</button></td>
                 </tr>
             }
             </tbody>
         </table>
-    }
-    else
-    {
-        <p  style="color: green">Data Not available</p>
-    }
+        <div class="modal fade" id="confirmCheckoutModal" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" data-backdrop="static" data-keyboard="true">
+            <div class="modal-dialog">
+                <div class="modal-content" id="confirmModelContent">
+                </div>
+            </div>
+        </div>
+    
     
 </div>
 @section scripts{
@@ -76,6 +78,15 @@
                             }
                         });
                 });
+           $("#confirmTable").on("click", ".confirmModal",
+               function() {
+                   var id = $(this).attr("data-confirm-id");
+                   var url = "/Files/FileDetailsForConfirm/" + id;
+                   // alert(url);
+
+                   $('#confirmModelContent').load(url);
+                   $('#confirmCheckoutModal').modal('show');
+               });
         });
     </script>
 }

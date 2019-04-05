@@ -32,10 +32,18 @@ thead {
 	background-color: #3F433E;
 	color: white;
 }
+#searchTable thead {
+	background-color: #f3efef;
+	color: #1EA430;
+}
 #dfcNav {
 	background-color: #2C3B6B;
 	border-color: #928e8b;
 }
 .invalidStateMssg {
 	color: red;
+}
+.inputSearch {
+	color: #39384e;
+	background-color: white;
 }

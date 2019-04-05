@@ -12,8 +12,8 @@
 </div>
 
 <div class="row">   
-    <div class="alert alert-info alert-dismissible">
-        <p style="color: black">
+    <div>
+        <p >
             Files here are for the user currently signed on if they have requested, retrieved and approved file check out.
             Also, this feature should have a return file action to direct a file back to registry.
         </p>
@@ -32,7 +32,7 @@
         @foreach (var req in Model)
         {
             <tr>
-                <td>@req.FileVolumes.FileNumber</td>
+                <td><span data-return-id="@req.FileVolumes.FileId" class="glyphicon glyphicon-file btn btn-success btn-sm returnModal"> @req.FileVolumes.FileNumber</span></td>
                 <td>@req.FileVolumes.Volume</td>
                 <td>@req.AcceptedBy</td>
                 <td><button class="btn btn-adn js-return" data-return-id="@req.Id">Return</button></td>
@@ -40,7 +40,12 @@
         }      
         </tbody>
     </table>
-
+    <div class="modal fade" id="userReturnModal" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" data-backdrop="static" data-keyboard="true">
+        <div class="modal-dialog">
+            <div class="modal-content" id="returnModelContent">
+            </div>
+        </div>
+    </div>
 </div>
 @section scripts{
     <script>
@@ -68,6 +73,16 @@
                                     });
                                 }
                             });
+                });
+
+                $("#confirmTable").on("click", ".returnModal",
+                    function() {
+                        var id = $(this).attr("data-return-id");
+                        var url = "/Files/FileDetailsForConfirm/" + id;
+                        // alert(url);
+
+                        $('#returnModelContent').load(url);
+                        $('#userReturnModal').modal('show');
                     });
         });
     </script>

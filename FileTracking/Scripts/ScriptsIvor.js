@@ -1,5 +1,58 @@
 ﻿$(document).ready(function () {
- 
+
+    //-----will check if pending file has data to further enable a notification alert signal--------
+    if (AppGlobal.role == "FMS_Registry") {
+        determineRegistryNotificationAlert();
+    }
+   
+    function determineRegistryNotificationAlert() {
+     
+        $.ajax({
+            url: '/Requests/GetPendingFiles/',
+            type: 'POST',
+            dataType: 'json',
+            success: function (data, type, instance) {
+               // console.log(data);
+               var size = Object.keys(data.data).length; 
+                if (size > 0) {
+                    $("#notifIcon").css('color', 'red');
+                    $("#notifAlert").prepend("<li><a href='Requests/PendingFiles'><div><i class='fa fa-pencil-square-o'>" +
+                        "</i>Pending<span class='pull-right text-muted small'>You have file/s that require attention</span></div></a></li>");   
+                }
+            }
+        });
+        $.ajax({
+            url: '/FileVolumes/GetReturnedRequests',
+            type: 'POST',
+            dataType: 'json',
+            success: function (returns) {
+                //console.log(returns);
+                var size = Object.keys(returns.data).length;
+
+                if (size > 0) {
+                    $("#notifIcon").css('color', 'red');
+                     $("#notifAlert").prepend(
+                         "<li><a href='/FileVolumes/ReturnApproval'><div><i class='fa fa-check-square-o'>" +
+                         "</i>Returns<span class='pull-right text-muted small'>File awaiting return approval</span></div></a></li>");
+                 }
+            }
+        }); 
+        
+    }
+
+   
+
+
+    $("#indexFile").removeClass('active');
+    $("#createFile").on('click', function () {  
+        $(this).addClass('active');  
+       
+    });
+   
+    $("#indexFile").on('click', function () { 
+      $(this).addClass('active');
+      //background-color: #eee;
+    });
    //Implementation for action buttons on the dataTable (File/index)
    $("#fileTable").on("click", ".js-addVol", function () {
        var button = $(this);
@@ -30,5 +83,25 @@
            }
        });
    });
-  
+    //-------Implementing a front end feature that attaches an event to districts select and determines the location list-------
+    $("#File_DistrictsId").on('change', function() {
+        var value = $(this).val();
+        
+        $.ajax({
+            url: '/Files/GetLocationsByDistrict/' + value,
+            type: 'POST',
+            dataType: 'json',
+            success: function (data) {
+                $("#File_LocationId").empty();
+                $("#File_LocationId").append("<option value>Select client's location</option>");
+                $.each(data, function(key, loc) {
+                   // console.log('id: ' + value.LocationId + '  District Id: ' + value.DistrictsId + '  Location: ' + value.Name);
+                    $("#File_LocationId").append($('<option>', {
+                        value: loc.LocationId,
+                        text: loc.Name
+                    }));
+                });
+            }
+        });
+    });
 });

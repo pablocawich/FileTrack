@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Data.Entity;
 using System.Linq;
 using System.Web;
 using System.Web.Mvc;
@@ -30,7 +31,7 @@ namespace FileTracking.Controllers
         {
             var connection = InitializeAdConnection();
             var userList = AdUsers(Role.Registry, connection);
-
+            
             var viewModel = new UserAdModel
             {
                 UsersInRole = userList
@@ -48,7 +49,8 @@ namespace FileTracking.Controllers
         public List<AdUser> AdUsers(string groupName, PrincipalContext context)
         {
             var userList = new List<AdUser>();
-           
+            var adUsersinDb = _context.AdUsers.ToList();
+
             using (var group = GroupPrincipal.FindByIdentity(context, groupName))
             {
                 if (group == null)
@@ -63,20 +65,25 @@ namespace FileTracking.Controllers
                     foreach (UserPrincipal user in users)
                     {
 
-                        var branchId = DetermineBranch(user);
-
-                        var AdUserObj = new AdUser()
+                        
+                        //this if ensures a check is done to verify that our db records are not duplicated by the instances in the active directory
+                        if (!(adUsersinDb.Exists(adUser => adUser.Username == user.SamAccountName)))
                         {
-                            Name = user.Name,
-                            Email = user.EmailAddress,
-                            Username = user.SamAccountName,
-                            Role = groupName,
-                            BranchesId = branchId
+                            var branchId = DetermineBranch(user);
+                            var AdUserObj = new AdUser()
+                            {
+                                Name = user.Name,
+                                Email = user.EmailAddress,
+                                Username = user.SamAccountName,
+                                Role = groupName,
+                                BranchesId = branchId
 
-                        };
-                        //user variable has the details about the user 
+                            };
+                            //user variable has the details about the user 
 
-                        userList.Add(AdUserObj);
+                            userList.Add(AdUserObj);
+                        }
+                            
                     }
                 }
             }
@@ -112,10 +119,13 @@ namespace FileTracking.Controllers
             var userListInRegistry = AdUsers(Role.Registry, connection);
             var userListInRegular = AdUsers(Role.RegularUser, connection);
 
+            
+
+            
             //Prepares insert queries for registry users
             foreach (var u in userListInRegistry)
             {
-                _context.AdUsers.Add(u);
+                     _context.AdUsers.Add(u);
             }
 
             //Prepares insert queries for regular users

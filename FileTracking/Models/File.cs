@@ -93,5 +93,10 @@ namespace FileTracking.Models
         //Establish association with volumes, possibly ----------------------------------
         //public static readonly byte DefaultVolume = 1;
         public ICollection<FileVolumes> FileVolumes { get; set; }
+
+        [NotMapped]
+        [StringLength(200)]
+        [Display(Name = "Volume 1 Description")]
+        public string VolumeOneDescription { get; set; }
     }
 }

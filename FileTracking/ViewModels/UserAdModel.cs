@@ -9,5 +9,6 @@ namespace FileTracking.ViewModels
     public class UserAdModel
     {
         public List<AdUser> UsersInRole { get; set; }
+        
     }
 }
