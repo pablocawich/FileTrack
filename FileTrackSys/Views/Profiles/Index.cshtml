@@ -1,0 +1,76 @@
+﻿@using Microsoft.AspNet.Identity
+@model FileTracking.Models.AdUser
+@{
+    ViewBag.Title = "Index";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="row">
+    <div class="col-lg-12">
+        <h2 class="page-header">Profile</h2>
+    </div>
+    <!-- /.col-lg-12 -->
+</div>
+
+<div class="row">
+    <!--Content goes here b -->
+    
+        <div class="container">
+            <div class="row">
+                <div class="col-xs-12 col-sm-6 col-md-6">
+                    <div class="well well-sm">
+                        <div class="row">
+                            <div class="col-sm-6 col-md-4">
+                                <img src="https://cdn4.iconfinder.com/data/icons/universal-round-corner-glyph/614/1017_-_User_Management-512.png"  class="img-rounded img-responsive center" />
+                            </div>
+                            <div class="col-sm-6 col-md-8">
+                                <h4>
+                                    @Model.Name
+                                </h4>
+                                <small>
+                                    <cite title="San Francisco, USA">
+                                        @Model.Branches.Branch <i class="glyphicon glyphicon-map-marker">
+                                        </i>
+                                    </cite>
+                                </small>
+                                <p>
+                                    @{
+                                        var email = "";
+                                        if (Model.Email == null) {
+                                            email = "Not provided.";
+                                        }
+                                        else { email = Model.Email; }
+
+                                     }
+                                    <i class="glyphicon glyphicon-envelope"></i>@email
+                                    <br />
+                                    <i class="glyphicon glyphicon-globe"></i><a href="http://www.jquery2dotnet.com">www.Dfc.net</a>
+                                    <br />
+                                    <i class="glyphicon glyphicon-user"></i>@Model.Username
+                                    <br />
+                                    <i class="glyphicon glyphicon-import"></i>@Model.Role
+                                    <br/>
+                                </p>
+                                <!-- Split button -->
+                                <div class="btn-group">
+                                    <button type="button" class="btn btn-primary">
+                                        Social
+                                    </button>
+                                    <button type="button" class="btn btn-primary dropdown-toggle" data-toggle="dropdown">
+                                        <span class="caret"></span><span class="sr-only">Social</span>
+                                    </button>
+                                    <ul class="dropdown-menu" role="menu">
+                                        <li><a href="#">Twitter</a></li>
+                                        <li><a href="https://plus.google.com/+Jquery2dotnet/posts">Google +</a></li>
+                                        <li><a href="https://www.facebook.com/jquery2dotnet">Facebook</a></li>
+                                        <li class="divider"></li>
+                                        <li><a href="#">Github</a></li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+</div>
