@@ -91,20 +91,20 @@
                     {
                         data: "Id",
 
-                        "render": function(data) {
-                            var buttonAddVol = "<button class='btn btn-instagram btn-xs js-addVol' data-file-id='" +
-                                data +
-                                "'>Add Volume</button>";
-                            var buttonEditFile =
-                                "<button class='btn btn-flickr btn-xs js-editFile' data-edit-file-id='" +
-                                    data +
-                                    "'>Edit</button>";
-                            var buttonViewVolumes =
-                                "<button class='btn btn-success btn-xs js-viewVolumes' data-view-vol-id='" +
-                                    data +
-                                    "'>Volumes</button>";
+                        "render": function (data) {
+                            var actionButtons = `<div class="btn-group"><button type="button" class="btn btn-success">Select one:</button>
+                                    <button type="button" class="btn btn-success dropdown-toggle" data-toggle="dropdown">
+                                        <span class="caret"></span><span class="sr-only">Social</span>
+                                    </button>
+                                    <ul class="dropdown-menu" role="menu">
+                                        <li><a href="#" class='btn js-addVol' data-file-id=${data}>Add Volume</a></li>
+                                        <li><a href="#" class='btn js-editFile' data-edit-file-id=${data}>Edit</a></li>
+                                        <li><a href="#" class='btn js-viewVolumes'data-view-vol-id=${data}>View Volumes</a></li>
+                                        <li class="divider"></li>
+                                        <li><a href="#" class='btn'>Perhaps history</a></li>
+                                    </ul></div>`;
 
-                            return buttonEditFile + " | " + buttonViewVolumes + " | " + buttonAddVol;
+                            return actionButtons;
                         }
                     }
                 ],

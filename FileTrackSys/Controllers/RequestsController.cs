@@ -40,10 +40,11 @@ namespace FileTracking.Controllers
         public ActionResult Index(int volId)
         {
             //pulls records associated with a request such as volume and user
+            var userObj = new AdUser(User.Identity.Name);
 
             var volume = _context.FileVolumes.Single(v => v.Id == volId);
-            string username = ParseUsername(User.Identity.Name);
-            var user = _context.AdUsers.Single(u => u.Username == username);
+
+            var user = _context.AdUsers.Single(u => u.Username == userObj.Username);
 
             if (!CheckBranchValidity(user, volume))
                 return Content("Cannot request file from situated outside your local branch. " +
@@ -70,8 +71,7 @@ namespace FileTracking.Controllers
                                       
         }
 
-       
-
+        //checks that a volume is not requested more than once by the same user
         public bool HasBeenRequested(FileVolumes v, AdUser u)
         {
           //First we query based in current user, then we get the volume id, and finally if the request is active.
@@ -90,7 +90,7 @@ namespace FileTracking.Controllers
                 //FileId = f.Id,
                 UserId = u.Id,
                 FileVolumesId = v.Id,
-                BranchesId = u.BranchesId,
+                BranchesId = u.BranchesId,//we get the branch based on the signed on user, since user must match volume branch atm
                 RequestStatusId = 1, //1 signifies pending
                 ReturnStateId = 1,//1 signifies idle state, meaning the return process is not in order
                 IsRequestActive = true,//meaning this request has been initiated, switched to false when file is returned and back to stored state
@@ -127,34 +127,30 @@ namespace FileTracking.Controllers
         [Authorize(Roles = Role.Registry)]
         public ActionResult GetPendingFiles()
         {
+            //we must ensure to take into account branches. registry is only to see request from user made within their respective branch
+            var userObj = new AdUser(User.Identity.Name);
+           
+            var user = _context.AdUsers.Single(u => u.Username == userObj.Username);
+            byte registryUserBranch = user.BranchesId;
             byte Pending = 1;
             var pendingRequests = _context.Requests.Include(r => r.FileVolumes).
-                Include(r => r.User.Branches).Where(r => r.RequestStatusId == Pending).ToList();
+                Include(r => r.User.Branches).Where(r => r.RequestStatusId == Pending).Where(r=>r.BranchesId == registryUserBranch).ToList();
 
 
             return Json(new { data = pendingRequests }, JsonRequestBehavior.AllowGet);
-        }
-
-        //return username only and discards string 'DEVFINCO\\'. Reason being our database sets username without the devfinco literal
-        public string ParseUsername(string adName)
-        {
-            string newName = "";
-            if (adName.Contains("DEVFINCO"))
-                newName = adName.Remove(0, 9);
-            return newName;
         }
        
         //function is invoked when a registry user accepts a file, changing it to check out
         public void AcceptRequest(int id)
         {
-            string currentUser = ParseUsername(User.Identity.Name);
+            var userObj = new AdUser(User.Identity.Name);
             //recall that a person from registry accepts this request so get person name
           const byte acceptedState = 2;
            var request = _context.Requests.Single(r => r.Id == id);
          
 
             request.RequestStatusId = acceptedState;
-            request.AcceptedBy = currentUser;
+            request.AcceptedBy = userObj.Username;
             request.AcceptedDate = DateTime.Now;
             //request.UserId = 
             //request.AcceptedBy
@@ -192,7 +188,6 @@ namespace FileTracking.Controllers
             //after a volume's been rejected, better yet, let all request for that specific volume be denied.
             //What do we do then? since the state will remain at requested and never changed due to it never being accepted.
             //does this affect the flow of things
-
         }
 
         [Authorize(Roles = Role.RegularUser)]
@@ -200,9 +195,9 @@ namespace FileTracking.Controllers
         {
             byte reqStatus = 2;
 
-            string uname = ParseUsername(User.Identity.Name);
+           var userObj = new AdUser(User.Identity.Name);
 
-            var user = _context.AdUsers.Single(u => u.Username == uname);
+            var user = _context.AdUsers.Single(u => u.Username == userObj.Username);
 
             var request = _context.Requests.Include(r=>r.FileVolumes).Where(r => r.UserId == user.Id).
                 Where(r=>r.RequestStatusId == reqStatus).Where(r=>r.IsConfirmed == false).ToList();
@@ -230,8 +225,9 @@ namespace FileTracking.Controllers
 
         public void CheckoutVolume(int volId)
         {
-            string user = ParseUsername(User.Identity.Name);
-            var currUser = _context.AdUsers.Single(u => u.Username == user);
+           
+            var userObj = new AdUser(User.Identity.Name);
+            var currUser = _context.AdUsers.Single(u => u.Username == userObj.Username);
 
             const byte checkoutState = 5;
             var volume = _context.FileVolumes.Single(v => v.Id == volId);
@@ -242,16 +238,13 @@ namespace FileTracking.Controllers
 
         public ActionResult UserNotification()
         {
-            string currentUser = ParseUsername(User.Identity.Name);
-            var user = _context.AdUsers.Single(u => u.Username == currentUser);
+            var userObj = new AdUser(User.Identity.Name);
+            var user = _context.AdUsers.Single(u => u.Username == userObj.Username);
             var Notifications = _context.Requests.Include(r => r.FileVolumes).Where(r => r.UserId == user.Id).Where(r => r.IsRequestActive == true)
                 .Where(r => r.RequestStatusId == 2).Where(r => r.IsConfirmed == false).ToList();
 
             return View("UserNotification", Notifications);
         }
-
-        
-
     }
 
 }

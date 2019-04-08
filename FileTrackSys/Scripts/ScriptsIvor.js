@@ -1,6 +1,8 @@
 ﻿$(document).ready(function () {
 
     //-----will check if pending file has data to further enable a notification alert signal--------
+
+    //if ensures the function that gives notifications alerts registry only
     if (AppGlobal.role == "FMS_Registry") {
         determineRegistryNotificationAlert();
     }
@@ -16,7 +18,7 @@
                var size = Object.keys(data.data).length; 
                 if (size > 0) {
                     $("#notifIcon").css('color', 'red');
-                    $("#notifAlert").prepend("<li><a href='Requests/PendingFiles'><div><i class='fa fa-pencil-square-o'>" +
+                    $("#notifAlert").prepend("<li id='pendingMssg'><a href='Requests/PendingFiles'><div><i class='fa fa-pencil-square-o'>" +
                         "</i>Pending<span class='pull-right text-muted small'>You have file/s that require attention</span></div></a></li>");   
                 }
             }
@@ -40,15 +42,11 @@
         
     }
 
-   
-
-
     $("#indexFile").removeClass('active');
     $("#createFile").on('click', function () {  
-        $(this).addClass('active');  
-       
+        $(this).addClass('active');        
     });
-   
+
     $("#indexFile").on('click', function () { 
       $(this).addClass('active');
       //background-color: #eee;

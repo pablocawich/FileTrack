@@ -12,14 +12,6 @@
                     <i class="fa fa-bell fa-fw" id="notifIcon"></i> <b class="caret"></b>
                 </a>
                 <ul class="dropdown-menu dropdown-alerts" id="notifAlert">
-                    <li>
-                        <a href="#">
-                            <div>
-                                <i class="fa fa-comment fa-fw"></i> New Comment
-                                <span class="pull-right text-muted small">DFC Message</span>
-                            </div>
-                        </a>
-                    </li>
                     <li class="divider"></li>
                     <li>
                         <a class="text-center" href="#">
@@ -48,12 +40,9 @@
                     <li>   
                         <a href="@Url.Action("Index","Profiles")"><i class="fa fa-user fa-fw"></i> User Profile</a>
                     </li>
-                    <li>
-                        <a href="#"><i class="fa fa-gear fa-fw"></i> Settings</a>
-                    </li>
                     <li class="divider"></li>
                     <li>
-                        <a href="#"><i class="fa fa-sign-out fa-fw"></i> Logout</a>
+                        <a href="@Url.Action("Index","Home")"><i class="fa fa-sign-out fa-fw"></i> Logout</a>
                     </li>
                 </ul>
             </li>

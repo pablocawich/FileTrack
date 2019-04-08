@@ -45,6 +45,7 @@ namespace FileTracking
                       "~/Content/timeline.css",
                       "~/Content/morris.css",
                       "~/Content/DataTables/css/dataTales.bootstrap.css",
+                      "~/Content/error.css",
                       "~/Content/site.css"));  
            
         }
