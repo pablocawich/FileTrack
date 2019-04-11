@@ -5,11 +5,12 @@
     //if ensures the function that gives notifications alerts registry only
     if (AppGlobal.role == "FMS_Registry") {
         determineRegistryNotificationAlert();
+    } else {
+        determineRegularNotificationAlert();//signifies user is regular 
     }
    
     function determineRegistryNotificationAlert() {
-     
-        $.ajax({
+       $.ajax({
             url: '/Requests/GetPendingFiles/',
             type: 'POST',
             dataType: 'json',
@@ -42,7 +43,27 @@
         
     }
 
+    function determineRegularNotificationAlert() {
+        $.ajax({
+            url: '/Requests/GetConfirmCheckout',
+            type: 'POST',
+            dataType: 'json',
+            success: function (returns) {
+                //console.log(returns);
+                var size = Object.keys(returns.data).length;
+                
+                if (size > 0) {
+                    $("#notifIcon").css('color', 'red');
+                    $("#notifAlert").prepend(
+                        "<li><a href='/Requests/ConfirmCheckout'><div><i class='fa fa-check-square-o'>" +
+                        "</i>Approval<span class='pull-right text-muted small'>Confirm checkout</span></div></a></li>");
+                }
+            }
+        }); 
+    }
+
     $("#indexFile").removeClass('active');
+
     $("#createFile").on('click', function () {  
         $(this).addClass('active');        
     });
@@ -72,14 +93,12 @@
            }
        });
     });
+
     $("#fileTable").on("click", ".js-viewVolumes", function () {
        var button = $(this);
-       bootbox.confirm("You are about to view volumes for this file. Continue", function (result) {
-           if (result) {
-
-               window.location.href = "/Files/FileVolumes/" + button.attr("data-view-vol-id");
-           }
-       });
+       window.location.href = "/Files/FileVolumes/" + button.attr("data-view-vol-id");
+          
+      
    });
     //-------Implementing a front end feature that attaches an event to districts select and determines the location list-------
     $("#File_DistrictsId").on('change', function() {
@@ -101,5 +120,21 @@
                 });
             }
         });
+    });
+
+    //Scroll to top feature below
+    var btn = $('#regScrollToTop');
+
+    $(window).scroll(function () {
+        if ($(window).scrollTop() > 20) {
+            btn.addClass('show');
+        } else {
+            btn.removeClass('show');
+        }
+    });
+
+    btn.on('click', function (e) {
+        e.preventDefault();
+        $('html, body').animate({ scrollTop: 0 }, '300');
     });
 });

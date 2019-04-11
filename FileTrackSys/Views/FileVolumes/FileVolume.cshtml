@@ -68,25 +68,44 @@
 @section scripts
 {
     <script>
-        $(document).ready(function() {
-            $("#volumeTable").on("click",
-                ".js-req-vol",
-                function () {      
+        $(document).ready(function () {
+
+            $("#volumeTable").on("click",".js-req-vol",function() {
                     var button = $(this);
                     var state = button.attr("vol-state");
                     var originalLoc = button.attr("originLoc");
                     var currentLoc = button.attr("currLoc-attr");
                     var userLoc = button.attr("user-loc");
-                   //------------------------------the above retrieves attributes necessary for routing ----------
-                    if (!(userLoc == currentLoc))
-                        toastr.error("File volume is not within your respective branch. Cannot request at this time.",
-                            "Volume Request",
-                            { positionClass: "toast-bottom-right" });
-                    else {
+                    //------------------------------the above retrieves attributes necessary for routing ----------
+                    if (!(userLoc == currentLoc)) {
+                        bootbox.confirm({
+                            message:
+                                "<strong style='color: #ff7144'>This volume is outside your branch, thus request will be sent outside your branch. Continue?</strong>",
+                            buttons: {
+                                confirm: {
+                                    label: 'Yes',
+                                    className: 'btn-success'
+                                },
+                                cancel: {
+                                    label: 'Never mind',
+                                    className: 'btn-github'
+                                }
+                            },
+                            callback: function(result) {
+                                if (result) {
+                                    //write code tht routes volumes id to an action result in volumes controller.
+                                    window.location.href =
+                                        "/Requests/Index/" + button.attr("vol-data-id");
+                                }
+                            }
+                        });
+                       
+                    } else {
                         if (originalLoc == currentLoc)
                             if (state === "Stored" || state === "Requested") {
                                 bootbox.confirm({
-                                    message: "Volume with the vicinity thus if you proceed your request will be sent to registry and you must await approval",
+                                    message:
+                                        "Volume within the vicinity thus if you proceed your request will be sent to your registry and you must await approval",
                                     buttons: {
                                         confirm: {
                                             label: 'Proceed',
@@ -94,7 +113,7 @@
                                         },
                                         cancel: {
                                             label: 'Never mind',
-                                            className: 'btn-danger'
+                                            className: 'btn-github'
                                         }
                                     },
                                     callback: function(result) {
@@ -107,18 +126,21 @@
                                     }
                                 });
                             } else {
-                                toastr.error("Volume CANNOT be requested. Currently being tranferred or has already been checked-out", "Volume Request", { positionClass: "toast-bottom-right" });
+                                toastr.error(
+                                    "Volume CANNOT be requested. Currently being transferred or has already been checked-out",
+                                    "Volume Request",
+                                    { positionClass: "toast-bottom-right" });
                                 $(this).prop("disabled", true);
                             }
                     }
-                    
-                    
+
+
                 });
             //inserting a string value for current location
             $(".currentLoc").each(function() {
                 var locNum = $(this).attr("currLoc-data");
-                var num = parseInt(locNum);         
-                switch(num) {
+                var num = parseInt(locNum);
+                switch (num) {
                 case 1:
                     $(this).text("Corozal");
                     break;
@@ -136,11 +158,11 @@
                     break;
                 case 6:
                     $(this).text("Dangriga");
-                    break;  
+                    break;
                 }
             });
 
         });
-      
+
     </script>
 }

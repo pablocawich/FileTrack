@@ -34,6 +34,7 @@ namespace FileTracking.Models
         public DbSet<Request> Requests { get; set; }
         public DbSet<ReturnState> ReturnStates { get; set; }
         public DbSet<Location> Locations { get; set; }
+        public DbSet<ExternalRequestsBinder> ExternalRequestsBinder { get; set; }
 
 
         public ApplicationDbContext()

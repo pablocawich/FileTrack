@@ -30,6 +30,7 @@ namespace FileTracking.Controllers
                 newName = adName.Remove(0, 9);
             return newName;
         }
+
         // GET: FileVolumes for a specific file identified by the id parameter
         [Authorize(Roles = Role.RegularUser)]
         public ActionResult RequestFile(int id)
@@ -84,6 +85,7 @@ namespace FileTracking.Controllers
         {
             return View("ReturnApproval");
         }
+
         [Authorize(Roles = Role.Registry)]
         public ActionResult GetReturnedRequests()
         {
@@ -96,7 +98,10 @@ namespace FileTracking.Controllers
 
         public void AcceptReturn(int id)
         {
+            var user = new AdUser(User.Identity.Name);//we get the current registry user and initialize its username
             var req = _context.Requests.Single(r => r.Id == id);
+            req.ReturnedDate = DateTime.Now;
+            req.ReturnAcceptBy = user.Username;
             req.ReturnStateId = 3;
             req.IsRequestActive = false;
 
@@ -113,6 +118,51 @@ namespace FileTracking.Controllers
             vol.AdUserId = null;
 
             _context.SaveChanges();
+        }
+
+        [Authorize(Roles = Role.Registry)]
+        public ActionResult UpdateVolumeDescription(int id)
+        {
+            var volumeInDb = _context.FileVolumes.Single(fv => fv.Id == id);
+
+            return PartialView(volumeInDb);
+        }
+
+        [HttpPost]
+        public ActionResult SaveVolumeDescription(FileVolumes fileVolumes)
+        {
+            if (!ModelState.IsValid)
+            {
+                //redirect to form page if validations fails with the same file vol objects redirected
+                var volumeInDb = _context.FileVolumes.Single(fv => fv.Id == fileVolumes.Id);
+                return PartialView("UpdateVolumeDescription", volumeInDb);
+            }
+
+            //otherwise, create a new volume record with respect to its file parent
+            if (fileVolumes.Id != 0)
+            {
+                var volumeInDb = _context.FileVolumes.Single(v=>v.Id == fileVolumes.Id);
+                volumeInDb.Comment = fileVolumes.Comment;
+                volumeInDb.Id = fileVolumes.Id;
+                volumeInDb.FileId = fileVolumes.FileId;
+                volumeInDb.Volume = fileVolumes.Volume;
+                volumeInDb.StatesId = fileVolumes.StatesId;
+                volumeInDb.FileNumber = fileVolumes.FileNumber;
+                volumeInDb.BranchesId = fileVolumes.BranchesId;
+                volumeInDb.CurrentLocation = fileVolumes.CurrentLocation;
+                volumeInDb.AdUserId = fileVolumes.AdUserId;
+
+                _context.SaveChanges();
+
+            }
+
+            return RedirectToRoute(new
+            {
+                controller = "Files",
+                action = "FileVolumes",
+                id = fileVolumes.FileId
+            });
+
         }
     }
 }

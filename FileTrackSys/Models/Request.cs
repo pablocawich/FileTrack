@@ -27,15 +27,21 @@ namespace FileTracking.Models
         [Required]
         public byte BranchesId { get; set; }
 
+        public byte RequesteeBranch { get; set; }
+
         public RequestStatus RequestStatus { get; set; }
         [Required]
-        public byte RequestStatusId { get; set; }
+        public byte RequestStatusId { get; set; } //pending, accepted, rejected
 
-        public DateTime RequestDate { get; set; }
+        public DateTime RequestDate { get; set; }//date request was made by the user
 
-        public DateTime? AcceptedDate { get; set; }
+        public DateTime? AcceptedDate { get; set; }//date accepted by registry
 
-        public string AcceptedBy { get; set; }
+        public string AcceptedBy { get; set; }//specific registry member
+
+        public DateTime? ReturnedDate { get; set; } //date file was returned to registry, triggered when registry accepts return
+
+        public string ReturnAcceptBy { get; set; }//Specific reg member who did the accept
 
         [DefaultValue(false)]
         public bool IsConfirmed { get; set; }
@@ -47,5 +53,8 @@ namespace FileTracking.Models
 
         [DefaultValue(true)]
         public bool IsRequestActive { get; set; }
+
+        public int RequestBinder { get; set; }
+
     }
 }

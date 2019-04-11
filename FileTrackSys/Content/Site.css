@@ -22,6 +22,7 @@ select,
 textarea {
 	max-width: 280px;
 }
+
 .field-validation-error, .validation-summary-errors {
 	color: red;
 }
@@ -47,3 +48,40 @@ thead {
 	color: #39384e;
 	background-color: white;
 }
+/* Scroll button stuff*/
+#regScrollToTop {
+    display: inline-block;
+    background-color: #FF9800;
+    width: 50px;
+    height: 50px;
+    text-align: center;
+    border-radius: 4px;
+    position: fixed;
+    bottom: 20px;
+    right: 15px;
+    transition: background-color .3s, 
+                opacity .5s, visibility .5s;
+    opacity: 0;
+    visibility: hidden;
+    z-index: 1000;
+}
+    #regScrollToTop::after {
+        content: "\f077";
+        font-family: FontAwesome;
+        font-weight: normal;
+        font-style: normal;
+        font-size: 2em;
+        line-height: 50px;
+        color: #fff;
+    }
+#regScrollToTop:hover {
+    cursor: pointer;
+    background-color: #333;
+}
+    #regScrollToTop:active {
+        background-color: #555;
+    }
+    #regScrollToTop.show {
+        opacity: 1;
+        visibility: visible;
+    }

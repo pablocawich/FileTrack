@@ -1,0 +1,72 @@
+﻿
+@{
+    ViewBag.Title = "ExternalBranchRequest";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="row">
+    <div class="col-lg-12">
+        <h2 class="page-header"><strong>Pending External Request</strong></h2>
+    </div>
+    <!-- /.col-lg-12 -->
+</div>
+<link rel="stylesheet" href="https://cdn.datatables.net/1.10.19/css/dataTables.bootstrap.min.css">
+<div class="row">
+    <table id="externalBranchPendingTable" class="table  table-bordered table-hover">
+        <thead>
+            <tr>
+                <th>Id</th>
+                <th>File Number</th>
+                <th>Volume</th>
+                <th>Requester</th>
+                <th>Requested Date</th>
+                <th>Action</th>
+            </tr>
+        </thead>
+
+    </table>
+</div>
+@section scripts
+{
+    <script>
+        $(document).ready(function() {
+            //gets json objects from the request controller in order to populate the dataTable
+            var table = $("#externalBranchPendingTable").DataTable({
+                "ajax": {
+                    "url": "/Requests/GetExternalBranchPendingFiles",
+                    "data": "GET",
+                    "datatype": "json"
+                },
+                "columns": [
+                    { "data": "Id" },
+                    { "data": "FileVolumes.FileNumber" },
+                    { "data": "FileVolumes.Volume" },
+                    { "data": "UserId" },
+                 
+                    {
+                        data: "RequestDate",
+                        "render": function(data) {
+                            return getDateString(data);
+                        }
+                    },
+                    {
+                        data: "Id",
+                        "render": function(data, type, req) {
+                            var buttonAccept =
+                                "<button class='btn btn-success btn-xs js-accept'>Check out</button>";
+                            
+
+                            return buttonAccept;
+                        }
+                    }
+                ]
+            });
+           
+            function getDateString(date) {
+                var dateObj = new Date(parseInt(date.substr(6)));
+                return dateObj.toDateString();
+            }
+
+        });
+    </script>
+}

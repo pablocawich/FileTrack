@@ -1,5 +1,4 @@
-﻿@model IEnumerable<FileTracking.Models.Request>
-@{
+﻿@{
     ViewBag.Title = "ConfirmCheckout";
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
@@ -10,7 +9,7 @@
 </div>
 <!-- /.col-lg-12 -->
 </div>
-
+<link rel="stylesheet" href="https://cdn.datatables.net/1.10.19/css/dataTables.bootstrap.min.css">
 <div class="row">
     <p>File has been accepted by registry and requires you to confirm physical retrieval to end the checkout process.
         Kindly approve from the table below</p>
@@ -21,25 +20,13 @@
             <tr>
                 <th>File Number</th>
                 <th>Volume</th>
-                <th>Confirmation Status</th>
                 <th>Accepted By</th>
                 <th>Accepted Date</th>
                 <th><span class="glyphicon glyphicon-hand-down" style="color: aliceblue">Action</span></th>
             </tr>
             </thead>
             <tbody>
-
-            @foreach (var req in Model)
-            {
-                <tr>
-                    <td><span data-confirm-id="@req.FileVolumes.FileId" class="glyphicon glyphicon-file btn btn-success btn-sm confirmModal"> @req.FileVolumes.FileNumber</span></td>
-                    <td>@req.FileVolumes.Volume</td>
-                    <td>@req.IsConfirmed</td>
-                    <td><span class="glyphicon glyphicon-user"> @req.AcceptedBy</span></td>
-                    <td><span class="glyphicon glyphicon-time"> @req.AcceptedDate</span></td>
-                    <td><button approve-data-id="@req.Id" class="btn js-approve">Approve checkout</button></td>
-                </tr>
-            }
+           
             </tbody>
         </table>
         <div class="modal fade" id="confirmCheckoutModal" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" data-backdrop="static" data-keyboard="true">
@@ -53,11 +40,37 @@
 </div>
 @section scripts{
     <script>
-        $(document).ready(function () {
-       
-           $("#confirmTable").on('click',
+        $(document).ready(function() {
+            var table = $("#confirmTable").DataTable({
+                "ajax": {
+                    "url": "/Requests/GetConfirmCheckout",
+                    "data": "GET",
+                    "datatype": "json"
+                },
+                "columns": [
+                    { "data": "FileVolumes.FileNumber" },
+                    { "data": "FileVolumes.Volume" },
+                    { "data": "AcceptedBy" },
+                    {
+                        data: "AcceptedDate",
+                        "render": function(data) {
+                            return getDateString(data);
+                        }
+                    },
+                    {
+                        data: "Id",
+                        "render": function(data, type, req) {
+                            var button =
+                                `<button approve-data-id=${data} class="btn js-approve">Checkout</button>`;
+                            return button;
+                        }
+                    }
+                ]
+            });
+            //End implementation of dataTable
+            $("#confirmTable").on('click',
                 '.js-approve',
-                function () {
+                function() {
                     var $btn = $(this);
                     var requestId = $btn.attr("approve-data-id");
                     bootbox.confirm("You are approving volume. Do you wish to continue?",
@@ -66,7 +79,9 @@
                                 $.ajax({
                                     url: '/Requests/AcceptCheckout/' + requestId,
                                     success: function() {
-                                        toastr.success("File volume checked out", "Approval", { positionClass: "toast-bottom-right" });
+                                        toastr.success("File volume checked out",
+                                            "Approval",
+                                            { positionClass: "toast-bottom-right" });
 
                                         $($btn).closest("tr").remove();
                                     },
@@ -78,15 +93,21 @@
                             }
                         });
                 });
-           $("#confirmTable").on("click", ".confirmModal",
-               function() {
-                   var id = $(this).attr("data-confirm-id");
-                   var url = "/Files/FileDetailsForConfirm/" + id;
-                   // alert(url);
+            $("#confirmTable").on("click",
+                ".confirmModal",
+                function() {
+                    var id = $(this).attr("data-confirm-id");
+                    var url = "/Files/FileDetailsForConfirm/" + id;
+                    // alert(url);
 
-                   $('#confirmModelContent').load(url);
-                   $('#confirmCheckoutModal').modal('show');
-               });
+                    $('#confirmModelContent').load(url);
+                    $('#confirmCheckoutModal').modal('show');
+                });
+
+            function getDateString(date) {
+                var dateObj = new Date(parseInt(date.substr(6)));
+                return dateObj.toDateString();
+            }
         });
     </script>
 }

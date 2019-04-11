@@ -393,6 +393,22 @@
     <Compile Include="Migrations\201904011708005_AddLocationToFiles.Designer.cs">
       <DependentUpon>201904011708005_AddLocationToFiles.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201904101609546_AdditionalRequestFields.cs" />
+    <Compile Include="Migrations\201904101609546_AdditionalRequestFields.Designer.cs">
+      <DependentUpon>201904101609546_AdditionalRequestFields.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201904102136277_AddExternalRequestsBinder.cs" />
+    <Compile Include="Migrations\201904102136277_AddExternalRequestsBinder.Designer.cs">
+      <DependentUpon>201904102136277_AddExternalRequestsBinder.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201904102138179_PopulateExternalRequestsBinder.cs" />
+    <Compile Include="Migrations\201904102138179_PopulateExternalRequestsBinder.Designer.cs">
+      <DependentUpon>201904102138179_PopulateExternalRequestsBinder.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201904102142252_AddRequestBinderField.cs" />
+    <Compile Include="Migrations\201904102142252_AddRequestBinderField.Designer.cs">
+      <DependentUpon>201904102142252_AddRequestBinderField.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Models\AccountViewModels.cs" />
     <Compile Include="Models\AddNumberIfIdentificationSelected.cs" />
@@ -400,6 +416,7 @@
     <Compile Include="Models\Branches.cs" />
     <Compile Include="Models\Districts.cs" />
     <Compile Include="Models\DistrictToLocationValidation.cs" />
+    <Compile Include="Models\ExternalRequestsBinder.cs" />
     <Compile Include="Models\File.cs" />
     <Compile Include="Models\FileLoanCategory.cs" />
     <Compile Include="Models\FileStatus.cs" />
@@ -710,9 +727,8 @@
     <Content Include="WelcomePage\img\elements\success-check.png" />
     <Content Include="WelcomePage\img\elements\success-radio.png" />
     <Content Include="WelcomePage\img\elements\work-arrow.png" />
-    <Content Include="WelcomePage\img\FileTrack.png" />
-    <Content Include="WelcomePage\img\header-img.png" />
     <Content Include="WelcomePage\img\logo.png" />
+    <Content Include="WelcomePage\img\FileTrack.png" />
     <Content Include="WelcomePage\js\jquery.ajaxchimp.min.js" />
     <Content Include="WelcomePage\js\jquery.counterup.min.js" />
     <Content Include="WelcomePage\js\jquery.magnific-popup.min.js" />
@@ -935,6 +951,8 @@
     <Content Include="WelcomePage\scss\theme\_variables.scss" />
     <Content Include="WelcomePage\scss\_DS_Store" />
     <Content Include="WelcomePage\img\elements\_DS_Store" />
+    <Content Include="Views\FileVolumes\UpdateVolumeDescription.cshtml" />
+    <Content Include="Views\Requests\ExternalBranchRequest.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
@@ -1088,6 +1106,18 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201904011708005_AddLocationToFiles.resx">
       <DependentUpon>201904011708005_AddLocationToFiles.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201904101609546_AdditionalRequestFields.resx">
+      <DependentUpon>201904101609546_AdditionalRequestFields.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201904102136277_AddExternalRequestsBinder.resx">
+      <DependentUpon>201904102136277_AddExternalRequestsBinder.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201904102138179_PopulateExternalRequestsBinder.resx">
+      <DependentUpon>201904102138179_PopulateExternalRequestsBinder.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201904102142252_AddRequestBinderField.resx">
+      <DependentUpon>201904102142252_AddRequestBinderField.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>

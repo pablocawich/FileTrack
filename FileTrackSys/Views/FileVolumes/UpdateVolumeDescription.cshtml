@@ -1,0 +1,43 @@
+﻿@model FileTracking.Models.FileVolumes
+<div class="modal-header" style="background-color: #7b7979">
+    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+        <span aria-hidden="true"><i class="fa fa-times-circle"></i></span>
+    </button>
+    <h4 class="modal-title" style="color: #fff">Update volume's  @Model.Id description</h4>
+</div>
+@using (Html.BeginForm("SaveVolumeDescription", "FileVolumes", FormMethod.Post, new {@id = "editVolFormId"}))
+{
+    <div class="modal-body container-fluid">
+
+        @Html.ValidationSummary(false)
+
+        @Html.LabelFor(v => v.Comment, new {@class = "control-label"})
+        <div class="input-group">
+            <span class="input-group-addon">
+                <i class="glyphicon glyphicon-comment"></i>
+            </span>@Html.TextAreaFor(v => v.Comment, new {@class = "form-control"})
+        </div>
+        @Html.ValidationMessageFor(v => v.Comment)
+
+
+        @Html.HiddenFor(v => v.Id)
+        @Html.HiddenFor(v => v.FileId)
+        @Html.HiddenFor(v => v.Volume)
+        @Html.HiddenFor(v => v.FileNumber)
+        @Html.HiddenFor(v => v.StatesId)
+        @Html.HiddenFor(v => v.BranchesId)
+        @Html.HiddenFor(v => v.CurrentLocation)
+        @Html.HiddenFor(v => v.AdUserId)
+        
+        
+        
+    </div>
+    <div class="modal-footer">
+        <button class="btn btn-primary btn-sm" type="submit">Save File</button>
+        <button type="button" class="btn btn-github"
+                data-dismiss="modal">
+            Close
+        </button>
+    </div>
+
+}
