@@ -19,7 +19,7 @@
                var size = Object.keys(data.data).length; 
                 if (size > 0) {
                     $("#notifIcon").css('color', 'red');
-                    $("#notifAlert").prepend("<li id='pendingMssg'><a href='Requests/PendingFiles'><div><i class='fa fa-pencil-square-o'>" +
+                    $("#notifAlert").prepend("<li id='pendingMssg'><a href='/Requests/PendingFiles'><div><i class='fa fa-pencil-square-o'>" +
                         "</i>Pending<span class='pull-right text-muted small'>You have file/s that require attention</span></div></a></li>");   
                 }
             }
@@ -72,6 +72,7 @@
       $(this).addClass('active');
       //background-color: #eee;
     });
+
    //Implementation for action buttons on the dataTable (File/index)
    $("#fileTable").on("click", ".js-addVol", function () {
        var button = $(this);

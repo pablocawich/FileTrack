@@ -55,18 +55,19 @@ namespace FileTracking.Controllers
         }
 
         [Authorize(Roles = Role.RegularUser)]
-        public ActionResult UserVolumes()
+        public ActionResult UserVolumes()//this interface gets files currently check out to user
         {
             string username = ParseUsername(User.Identity.Name);
             var user = _context.AdUsers.Single(u => u.Username == username);
 
-            var request = _context.Requests.Include(r=>r.FileVolumes).Where(r => r.UserId == user.Id).Where(r => r.IsConfirmed == true).Where(r=>r.ReturnStateId == 1).ToList();
+            var request = _context.Requests.Include(r=>r.FileVolumes).Where(r => r.UserId == user.Id).Where(r => r.IsConfirmed == true).
+                Where(r=>r.ReturnStateId == 1).Where(r=>r.RequestTypeId == RequestType.InternalRequest).ToList();
 
            // var reqList = new List<Request>();
 
             //reqList = request;
             //run query that shows volume currently assigned to the signed in user
-                        //get those from requests with user id,
+                      
             return View("UserVolumes", request);
         }
 
@@ -100,25 +101,66 @@ namespace FileTracking.Controllers
         {
             var user = new AdUser(User.Identity.Name);//we get the current registry user and initialize its username
             var req = _context.Requests.Single(r => r.Id == id);
+            
             req.ReturnedDate = DateTime.Now;
             req.ReturnAcceptBy = user.Username;
             req.ReturnStateId = 3;
             req.IsRequestActive = false;
-
-            _context.SaveChanges();
-            ChangeStateToStored(req.FileVolumesId);
+            //
+               
+            if (req.RequestBinder != 0)
+            {
+                req.RequestTypeId = RequestType.ExternalRequest;//if it has external binder we switch the req type to external   
+                _context.SaveChanges();
+                InitiateExternalReturn(req.RequestBinder);
+            }
+            else
+            {
+                _context.SaveChanges();
+                ChangeStateToStored(req.FileVolumesId);
+            }
+            
+            
         }
 
         public void ChangeStateToStored(int id)
         {
-            const byte storedState = 1;
+            //stored state => 1
             var vol = _context.FileVolumes.Single(v => v.Id == id);
 
-            vol.StatesId = storedState;
+            vol.StatesId = 1;
             vol.AdUserId = null;
 
             _context.SaveChanges();
         }
+
+        public void InitiateExternalReturn(int id)
+        {
+            var extReq = _context.Requests.Single(r=>r.RequestBinder == id && r.RequestStatusId == 2 && r.ReturnStateId == 1);
+            extReq.IsRequestActive = true;
+            _context.SaveChanges();
+            return;
+        }
+
+        [Authorize(Roles = Role.Registry)]
+        public ActionResult ReturnToBranch()
+        {
+            return View();
+        }
+
+        public ActionResult GetReturnToBranchFiles()
+        {
+            var userObj = new AdUser(User.Identity.Name);
+
+            var user = _context.AdUsers.Single(u => u.Username == userObj.Username);
+
+            var request = _context.Requests.Include(r => r.FileVolumes).Include(r => r.User.Branches).
+                Where(r => r.BranchesId == user.BranchesId).Where(r => r.RequestBinder != 0).Where(r => r.RequestTypeId == RequestType.ExternalRequest).
+              Where(r=>r.ReturnStateId == 1).Where(r=>r.IsRequestActive == true).Where(r=>r.IsConfirmed == true).ToList();
+
+            return Json(new { data = request }, JsonRequestBehavior.AllowGet);
+        }
+       
 
         [Authorize(Roles = Role.Registry)]
         public ActionResult UpdateVolumeDescription(int id)

@@ -409,6 +409,22 @@
     <Compile Include="Migrations\201904102142252_AddRequestBinderField.Designer.cs">
       <DependentUpon>201904102142252_AddRequestBinderField.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201904112057450_AddOtherStateToRequestStatus.cs" />
+    <Compile Include="Migrations\201904112057450_AddOtherStateToRequestStatus.Designer.cs">
+      <DependentUpon>201904112057450_AddOtherStateToRequestStatus.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201904120311429_AddRequestTypeTable.cs" />
+    <Compile Include="Migrations\201904120311429_AddRequestTypeTable.Designer.cs">
+      <DependentUpon>201904120311429_AddRequestTypeTable.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201904120312496_PopulateRequestType.cs" />
+    <Compile Include="Migrations\201904120312496_PopulateRequestType.Designer.cs">
+      <DependentUpon>201904120312496_PopulateRequestType.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201904120320194_AddRequestTypeToRequest.cs" />
+    <Compile Include="Migrations\201904120320194_AddRequestTypeToRequest.Designer.cs">
+      <DependentUpon>201904120320194_AddRequestTypeToRequest.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Models\AccountViewModels.cs" />
     <Compile Include="Models\AddNumberIfIdentificationSelected.cs" />
@@ -430,6 +446,7 @@
     <Compile Include="Models\Profile.cs" />
     <Compile Include="Models\Request.cs" />
     <Compile Include="Models\RequestStatus.cs" />
+    <Compile Include="Models\RequestType.cs" />
     <Compile Include="Models\ReturnState.cs" />
     <Compile Include="Models\Role.cs" />
     <Compile Include="Models\States.cs" />
@@ -843,7 +860,6 @@
     <Content Include="Views\Files\FileDetails.cshtml" />
     <Content Include="Views\Files\AddNewVolume.cshtml" />
     <Content Include="Views\Files\FileVolumes.cshtml" />
-    <Content Include="Views\Requests\UserNotification.cshtml" />
     <Content Include="Views\Requests\Index.cshtml" />
     <Content Include="Views\Files\FileDetailsForConfirm.cshtml" />
     <Content Include="Views\Home\Index.cshtml" />
@@ -953,6 +969,10 @@
     <Content Include="WelcomePage\img\elements\_DS_Store" />
     <Content Include="Views\FileVolumes\UpdateVolumeDescription.cshtml" />
     <Content Include="Views\Requests\ExternalBranchRequest.cshtml" />
+    <Content Include="Views\Requests\ExternalTransferApproval.cshtml" />
+    <Content Include="Views\FileVolumes\ExternalReturns.cshtml" />
+    <Content Include="Views\FileVolumes\ReturnToBranch.cshtml" />
+    <Content Include="Views\Requests\VolumeStateNotValid.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
@@ -1118,6 +1138,18 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201904102142252_AddRequestBinderField.resx">
       <DependentUpon>201904102142252_AddRequestBinderField.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201904112057450_AddOtherStateToRequestStatus.resx">
+      <DependentUpon>201904112057450_AddOtherStateToRequestStatus.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201904120311429_AddRequestTypeTable.resx">
+      <DependentUpon>201904120311429_AddRequestTypeTable.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201904120312496_PopulateRequestType.resx">
+      <DependentUpon>201904120312496_PopulateRequestType.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201904120320194_AddRequestTypeToRequest.resx">
+      <DependentUpon>201904120320194_AddRequestTypeToRequest.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>

@@ -1,0 +1,71 @@
+﻿
+@{
+    ViewBag.Title = "ReturnToBranch";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<link rel="stylesheet" href="https://cdn.datatables.net/1.10.19/css/dataTables.bootstrap.min.css">
+<div class="row">
+    <div class="col-lg-12">
+        <h2 class="page-header"><strong>Return to Branch</strong></h2>
+    </div>
+    <!-- /.col-lg-12 -->
+</div>
+
+<div class="row">
+    <table id="branchReturnsTable" class="table  table-bordered table-hover">
+        <thead>
+            <tr>
+                <th>File Number</th>
+                <th>Volume</th>
+                <th>Requester</th>
+                <th>Requester Branch</th>
+                <th>Requested Date</th>
+                <th>Action</th>
+            </tr>
+        </thead>
+        <tbody></tbody>
+
+    </table>
+</div>
+@section scripts
+{
+    <script>
+        $(document).ready(function() {
+            //gets json objects from the request controller in order to populate the dataTable
+            var table = $("#branchReturnsTable").DataTable({
+                "ajax": {
+                    "url": "/FileVolumes/GetReturnToBranchFiles",
+                    "data": "GET",
+                    "datatype": "json"
+                },
+                "columns": [
+                    { "data": "FileVolumes.FileNumber" },
+                    { "data": "FileVolumes.Volume" },
+                    { "data": "User.Name" },
+                    { "data": "User.Branches.Branch" },
+                    {
+                        data: "RequestDate",
+                        "render": function(data) {
+                            return getDateString(data);
+                        }
+                    },
+                    {
+                        data: "Id",
+                        "render": function(data, type, req) {
+                            var buttonAccept =   "<button class='btn btn-success js-return' data-return-id='" + data + "'>Return File</button>";
+
+                            return buttonAccept;
+                        }
+                    }
+                ]
+            });
+            //--------------accepting file volume implementation----------------------------------
+
+            function getDateString(date) {
+                var dateObj = new Date(parseInt(date.substr(6)));
+                return dateObj.toDateString();
+            }
+         });
+    </script>
+}
+

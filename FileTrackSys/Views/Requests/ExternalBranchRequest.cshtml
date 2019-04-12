@@ -19,6 +19,7 @@
                 <th>File Number</th>
                 <th>Volume</th>
                 <th>Requester</th>
+                <th>Requester Branch</th>
                 <th>Requested Date</th>
                 <th>Action</th>
             </tr>
@@ -41,8 +42,8 @@
                     { "data": "Id" },
                     { "data": "FileVolumes.FileNumber" },
                     { "data": "FileVolumes.Volume" },
-                    { "data": "UserId" },
-                 
+                    { "data": "User.Name" },
+                    { "data": "User.Branches.Branch" },
                     {
                         data: "RequestDate",
                         "render": function(data) {
@@ -52,16 +53,52 @@
                     {
                         data: "Id",
                         "render": function(data, type, req) {
-                            var buttonAccept =
-                                "<button class='btn btn-success btn-xs js-accept'>Check out</button>";
-                            
+                            var buttonAccept = `<button id-ext-attr="${data}" uname-attr="${req.User.Name}" class="btn btn-success js-ext-accept">Checkout</button>`;
+
 
                             return buttonAccept;
                         }
                     }
                 ]
             });
-           
+            $("#externalBranchPendingTable").on('click',
+                '.js-ext-accept',
+                function () {
+                    var button = $(this);
+                    var username = $(this).attr('uname-attr');
+                    var id = $(this).attr('id-ext-attr');
+                    bootbox.confirm("You are about to accept an external request from user: <strong>"+username+"</strong>",
+                        function(result) {
+                            if (result) {
+                                $.ajax({
+                                    url: '/Requests/AcceptExternalRequest/' + id,
+                                    success: function () {
+                                        toastr.success("Accepted", "External Request", { positionClass: "toast-bottom-right" });
+
+                                        //removes row from client side perspective. Not on server side thus 
+                                        
+                                        //console.log(table.data().count());
+                                        table.row(button.parents('tr')).remove().draw();
+                                        if (table.data().count() == 0) {
+                                            $("#notifIcon").css('color', 'white');
+                                        }
+
+                                    },
+                                    statusCode: {
+                                        
+                                        404: function (content) {  
+                                            alert('cannot find resource');
+                                        },
+                                        500: function (content) {
+                                            window.location.href = "/Requests/VolumeStateNotValid/";
+                                            //alert('internal server error');
+                                        }
+                                    }
+                                });
+                            }
+                        });
+                });
+
             function getDateString(date) {
                 var dateObj = new Date(parseInt(date.substr(6)));
                 return dateObj.toDateString();

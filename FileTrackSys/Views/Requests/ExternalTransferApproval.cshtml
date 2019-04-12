@@ -1,0 +1,159 @@
+﻿
+@{
+    ViewBag.Title = "ExternalTransferApproval";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="row">
+    <div class="col-lg-12">
+        <h2 class="page-header"><strong>Approve External Transfer</strong></h2>
+    </div>
+    <!-- /.col-lg-12 -->
+</div>
+<link rel="stylesheet" href="https://cdn.datatables.net/1.10.19/css/dataTables.bootstrap.min.css">
+<div class="row">
+    <table id="externalBranchTransferTable" class="table  table-bordered table-hover">
+        <thead>
+            <tr>
+                <th>Id</th>
+                <th>File Number</th>
+                <th>Volume</th>
+                <th>Original Requester</th>
+                <th>Request Branch</th>
+                <th>Registry Requester</th>
+                <th>Registry Branch</th>
+                <th>Requested Date</th>
+                <th width="110">Action</th>
+            </tr>
+        </thead>
+    </table>
+</div>
+@section scripts
+{
+    <script>
+        $(document).ready(function() {
+            //gets json objects from the request controller in order to populate the dataTable
+            var table = $("#externalBranchTransferTable").DataTable({
+                "ajax": {
+                    "url": "/Requests/GetExternalTransferRecords",
+                    "data": "GET",
+                    "datatype": "json"
+                },
+                "columns": [
+                    { "data": "Id" },
+                    { "data": "FileVolumes.FileNumber" },
+                    { "data": "FileVolumes.Volume" },
+                    { "data": "User.Name" },
+                    { "data": "User.Branches.Branch" },
+                    { "data": "AcceptedBy" },
+                    {
+                        "data": "RequesteeBranch",
+                        "render": function (data) {
+                            return determineBranch(data);
+                        }
+                    },
+                    {
+                        data: "RequestDate",
+                        "render": function(data) {
+                            return getDateString(data);
+                        }
+                    },
+                    {
+                        data: "Id",
+                        "render": function (data, type, req) {
+                            var externalTransferOption = `<div class="btn-group"><button type="button" class="btn btn-circle" disabled><i class="fa fa-th-list"></i></button>
+                                    <button type="button" class="btn btn-circle dropdown-toggle" data-toggle="dropdown">
+                                        <span class="caret"></span><span class="sr-only">Social</span>
+                                    </button>
+                                    <ul class="dropdown-menu" role="menu">
+                                        <li><a href="#" class='btn js-ext-approve' trans-accept-ext-id=${data} reg-req-branch="${req.RequesteeBranch}" reg-user-attr="${req.AcceptedBy}">Accept <i class="fa fa-check-circle"></i></a></li>
+                                        <li><a href="#" class='btn js-ext-reject' trans-reject-ext-id=${data}>Reject <i class="fa fa-times-circle"></i></a></li>
+                                        <li class="divider"></li>
+                                        <li><a href="#" class='btn js-neverRecieved' reg-user-nr='${req.AcceptedBy}' trans-neverRecieved-ext-id=${data}>Never Recieved <i class="fa fa-thumbs-o-down"></i></a></li>
+                                    </ul></div>`;
+
+                            return externalTransferOption;
+                        }
+                    }
+                ]
+            });
+            $("#externalBranchTransferTable").on('click','.js-ext-approve',function () {
+                    var button = $(this);
+                    var regUser = $(this).attr('reg-user-attr');
+                    var id = $(this).attr('trans-accept-ext-id');
+                    bootbox.confirm("You are about to accept an external request from user: <strong>"+regUser+"</strong>",
+                        function(result) {
+                            if (result) {
+                                $.ajax({
+                                    url: '/Requests/AcceptForeignRegistryTransfer/' + id,
+                                    success: function () {
+                                        toastr.success("Accepted", "Transfer Approval", { positionClass: "toast-bottom-right" });
+                                        //removes row from client side perspective. Not on server side thus 
+                                        //console.log(table.data().count());
+                                        table.row(button.parents('tr')).remove().draw();
+                                        if (table.data().count() == 0) {
+                                            $("#notifIcon").css('color', 'white');
+                                        }
+
+                                    },
+                                    statusCode: {
+                                        404: function (content) { alert('cannot find resource'); },
+                                        500: function (content) { alert('internal server error'); }
+                                    }
+                                });
+                            }
+                        });
+                });
+            $("#externalBranchTransferTable").on('click','.js-neverRecieved',function () {
+                    var button = $(this);
+                    var regUser = $(this).attr('reg-user-nr');
+                    var id = $(this).attr('trans-neverRecieved-ext-id');
+                    bootbox.confirm("Confirm that the file sent by: <strong>" + regUser + "</strong> was never received?",
+                        function (result) {
+                            if (result) {
+                                $.ajax({
+                                    url: '/Requests/NeverReceived/' + id,
+                                    success: function () {
+                                        toastr.success("Not received", "Confirmation", { positionClass: "toast-bottom-right" });
+                                        //removes row from client side perspective. Not on server side thus 
+                                        //console.log(table.data().count());
+                                        table.row(button.parents('tr')).remove().draw();
+                                        if (table.data().count() == 0) {
+                                            $("#notifIcon").css('color', 'white');
+                                        }
+
+                                    },
+                                    statusCode: {
+                                        404: function (content) { alert('cannot find resource'); },
+                                        500: function (content) { alert('internal server error'); }
+                                    }
+                                });
+                            }
+                        });
+                });
+
+            function getDateString(date) {
+                var dateObj = new Date(parseInt(date.substr(6)));
+                return dateObj.toDateString();
+            }
+            function determineBranch(branchId) {
+                var num = parseInt(branchId);
+                switch (num) {
+                    case 1:
+                        return "Corozal";
+                    case 2:
+                        return "Orange Walk";
+                    case 3:
+                        return "Belize City";
+                    case 4:
+                        return "San Pedro";
+                    case 5:
+                        return "Belmopan";
+                    case 6:
+                        return "Dangriga";
+                }
+            };
+
+        });
+    </script>
+}

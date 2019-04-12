@@ -1,0 +1,27 @@
+﻿
+@{
+    ViewBag.Title = "VolumeStateNotValid";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<link href="https://fonts.googleapis.com/css?family=Cabin:400,700" rel="stylesheet">
+
+<!-- Custom stlylesheet -->
+
+<h2>Volume state not valid</h2>
+<div class="row">
+    <div id="notfound">
+        <div class="notfound">
+            <div class="notfound-404">
+                <div></div>
+                <h1>404</h1>
+            </div>
+            <h2>Page not necessarily found but..</h2>
+            <p>The volume you are trying to request is not valid for a request</p>
+            <p>Either the file is checked out to another user or is in the transfer state. Kindly Wait for this file to be in a stored state</p>
+            <a href="@Url.Action("Index","Files")">home page</a>
+        </div>
+    </div>
+
+</div>
+

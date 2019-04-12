@@ -25,7 +25,10 @@
                 <th>File Number</th>
                 <th>Volume #</th>
                 <th>Accepted By</th>
+                <th>Accepted Date</th>
+                <th>Request Type</th>
                 <th>Action</th>
+                <
             </tr>
         </thead>
         <tbody>
@@ -35,6 +38,8 @@
                 <td><span data-return-id="@req.FileVolumes.FileId" class="glyphicon glyphicon-file btn btn-success btn-sm returnModal"> @req.FileVolumes.FileNumber</span></td>
                 <td>@req.FileVolumes.Volume</td>
                 <td>@req.AcceptedBy</td>
+                <td>@req.AcceptedDate</td>
+                <td>@req.RequestType</td>
                 <td><button class="btn btn-adn js-return" data-return-id="@req.Id">Return</button></td>
             </tr>
         }      
