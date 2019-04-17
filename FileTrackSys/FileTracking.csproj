@@ -744,6 +744,7 @@
     <Content Include="WelcomePage\img\elements\success-check.png" />
     <Content Include="WelcomePage\img\elements\success-radio.png" />
     <Content Include="WelcomePage\img\elements\work-arrow.png" />
+    <Content Include="WelcomePage\img\ftp.png" />
     <Content Include="WelcomePage\img\logo.png" />
     <Content Include="WelcomePage\img\FileTrack.png" />
     <Content Include="WelcomePage\js\jquery.ajaxchimp.min.js" />
@@ -973,6 +974,8 @@
     <Content Include="Views\FileVolumes\ExternalReturns.cshtml" />
     <Content Include="Views\FileVolumes\ReturnToBranch.cshtml" />
     <Content Include="Views\Requests\VolumeStateNotValid.cshtml" />
+    <Content Include="Views\Requests\ExternalRequestMade.cshtml" />
+    <Content Include="Views\FileVolumes\ApproveExternalReturns.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

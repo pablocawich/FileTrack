@@ -6,16 +6,16 @@
 
 <div class="row">
     <div class="col-lg-12 ">
-        <h2 class="page-header">My Files</h2>
+        <h2 class="page-header"><strong>My Files</strong></h2>
     </div>
     <!-- /.col-lg-12 -->
 </div>
 
 <div class="row">   
     <div>
-        <p >
-            Files here are for the user currently signed on if they have requested, retrieved and approved file check out.
-            Also, this feature should have a return file action to direct a file back to registry.
+        <p>
+            File registered here are, as of this moment in your possession and must be returned to registry when you're 
+            finished with it.
         </p>
     </div>
     
@@ -26,9 +26,9 @@
                 <th>Volume #</th>
                 <th>Accepted By</th>
                 <th>Accepted Date</th>
+                <th>Branch</th>
                 <th>Request Type</th>
                 <th>Action</th>
-                <
             </tr>
         </thead>
         <tbody>
@@ -39,7 +39,8 @@
                 <td>@req.FileVolumes.Volume</td>
                 <td>@req.AcceptedBy</td>
                 <td>@req.AcceptedDate</td>
-                <td>@req.RequestType</td>
+                <td>@req.Branches.Branch</td>
+                <td>@req.RequestTypeId</td>
                 <td><button class="btn btn-adn js-return" data-return-id="@req.Id">Return</button></td>
             </tr>
         }      

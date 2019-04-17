@@ -60,7 +60,8 @@ namespace FileTracking.Controllers
             string username = ParseUsername(User.Identity.Name);
             var user = _context.AdUsers.Single(u => u.Username == username);
 
-            var request = _context.Requests.Include(r=>r.FileVolumes).Where(r => r.UserId == user.Id).Where(r => r.IsConfirmed == true).
+            var request = _context.Requests.Include(r=>r.FileVolumes).Include(r=>r.Branches).Where(r => r.UserId == user.Id).Where(r=>r.IsRequestActive == true)
+                .Where(r => r.IsConfirmed == true).
                 Where(r=>r.ReturnStateId == 1).Where(r=>r.RequestTypeId == RequestType.InternalRequest).ToList();
 
            // var reqList = new List<Request>();
@@ -90,13 +91,17 @@ namespace FileTracking.Controllers
         [Authorize(Roles = Role.Registry)]
         public ActionResult GetReturnedRequests()
         {
+            var username = new AdUser(User.Identity.Name);
+            var adUser = _context.AdUsers.Single(a => a.Username == username.Username);
             var returnedReq = _context.Requests.Include(r => r.FileVolumes).
-                Include(r => r.User.Branches).Where(r=>r.ReturnStateId== 2).ToList();
+                Include(r => r.User.Branches).Where(r=>r.RequesteeBranch == adUser.BranchesId).Where(r=>r.RequestTypeId == RequestType.InternalRequest)
+                .Where(r=>r.IsRequestActive == true).Where(r=>r.ReturnStateId == 2).ToList();
 
 
             return Json(new { data = returnedReq }, JsonRequestBehavior.AllowGet);
         }
 
+        //handles returns for both external and internal transfer 
         public void AcceptReturn(int id)
         {
             var user = new AdUser(User.Identity.Name);//we get the current registry user and initialize its username
@@ -106,8 +111,8 @@ namespace FileTracking.Controllers
             req.ReturnAcceptBy = user.Username;
             req.ReturnStateId = 3;
             req.IsRequestActive = false;
-            //
-               
+            
+            //if a binder exists then that signifies our records is still not complete   
             if (req.RequestBinder != 0)
             {
                 req.RequestTypeId = RequestType.ExternalRequest;//if it has external binder we switch the req type to external   
@@ -123,31 +128,53 @@ namespace FileTracking.Controllers
             
         }
 
-        public void ChangeStateToStored(int id)
+        //accepting external return
+        public void AcceptExternalReturn(int id)
+        {
+           var user = new AdUser(User.Identity.Name);//we get the current registry user and initialize its username
+            var req = _context.Requests.Single(r => r.Id == id);
+
+            req.ReturnedDate = DateTime.Now;
+            req.ReturnAcceptBy = user.Username;
+            req.ReturnStateId = 3;
+            req.IsRequestActive = false;
+
+            _context.SaveChanges();
+
+            ChangeStateToStored(req.FileVolumesId);
+        }
+
+        public void ChangeStateToStored(int volId)
         {
             //stored state => 1
-            var vol = _context.FileVolumes.Single(v => v.Id == id);
+            var vol = _context.FileVolumes.Single(v => v.Id == volId);
 
             vol.StatesId = 1;
             vol.AdUserId = null;
 
+            if(vol.CurrentLocation != vol.BranchesId)//we both locations are different, it means it was an external request and we should reset since the return process is complete
+                vol.CurrentLocation = vol.BranchesId;
             _context.SaveChanges();
         }
 
-        public void InitiateExternalReturn(int id)
+        //after the binded internal request is returned to local registry, we must initiate registry to registry request to return the file to its initial location
+        public void InitiateExternalReturn(int binderId)
         {
-            var extReq = _context.Requests.Single(r=>r.RequestBinder == id && r.RequestStatusId == 2 && r.ReturnStateId == 1);
-            extReq.IsRequestActive = true;
+            var extReturnReq = _context.Requests.Single(r=>r.RequestBinder == binderId &&
+                                                           r.RequestStatusId == 2 && r.IsConfirmed == true && r.ReturnStateId == 1);
+            extReturnReq.IsRequestActive = true;
             _context.SaveChanges();
             return;
         }
 
+        //load the return to branch view, reigstry users will be able to see external files currently at their disposal to further send a request back to the external registry
         [Authorize(Roles = Role.Registry)]
         public ActionResult ReturnToBranch()
         {
             return View();
         }
 
+        //executs query and returns external files list in order for the local registry to send external return
         public ActionResult GetReturnToBranchFiles()
         {
             var userObj = new AdUser(User.Identity.Name);
@@ -155,12 +182,44 @@ namespace FileTracking.Controllers
             var user = _context.AdUsers.Single(u => u.Username == userObj.Username);
 
             var request = _context.Requests.Include(r => r.FileVolumes).Include(r => r.User.Branches).
-                Where(r => r.BranchesId == user.BranchesId).Where(r => r.RequestBinder != 0).Where(r => r.RequestTypeId == RequestType.ExternalRequest).
-              Where(r=>r.ReturnStateId == 1).Where(r=>r.IsRequestActive == true).Where(r=>r.IsConfirmed == true).ToList();
+                Where(r => r.BranchesId == user.BranchesId).Where(r => r.RequestTypeId == RequestType.ExternalRequest).
+                Where(r => r.IsConfirmed == true).Where(r=>r.ReturnStateId == 1).Where(r=>r.IsRequestActive == true).ToList();
 
             return Json(new { data = request }, JsonRequestBehavior.AllowGet);
         }
-       
+
+        public void ReturnToBranchAction(int id)
+        {
+            var currUser = new AdUser(User.Identity.Name);
+            //return sent => 2
+            var extReq = _context.Requests.Single(r => r.Id == id);
+            extReq.ReturnStateId = 2;
+            extReq.ReturnedDate = DateTime.Now;
+            extReq.ReturnAcceptBy = currUser.Username;
+
+            _context.SaveChanges();
+        }
+
+        [Authorize(Roles = Role.Registry)]
+        public ActionResult ApproveExternalReturns()
+        {
+            return View();
+        }
+
+        public ActionResult GetExternalApproveReturns()
+        {
+            //after internal returns, local registry will need to return that file to its original branch
+            //this query will return all those returns to its original branch to await confirmation
+            var userObj = new AdUser(User.Identity.Name);
+
+            var user = _context.AdUsers.Single(u => u.Username == userObj.Username);
+
+            var request = _context.Requests.Include(r => r.FileVolumes).Include(r => r.User.Branches).
+                Where(r => r.RequesteeBranch == user.BranchesId).Where(r => r.RequestTypeId == RequestType.ExternalRequest).
+                Where(r => r.IsConfirmed == true).Where(r => r.ReturnStateId == 2).Where(r => r.IsRequestActive == true).ToList();
+
+            return Json(new { data = request }, JsonRequestBehavior.AllowGet);
+        }
 
         [Authorize(Roles = Role.Registry)]
         public ActionResult UpdateVolumeDescription(int id)

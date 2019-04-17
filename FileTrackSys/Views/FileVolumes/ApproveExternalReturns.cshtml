@@ -1,18 +1,20 @@
 ﻿
 @{
-    ViewBag.Title = "ReturnToBranch";
-    Layout = "~/Views/Shared/_Layout.cshtml";
+                /**/
+
+                ViewBag.Title = "ApproveExternalReturns";
+                Layout = "~/Views/Shared/_Layout.cshtml";
 }
 <link rel="stylesheet" href="https://cdn.datatables.net/1.10.19/css/dataTables.bootstrap.min.css">
 <div class="row">
     <div class="col-lg-12">
-        <h2 class="page-header"><strong>Return to Original Branch</strong></h2>
+        <h2 class="page-header"><strong>External Return Approval</strong></h2>
     </div>
     <!-- /.col-lg-12 -->
 </div>
 
 <div class="row">
-    <table id="extBranchReturnsTable" class="table  table-bordered table-hover">
+    <table id="extReturnsApprovalTable" class="table  table-bordered table-hover">
         <thead>
             <tr>
                 <th>File Number</th>
@@ -33,9 +35,9 @@
     <script>
         $(document).ready(function() {
             //gets json objects from the request controller in order to populate the dataTable
-            var table = $("#extBranchReturnsTable").DataTable({
+            var table = $("#extReturnsApprovalTable").DataTable({
                 "ajax": {
-                    "url": "/FileVolumes/GetReturnToBranchFiles",
+                    "url": "/FileVolumes/GetExternalApproveReturns",
                     "data": "GET",
                     "datatype": "json"
                 },
@@ -59,36 +61,34 @@
                     {
                         data: "Id",
                         "render": function(data, type, req) {
-                       
+
                             var extReturnButton =
                                 `<button class='btn btn-success js-ext-branch-return' accepted-by='${req.AcceptedBy}' data-ext-return-id=${
-                                    data}>Return File</button>`;
+                                    data}>Check In</button>`;
                             return extReturnButton;
                         }
                     }
                 ]
             });
             //--------------returning file volume to external branch (origin) implementation----------------------------------
-            $("#extBranchReturnsTable").on("click",
+            $("#extReturnsApprovalTable").on("click",
                 '.js-ext-branch-return',
                 function() {
                     var button = $(this);
                     var externalUser = button.attr('accepted-by');
                     var id = button.attr("data-ext-return-id");
-                    var requesteeBranch = button.attr("requestee-branch");
+                    //var requesteeBranch = button.attr("requestee-branch");
 
                     var branchStr = button.parents("tr").find("td").eq(5).html();//we get the string returned from the external branch field
                     
-                    bootbox.confirm("You are returning this file back to its original branch: <strong>"+branchStr+"</strong>",
+                    bootbox.confirm("By checking in you are confirming that the file has returned and will now be stored",
                         function(result) {
                             if (result) {
                                 $.ajax({
-                                    url: '/FileVolumes/ReturnToBranchAction/' + id,
+                                    url: '/FileVolumes/AcceptExternalReturn/' + id,
                                     success: function() {
 
-                                        toastr.success("Accepted return for client",
-                                            "Return",
-                                            { positionClass: "toast-bottom-right" });
+                                        toastr.success("Accepted return for client","Return",{ positionClass: "toast-bottom-right" });
 
                                         //removes row from client side perspective. Not on server side thus 
                                         //if a refresh is made it will be reloaded since we have not done any server side processing
@@ -128,4 +128,3 @@
         });
     </script>
 }
-

@@ -6,13 +6,14 @@
 
 <div class="row">
     <div class="col-lg-12">
-        <h2>File Volume</h2>
-        <p>You are viewing file num: @Model.File.FileNumber which belongs to @Model.File.FirstName @Model.File.MiddleName @Model.File.LastName</p>
+        <h2><strong>File Volume</strong></h2>
+       
     </div>
     <!-- /.col-lg-12 -->
 </div>
 
 <div class="row">
+    <p>You are viewing file num: @Model.File.FileNumber which belongs to <strong> @Model.File.FirstName @Model.File.MiddleName @Model.File.LastName</strong></p>
     <table id="registryVolumeTable" user-loc="@Model.AdUser.BranchesId" class="table  table-bordered table-hover">
         <thead>
         <tr class="row100 head">
@@ -55,7 +56,7 @@
                     <button vol-data-id="@fileVol.Id" file-name="@Model.File.FirstName" class="btn btn-yahoo btn-sm js-edit-vol">
                         Update
                     </button>
-                   
+
                 </td>
 
             </tr>

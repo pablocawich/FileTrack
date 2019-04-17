@@ -80,22 +80,33 @@
                             if (result) {
                                 $.ajax({
                                     url: '/Requests/AcceptRequest/' + id,
-                                    success: function(reqObj) {
+                                    success: function(response) {
+                                        if (response.success == true) {
+                                            toastr.success("Accepted", "Request", { positionClass: "toast-bottom-right" });
 
-                                        toastr.success("Accepted", "Request", { positionClass: "toast-bottom-right" });
-
-                                        //removes row from client side perspective. Not on server side thus 
-                                        //if a refresh is made it will be reloaded since we have not done any server side processing
-                                        //console.log(table.data().count());
-                                        table.row(button.parents('tr')).remove().draw();
-                                        if (table.data().count() == 0) {
-                                            $("#notifIcon").css('color', 'white');
+                                            //removes row from client side perspective. Not on server side thus 
+                                            //if a refresh is made it will be reloaded since we have not done any server side processing
+                                            //console.log(table.data().count());
+                                            table.row(button.parents('tr')).remove().draw();
+                                            if (table.data().count() == 0) {
+                                                $("#notifIcon").css('color', 'white');
+                                            }
                                         }
+                                        else if (response.success == false) {
+                                            toastr.error("Rejected", "Unfortunately this request cannot be made as the volume has been registered to another user", { positionClass: "toast-bottom-right" });
+                                            table.row(button.parents('tr')).remove().draw();
+                                            //window.location.href = "/Requests/PendingFiles";
+                                        }
+
 
                                     },
                                     statusCode: {
-                                        404: function(content) { alert('cannot find resource'); },
-                                        500: function(content) { alert('internal server error'); }
+                                        404: function(content) {
+                                            alert("404, page not found");
+                                        },
+                                        500: function(content) {                                           
+                                            alert('internal server error');
+                                        }
                                     }
                                 });
                             }

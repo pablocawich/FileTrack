@@ -12,7 +12,7 @@
 </div>
 <link rel="stylesheet" href="https://cdn.datatables.net/1.10.19/css/dataTables.bootstrap.min.css">
 <div class="row">
-    <table id="externalBranchPendingTable" class="table  table-bordered table-hover">
+    <table id="externalBranchPendingTable" class="table table-hover">
         <thead>
             <tr>
                 <th>Id</th>
@@ -53,30 +53,38 @@
                     {
                         data: "Id",
                         "render": function(data, type, req) {
-                            var buttonAccept = `<button id-ext-attr="${data}" uname-attr="${req.User.Name}" class="btn btn-success js-ext-accept">Checkout</button>`;
-
-
-                            return buttonAccept;
+                            var buttonAccept =
+                                `<button id-ext-attr="${data}" user-branch-acc="${req.Branches.Branch}" uname-attr="${req.User.Name
+                                    }" class="btn btn-success js-ext-accept">Checkout</button>`;
+                            var buttonReject =
+                                `<button id-ext-rej-attr="${data}" user-branch-rej="${req.Branches.Branch}" uname-rej-attr="${req.User.Name
+                                    }" class="btn btn-danger js-ext-reject">Reject</button>`;
+                            return buttonAccept + " | " + buttonReject;
                         }
                     }
                 ]
             });
+
             $("#externalBranchPendingTable").on('click',
                 '.js-ext-accept',
-                function () {
+                function() {
                     var button = $(this);
                     var username = $(this).attr('uname-attr');
+                    var userBranch = $(this).attr('user-branch-acc');
                     var id = $(this).attr('id-ext-attr');
-                    bootbox.confirm("You are about to accept an external request from user: <strong>"+username+"</strong>",
+                    bootbox.confirm("You are about to accept an external request from branch <strong>"+userBranch+" </strong>belonging to user: <strong>" +username+
+                        "</strong>",
                         function(result) {
                             if (result) {
                                 $.ajax({
-                                    url: '/Requests/AcceptExternalRequest/' + id,
-                                    success: function () {
-                                        toastr.success("Accepted", "External Request", { positionClass: "toast-bottom-right" });
+                                    url: '/Requests/AcceptExternalUserRequest/' + id,
+                                    success: function() {
+                                        toastr.success("Accepted",
+                                            "External Request",
+                                            { positionClass: "toast-bottom-right" });
 
                                         //removes row from client side perspective. Not on server side thus 
-                                        
+
                                         //console.log(table.data().count());
                                         table.row(button.parents('tr')).remove().draw();
                                         if (table.data().count() == 0) {
@@ -85,13 +93,52 @@
 
                                     },
                                     statusCode: {
-                                        
-                                        404: function (content) {  
+                                        404: function(content) {
                                             alert('cannot find resource');
                                         },
-                                        500: function (content) {
+                                        500: function(content) {
                                             window.location.href = "/Requests/VolumeStateNotValid/";
                                             //alert('internal server error');
+                                        }
+                                    }
+                                });
+                            }
+                        });
+                });
+
+            $("#externalBranchPendingTable").on('click',
+                '.js-ext-reject',
+                function() {
+                    var button = $(this);
+                    var userBranch = $(this).attr('user-branch-rej');
+                    var username = $(this).attr('uname-rej-attr');
+                    var id = $(this).attr('id-ext-attr');
+                    bootbox.confirm("You are about to reject an external request from branch: <strong>"+userBranch+"</strong></br> " +
+                        "Requester: " +"<strong>" + username + "</strong>",
+                        function(result) {
+                            if (result) {
+                                $.ajax({
+                                    url: '/Requests/DeclineRequest/' + id,
+                                    success: function() {
+                                        toastr.success("This request has been declined",
+                                            "Request Declined",
+                                            { positionClass: "toast-bottom-right" });
+
+                                        //removes row from client side perspective. Not on server side thus 
+
+                                        //console.log(table.data().count());
+                                        table.row(button.parents('tr')).remove().draw();
+                                        if (table.data().count() == 0) {
+                                            $("#notifIcon").css('color', 'white');
+                                        }
+
+                                    },
+                                    statusCode: {
+                                        404: function(content) {
+                                            alert('cannot find resource');
+                                        },
+                                        500: function(content) {
+                                            alert('internal server error');
                                         }
                                     }
                                 });
