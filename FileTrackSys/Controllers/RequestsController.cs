@@ -123,41 +123,23 @@ namespace FileTracking.Controllers
             //line below holds a value we will use to bind both requests and then increment thereafter assignment.
             var bindVal = _context.ExternalRequestsBinder.Single(b => b.Id == 1);
 
-            List<Request> externalReqRecords = new List<Request>(2);
-             externalReqRecords.Add(new Request()
-             {
-                 //here we will add the first record, which is the local registry request to external registry
-
-                 UserId = u.Id,//0 doesn't work so we try must use another determining value
-                 FileVolumesId = v.Id, 
-                 RequesteeBranch = v.CurrentLocation,//In this case requestee branch is assigned to the external location that corresponds to the vol loc
-                 BranchesId = u.BranchesId,//requesting user's location which will ofc differ from requestee branch
-                 RequestStatusId = 1, //1 signifies pending
-                 ReturnStateId = 1,//1 signifies idle state, meaning the return process is not in order
-                 IsRequestActive = true,//meaning this request has been initiated, switched to false when file is returned and back to stored state
-                 RequestDate = DateTime.Now,
-                 RequestBinder = bindVal.CurrentNumberBinder,//This identifier will bindd these two newly created requests
-                 RequestTypeId = RequestType.ExternalRequest
-             });
-             externalReqRecords.Add(new Request()
-             {
-                 UserId = u.Id,//the user's, making the request, id
-                 FileVolumesId = v.Id,
-                 RequesteeBranch = u.BranchesId,//In this case requestee branch is assigned to user making the request's branch, as he must request from his respective branch eventually
-                 BranchesId = u.BranchesId,//requesting user's location which will ofc differ from requestee branch
-                 RequestStatusId = 1, //1 signifies pending
-                 ReturnStateId = 1,//1 signifies idle state, meaning the return process is not in order
-                 IsRequestActive = false,//Since this vol is depending on the above request to be confrimed, it's default val is false, until the above get confirmed
-                 RequestDate = DateTime.Now,
-                 RequestBinder = bindVal.CurrentNumberBinder,
-                 RequestTypeId = RequestType.ExternalRequest
-             });
-            //for the above 2 requests we must have a binding value, a unique identifier that only those 2 will have to know to move on to the next request after the first is executed
-             foreach (var req in externalReqRecords)
-             {
-                _context.Requests.Add(req);
-             }
-
+            var externalRequestRec = new Request()
+            {
+                UserId = u.Id,//0 doesn't work so we try must use another determining value
+                FileVolumesId = v.Id,
+                RequesteeBranch = v.CurrentLocation,//In this case requestee branch is assigned to the external location that corresponds to the vol loc
+                BranchesId = u.BranchesId,//requesting user's location which will ofc differ from requestee branch
+                RequestStatusId = 1, //1 signifies pending
+                ReturnStateId = 1,//1 signifies idle state, meaning the return process is not in order
+                IsRequestActive = true,//meaning this request has been initiated, switched to false when file is returned and back to stored state
+                RequestDate = DateTime.Now,
+                RequestBinder = bindVal.CurrentNumberBinder,//This identifier will bindd these two newly created requests
+                RequestTypeId = RequestType.ExternalRequest
+            };          
+             
+            //for the above 2 requests we must have a binding value, a unique identifier that only those 2 will have to know to move on to the next request after the first is executed            
+             _context.Requests.Add(externalRequestRec);
+             
              bindVal.CurrentNumberBinder++;//we increment the value in order to generate a unique value on another instance
              if (_context.SaveChanges() > 0)//confirms changes
                  return true;
@@ -397,7 +379,7 @@ namespace FileTracking.Controllers
 
             //requestRecord.RequestBinder
             //below the request is the binded request that performs local request (internal)
-            var brotherReq = _context.Requests.Single(r => r.Id != id && r.RequestBinder == requestRecord.RequestBinder && r.RequestStatusId == 1 && r.IsRequestActive == false);
+           //var brotherReq = _context.Requests.Single(r => r.Id != id && r.RequestBinder == requestRecord.RequestBinder && r.RequestStatusId == 1 && r.IsRequestActive == false);
 
             requestRecord.IsConfirmed = true;
             requestRecord.ReturnStateId = 1;
@@ -405,15 +387,36 @@ namespace FileTracking.Controllers
             _context.SaveChanges();
 
             //after the above is performed we let its binded request become active in order for the initiating user to go through the local request process
-            //also be reminded to change to volume's current location, as being accepted now signifies the file is at a foreign branch
-           brotherReq.IsRequestActive = true;
-           brotherReq.RequestTypeId = RequestType.InternalRequest;//we must change this to internal as it turns into an internal request (and pending will now utilize)
-           _context.SaveChanges();
+            //also be reminded to change to volume's current location, as being accepted now signifies the file is at a foreign branch       
 
            var volume = _context.FileVolumes.Single(v => v.Id == requestRecord.FileVolumesId);
-           volume.CurrentLocation = requestRecord.BranchesId; //we must change the volume's current location to the current user's branch
 
+           PopulateNewInternalRequest(requestRecord.UserId, requestRecord.BranchesId, volume, requestRecord.RequestBinder);//both registry passed, now we create an internal request
+
+           volume.CurrentLocation = requestRecord.BranchesId; //we must change the volume's current location to the current user's branch
            _context.SaveChanges();
+        }
+
+        //now that user's local branch has accepted 
+        public void PopulateNewInternalRequest(int userId, byte userBranchId, FileVolumes v, int binder)
+        {
+            var user = new AdUser(User.Identity.Name);
+            var internalRequest = new Request()
+            {
+                UserId = userId,//the user's, making the request, id
+                FileVolumesId = v.Id,
+                RequesteeBranch = userBranchId,//In this case requestee branch is assigned to user making the request's branch, as he must request from his respective branch eventually
+                BranchesId = userBranchId,//requesting user's location which will ofc differ from requestee branch
+                RequestStatusId = 2, //2 signifies accepted
+                ReturnStateId = 1,//1 signifies idle state, meaning the return process is not in order
+                IsRequestActive = true,//Since this vol is depending on the above request to be confrimed, it's default val is false, until the above get confirmed
+                RequestDate = DateTime.Now,
+                RequestBinder = binder,
+                RequestTypeId = RequestType.InternalRequest,
+                AcceptedBy = user.Username
+            };
+            _context.Requests.Add(internalRequest);
+            _context.SaveChanges();
         }
 
         public void NeverReceived(int id)
