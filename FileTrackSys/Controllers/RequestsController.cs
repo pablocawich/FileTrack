@@ -377,9 +377,7 @@ namespace FileTracking.Controllers
             //request binded records that sees to registry to registry operations before initiating the local request it is bound by
             var requestRecord = _context.Requests.Single(r => r.Id == id);
 
-            //requestRecord.RequestBinder
-            //below the request is the binded request that performs local request (internal)
-           //var brotherReq = _context.Requests.Single(r => r.Id != id && r.RequestBinder == requestRecord.RequestBinder && r.RequestStatusId == 1 && r.IsRequestActive == false);
+           
 
             requestRecord.IsConfirmed = true;
             requestRecord.ReturnStateId = 1;
@@ -391,14 +389,14 @@ namespace FileTracking.Controllers
 
            var volume = _context.FileVolumes.Single(v => v.Id == requestRecord.FileVolumesId);
 
-           PopulateNewInternalRequest(requestRecord.UserId, requestRecord.BranchesId, volume, requestRecord.RequestBinder);//both registry passed, now we create an internal request
+           PopulateNewInternalRequest(requestRecord.UserId, requestRecord.BranchesId, requestRecord.RequestDate,volume, requestRecord.RequestBinder);//both registry passed, now we create an internal request
 
            volume.CurrentLocation = requestRecord.BranchesId; //we must change the volume's current location to the current user's branch
            _context.SaveChanges();
         }
 
         //now that user's local branch has accepted 
-        public void PopulateNewInternalRequest(int userId, byte userBranchId, FileVolumes v, int binder)
+        public void PopulateNewInternalRequest(int userId, byte userBranchId, DateTime reqDate,FileVolumes v, int binder)
         {
             var user = new AdUser(User.Identity.Name);
             var internalRequest = new Request()
@@ -410,10 +408,11 @@ namespace FileTracking.Controllers
                 RequestStatusId = 2, //2 signifies accepted
                 ReturnStateId = 1,//1 signifies idle state, meaning the return process is not in order
                 IsRequestActive = true,//Since this vol is depending on the above request to be confrimed, it's default val is false, until the above get confirmed
-                RequestDate = DateTime.Now,
+                RequestDate = reqDate,
                 RequestBinder = binder,
                 RequestTypeId = RequestType.InternalRequest,
-                AcceptedBy = user.Username
+                AcceptedBy = user.Username,
+                AcceptedDate = DateTime.Now
             };
             _context.Requests.Add(internalRequest);
             _context.SaveChanges();
@@ -460,8 +459,7 @@ namespace FileTracking.Controllers
             volume.StatesId = stored;
 
             _context.SaveChanges();
-        }
-       
+        }      
     }
 
 }

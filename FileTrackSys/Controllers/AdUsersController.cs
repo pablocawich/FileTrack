@@ -112,16 +112,12 @@ namespace FileTracking.Controllers
         }
 
         //stores users objects into our db
-       
         public void SaveAdUsers()
         {
             var connection = InitializeAdConnection();
             var userListInRegistry = AdUsers(Role.Registry, connection);
             var userListInRegular = AdUsers(Role.RegularUser, connection);
-
-            
-
-            
+   
             //Prepares insert queries for registry users
             foreach (var u in userListInRegistry)
             {

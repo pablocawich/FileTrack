@@ -23,6 +23,7 @@ namespace FileTracking.Controllers
         {
             _context.Dispose();
         }
+
         public string ParseUsername(string adName)
         {
             string newName = "";
@@ -115,17 +116,17 @@ namespace FileTracking.Controllers
             //if a binder exists then that signifies our records is still not complete   
             if (req.RequestBinder != 0)
             {
-                req.RequestTypeId = RequestType.ExternalRequest;//if it has external binder we switch the req type to external   
+                //if it has external binder we switch the req type to external   
                 _context.SaveChanges();
-                InitiateExternalReturn(req.RequestBinder);
+                InitiateExternalReturn(req.RequestBinder);//we set the external brother request to active
+                UpdateVolumeForExternalTransfer(req.FileVolumesId);
             }
             else
             {
                 _context.SaveChanges();
                 ChangeStateToStored(req.FileVolumesId);
             }
-            
-            
+                       
         }
 
         //accepting external return
@@ -157,11 +158,23 @@ namespace FileTracking.Controllers
             _context.SaveChanges();
         }
 
+        public void UpdateVolumeForExternalTransfer(int volId)
+        {
+            var vol = _context.FileVolumes.Single(v => v.Id == volId);
+
+            vol.StatesId = 4;
+            vol.AdUserId = null;
+
+            _context.SaveChanges();
+        }
+
         //after the binded internal request is returned to local registry, we must initiate registry to registry request to return the file to its initial location
         public void InitiateExternalReturn(int binderId)
         {
-            var extReturnReq = _context.Requests.Single(r=>r.RequestBinder == binderId &&
-                                                           r.RequestStatusId == 2 && r.IsConfirmed == true && r.ReturnStateId == 1);
+            var extReturnReq = _context.Requests.Single(r=>r.RequestBinder == binderId && r.RequestTypeId == RequestType.ExternalRequest &&
+                                                           r.RequestStatusId == 2 && r.IsConfirmed == true);
+            //if(extReturnReq == null)
+                
             extReturnReq.IsRequestActive = true;
             _context.SaveChanges();
             return;
