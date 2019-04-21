@@ -197,7 +197,7 @@ namespace FileTracking.Controllers
             byte Pending = 1;
             var pendingRequests = _context.Requests.Include(r => r.FileVolumes).
                 Include(r => r.User.Branches).Where(r=>r.RequesteeBranch == user.BranchesId).Where(r => r.RequestStatusId == Pending)
-                .Where(r => r.IsRequestActive == true).Where(r=>r.RequestTypeId == RequestType.ExternalRequest).ToList();
+                .Where(r => r.RequestTypeId == RequestType.ExternalRequest).Where(r => r.IsRequestActive == true).ToList();
 
             
             return Json(new { data = pendingRequests }, JsonRequestBehavior.AllowGet);
@@ -324,7 +324,7 @@ namespace FileTracking.Controllers
 
             var user = _context.AdUsers.Single(u => u.Username == userObj.Username);
 
-            var request = _context.Requests.Include(r => r.FileVolumes).Include(r => r.User.Branches).
+            var request = _context.Requests.Include(r => r.FileVolumes).Include(r => r.User.Branches).Include(r=>r.User).
                 Where(r=>r.BranchesId == user.BranchesId).Where(r=>r.RequestTypeId == RequestType.ExternalRequest).
                 Where(r => r.RequestStatusId == 2).Where(r => r.IsConfirmed == false).ToList();
 
@@ -346,7 +346,7 @@ namespace FileTracking.Controllers
 
             var user = _context.AdUsers.Single(u => u.Username == userObj.Username);
 
-            var request = _context.Requests.Include(r=>r.FileVolumes).Where(r => r.UserId == user.Id).Where(r=>r.IsRequestActive == true)
+            var request = _context.Requests.Include(r=>r.FileVolumes).Include(r=>r.Branches).Where(r => r.UserId == user.Id).Where(r=>r.IsRequestActive == true)
                 .Where(r=>r.RequestTypeId == RequestType.InternalRequest).Where(r=>r.RequestStatusId == reqStatus).Where(r=>r.IsConfirmed == false).ToList();
 
             return Json(new { data = request }, JsonRequestBehavior.AllowGet);

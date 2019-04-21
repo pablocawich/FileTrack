@@ -6,7 +6,7 @@
 
 <div class="row">
     <div class="col-lg-12">
-        <h2 class="page-header"><strong>Approve External Transfer</strong></h2>
+        <h2 class="page-header"><strong>Accept External Transfer</strong></h2>
     </div>
     <!-- /.col-lg-12 -->
 </div>
@@ -66,8 +66,7 @@
                                         <span class="caret"></span><span class="sr-only">Social</span>
                                     </button>
                                     <ul class="dropdown-menu" role="menu">
-                                        <li><a href="#" class='btn js-ext-approve' trans-accept-ext-id=${data} reg-req-branch="${req.RequesteeBranch}" reg-user-attr="${req.AcceptedBy}">Accept <i class="fa fa-check-circle"></i></a></li>
-                                        <li><a href="#" class='btn js-ext-reject' trans-reject-ext-id=${data}>Reject <i class="fa fa-times-circle"></i></a></li>
+                                        <li><a href="#" class='btn js-ext-approve' trans-accept-ext-id=${data} reg-req-branch="${req.RequesteeBranch}" reg-user-attr="${req.User.Name}">Accept <i class="fa fa-check-circle"></i></a></li>
                                         <li class="divider"></li>
                                         <li><a href="#" class='btn js-neverRecieved' reg-user-nr='${req.AcceptedBy}' trans-neverRecieved-ext-id=${data}>Never Recieved <i class="fa fa-thumbs-o-down"></i></a></li>
                                     </ul></div>`;
@@ -77,34 +76,37 @@
                     }
                 ]
             });
-            $("#externalBranchTransferTable").on('click','.js-ext-approve',function () {
-                    var button = $(this);
-                    var regUser = $(this).attr('reg-user-attr');
-                    var id = $(this).attr('trans-accept-ext-id');
-                    bootbox.confirm("You are about to accept an external request from user: <strong>"+regUser+"</strong>",
-                        function(result) {
-                            if (result) {
-                                $.ajax({
-                                    url: '/Requests/AcceptForeignRegistryTransfer/' + id,
-                                    success: function () {
-                                        toastr.success("Accepted", "Transfer Approval", { positionClass: "toast-bottom-right" });
-                                        //removes row from client side perspective. Not on server side thus 
-                                        //console.log(table.data().count());
-                                        table.row(button.parents('tr')).remove().draw();
-                                        if (table.data().count() == 0) {
-                                            $("#notifIcon").css('color', 'white');
-                                        }
-
-                                    },
-                                    statusCode: {
-                                        404: function (content) { alert('cannot find resource'); },
-                                        500: function (content) { alert('internal server error'); }
+            //accept external transfer
+            $("#externalBranchTransferTable").on('click', '.js-ext-approve', function () {
+                var button = $(this);
+                var regUser = $(this).attr('reg-user-attr');
+                var id = $(this).attr('trans-accept-ext-id');
+                bootbox.confirm("You are about to accept an external request from user: <strong>" + regUser + "</strong>",
+                    function (result) {
+                        if (result) {
+                            $.ajax({
+                                url: '/Requests/AcceptForeignRegistryTransfer/' + id,
+                                success: function () {
+                                    toastr.success("Accepted", "Transfer Approval", { positionClass: "toast-bottom-right" });
+                                    //removes row from client side perspective. Not on server side thus 
+                                    //console.log(table.data().count());
+                                    table.row(button.parents('tr')).remove().draw();
+                                    if (table.data().count() == 0) {
+                                        $("#notifIcon").css('color', 'white');
                                     }
-                                });
-                            }
-                        });
-                });
-            $("#externalBranchTransferTable").on('click','.js-neverRecieved',function () {
+
+                                },
+                                statusCode: {
+                                    404: function (content) { alert('cannot find resource'); },
+                                    500: function (content) { alert('internal server error'); }
+                                }
+                            });
+                        }
+                    });
+            });
+
+            //never received external transfer
+            $("#externalBranchTransferTable").on('click', '.js-neverRecieved', function () {
                     var button = $(this);
                     var regUser = $(this).attr('reg-user-nr');
                     var id = $(this).attr('trans-neverRecieved-ext-id');

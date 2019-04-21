@@ -118,7 +118,7 @@ namespace FileTracking.Controllers
             {
                 //if it has external binder we switch the req type to external   
                 _context.SaveChanges();
-                InitiateExternalReturn(req.RequestBinder);//we set the external brother request to active
+                InitiateExternalReturn(req.RequestBinder);//we set the external (based on the bind value) request to active
                 UpdateVolumeForExternalTransfer(req.FileVolumesId);
             }
             else

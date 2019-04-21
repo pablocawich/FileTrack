@@ -15,17 +15,21 @@
     <table id="externalBranchPendingTable" class="table table-hover">
         <thead>
             <tr>
-                <th>Id</th>
                 <th>File Number</th>
                 <th>Volume</th>
                 <th>Requester</th>
                 <th>Requester Branch</th>
                 <th>Requested Date</th>
-                <th>Action</th>
+                <th width="150" style="text-align: center">Action</th>
             </tr>
         </thead>
-
     </table>
+    <div class="modal fade" id="extBranchModal" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" data-backdrop="static" data-keyboard="true">
+        <div class="modal-dialog">
+            <div class="modal-content" id="extBranchModelContent">
+            </div>
+        </div>
+    </div>
 </div>
 @section scripts
 {
@@ -39,8 +43,13 @@
                     "datatype": "json"
                 },
                 "columns": [
-                    { "data": "Id" },
-                    { "data": "FileVolumes.FileNumber" },
+                    {
+                        "data": "FileVolumes.FileNumber",
+                        render: function (data, type, req) {
+                            return `<a href="#" data-ext-branch-id="${req.FileVolumes.FileId}" class="btn btn-default btn-sm extBranchModal-js">
+                                <i class="fa fa-wpforms">${data}</i></a>`;
+                        }
+                    },
                     { "data": "FileVolumes.Volume" },
                     { "data": "User.Name" },
                     { "data": "User.Branches.Branch" },
@@ -55,10 +64,10 @@
                         "render": function(data, type, req) {
                             var buttonAccept =
                                 `<button id-ext-attr="${data}" user-branch-acc="${req.Branches.Branch}" uname-attr="${req.User.Name
-                                    }" class="btn btn-success js-ext-accept">Checkout</button>`;
+                                    }" class="btn btn-success btn-sm js-ext-accept">Checkout</button>`;
                             var buttonReject =
                                 `<button id-ext-rej-attr="${data}" user-branch-rej="${req.Branches.Branch}" uname-rej-attr="${req.User.Name
-                                    }" class="btn btn-danger js-ext-reject">Reject</button>`;
+                                    }" class="btn btn-danger btn-sm js-ext-reject">Reject</button>`;
                             return buttonAccept + " | " + buttonReject;
                         }
                     }
@@ -72,7 +81,7 @@
                     var username = $(this).attr('uname-attr');
                     var userBranch = $(this).attr('user-branch-acc');
                     var id = $(this).attr('id-ext-attr');
-                    bootbox.confirm("You are about to accept an external request from branch <strong>"+userBranch+" </strong>belonging to user: <strong>" +username+
+                    bootbox.confirm("You are about to accept an external request from the <strong>"+userBranch+" </strong> branch</br>Request made by <strong>" +username+
                         "</strong>",
                         function(result) {
                             if (result) {
@@ -112,7 +121,7 @@
                     var button = $(this);
                     var userBranch = $(this).attr('user-branch-rej');
                     var username = $(this).attr('uname-rej-attr');
-                    var id = $(this).attr('id-ext-attr');
+                    var id = $(this).attr('id-ext-rej-attr');
                     bootbox.confirm("You are about to reject an external request from branch: <strong>"+userBranch+"</strong></br> " +
                         "Requester: " +"<strong>" + username + "</strong>",
                         function(result) {
@@ -150,6 +159,16 @@
                 var dateObj = new Date(parseInt(date.substr(6)));
                 return dateObj.toDateString();
             }
+            $("#externalBranchPendingTable").on("click",
+                ".extBranchModal-js",
+                function() {
+                    var id = $(this).attr("data-ext-branch-id");
+                    var url = "/Files/FileDetailsForConfirm/" + id;
+                    // alert(url);
+
+                    $('#extBranchModelContent').load(url);
+                    $('#extBranchModal').modal('show');
+                });
 
         });
     </script>

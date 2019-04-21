@@ -736,6 +736,7 @@
     <Content Include="WelcomePage\css\owl.carousel.css" />
     <Content Include="WelcomePage\fonts\fontawesome-webfont.svg" />
     <Content Include="WelcomePage\fonts\Linearicons-Free.svg" />
+    <Content Include="WelcomePage\img\DFClogoFooter.png" />
     <Content Include="WelcomePage\img\elements\disabled-check.png" />
     <Content Include="WelcomePage\img\elements\disabled-radio.png" />
     <Content Include="WelcomePage\img\elements\logo.png" />
@@ -747,6 +748,7 @@
     <Content Include="WelcomePage\img\ftp.png" />
     <Content Include="WelcomePage\img\logo.png" />
     <Content Include="WelcomePage\img\FileTrack.png" />
+    <Content Include="WelcomePage\img\map.png" />
     <Content Include="WelcomePage\js\jquery.ajaxchimp.min.js" />
     <Content Include="WelcomePage\js\jquery.counterup.min.js" />
     <Content Include="WelcomePage\js\jquery.magnific-popup.min.js" />

@@ -27,15 +27,31 @@ namespace FileTracking.Controllers
         
         // GET: AdUsers
         [Authorize(Roles = "WEB_IT")]
-        public ActionResult TestUsers()
+        [Route("adUsers/TestUsers/{role}")]
+        public ActionResult TestUsers(string role)
         {
             var connection = InitializeAdConnection();
-            var userList = AdUsers(Role.RegularUser, connection);
-            
+            var userList = new List<AdUser>();
+
+            if (role == "registry")
+            {
+                userList = AdUsers(Role.Registry, connection);
+                ViewBag.Message = "Registry Users";
+            }else if (role == "regular")
+            {
+                userList = AdUsers(Role.RegularUser, connection);
+                ViewBag.Message = "Regular Users";
+            }
+            else if (role == null || role != "registry"||role != "regular")
+            {
+                return HttpNotFound("Role cannot be anything other than regular or registry. Please provide valid parameters");
+            }
+
             var viewModel = new UserAdModel
             {
                 UsersInRole = userList
             };
+
             return View("TestUsers",viewModel);
         }
 

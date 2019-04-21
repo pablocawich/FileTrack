@@ -6,61 +6,76 @@
 
 <div class="row">
     <div class="col-lg-12">
-        <h2><strong>File Volume</strong></h2>
+        <h2 class="page-header"><strong>File Volume</strong></h2>
        
     </div>
     <!-- /.col-lg-12 -->
 </div>
 
 <div class="row">
-    <p>You are viewing file num: @Model.File.FileNumber which belongs to <strong> @Model.File.FirstName @Model.File.MiddleName @Model.File.LastName</strong></p>
+    <p style="color: chocolate"><i>Volumes listed here are for the file record below:</i></p>
+    <div class="col-lg-4">
+        <ul class="list-group">
+            <li class="list-group-item">
+                <span class="badge"><i class="fa fa-list-alt"></i></span>
+                <strong>File Number:</strong> @Model.File.FileNumber
+            </li>
+            <li class="list-group-item">
+                <span class="badge"><i class="fa fa-user"></i></span>
+                <strong> Client:</strong> @Model.File.FirstName @Model.File.MiddleName @Model.File.LastName
+            </li>
+            <li class="list-group-item">
+                <span class="badge"><i class="fa fa-volume-up"></i></span>
+                <strong>Volume count: </strong>@Model.File.Volume
+            </li>
+        </ul>
+    </div>
+
     <table id="registryVolumeTable" user-loc="@Model.AdUser.BranchesId" class="table  table-bordered table-hover">
         <thead>
-        <tr class="row100 head">
-            <th>File Number</th>
-            <th>Volume</th>
-            <th>Comment</th>
-            <th>State</th>
-            <th>Location Origin</th>
-            <th>Current location</th>
-            <th>Volume's Holder</th>
-            <th>Action</th>
-        </tr>
+            <tr class="row100 head">
+                <th>Volume</th>
+                <th width="150">Comment</th>
+                <th>State</th>
+                <th><i class="glyphicon glyphicon-home"></i> Location Origin</th>
+                <th><i class="glyphicon glyphicon-map-marker"></i> Current location</th>
+                <th><i class="glyphicon glyphicon-user"></i> Holder</th>
+                <th>Action</th>
+            </tr>
         </thead>
         <tbody>
-        @foreach (var fileVol in Model.FileVolumes)
-        {
-            <tr>
-                <td>@fileVol.File.FileNumber</td>
-                <td>@fileVol.Volume</td>
-                @if (fileVol.Comment == null)
-                {
-                    <td>Comment not provided</td>
-                }
-                else
-                {
-                    <td>@fileVol.Comment</td>
-                }
-                <td class="tdState">@fileVol.States.State</td>
-                <td>@fileVol.Branches.Branch</td>
-                <td class="currentLoc" currLoc-data="@fileVol.CurrentLocation"></td>
-                @if (@fileVol.AdUserId == null)
-                {
-                    <td>At registry</td>
-                }
-                else
-                {
-                    <td>@fileVol.AdUser.Username</td>
-                }
-                <td class="tdBtn">
-                    <button vol-data-id="@fileVol.Id" file-name="@Model.File.FirstName" class="btn btn-yahoo btn-sm js-edit-vol">
-                        Update
-                    </button>
+            @foreach (var fileVol in Model.FileVolumes)
+            {
+                <tr>
+                    <td>@fileVol.Volume</td>
+                    @if (fileVol.Comment == null)
+                    {
+                        <td>Comment not provided</td>
+                    }
+                    else
+                    {
+                        <td>@fileVol.Comment</td>
+                    }
+                    <td class="tdState">@fileVol.States.State</td>
+                    <td>@fileVol.Branches.Branch</td>
+                    <td class="currentLoc" currLoc-data="@fileVol.CurrentLocation"></td>
+                    @if (@fileVol.AdUserId == null)
+                    {
+                        <td>At registry</td>
+                    }
+                    else
+                    {
+                        <td>@fileVol.AdUser.Username</td>
+                    }
+                    <td class="tdBtn">
+                        <button vol-data-id="@fileVol.Id" file-name="@Model.File.FirstName" vol-num-attr="@fileVol.Volume" class="btn btn-circle js-edit-vol">
+                            <i class="glyphicon glyphicon-pencil"></i>
+                        </button>
 
-                </td>
+                    </td>
 
-            </tr>
-        }
+                </tr>
+            }
         </tbody>
     </table>
     <div class="modal fade" id="volumeEditModal" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" data-backdrop="static" data-keyboard="true">
@@ -78,9 +93,10 @@
             // alert(userLocation);
             $("#registryVolumeTable").on("click",
                 ".js-edit-vol",
-                function() {
+                function () {
+                    var volNum = $(this).attr("vol-num-attr");
                     var volId = $(this).attr("vol-data-id");
-                    bootbox.confirm("Are you sure you want to edit this file?",
+                    bootbox.confirm("Are you sure you want to edit this volume's <strong>"+volNum+"</strong> ?",
                         function(result) {
                             if (result) {
                                 var url = "/FileVolumes/UpdateVolumeDescription/" + volId;

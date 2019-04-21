@@ -1417,7 +1417,7 @@ textarea {
 }
 
 a {
-    color: #158cba;
+    color: #268c29;
     text-decoration: none;
 }
 
@@ -1437,7 +1437,7 @@ figure {
 }
 
 img {
-    vertical-align: middle;
+    vertical-align: top;
 }
 
 .img-responsive,
@@ -5389,7 +5389,7 @@ select[multiple].input-group-sm > .input-group-btn > .btn {
 }
 
 .navbar-nav > li > .dropdown-menu {
-    margin-top: 0;
+    margin-top: 5px;
     border-top-left-radius: 0;
     border-top-right-radius: 0;
 }
@@ -5437,7 +5437,7 @@ select[multiple].input-group-sm > .input-group-btn > .btn {
 
     .navbar-right {
         float: right !important;
-        margin-right: -15px;
+        margin-right: -2px;
     }
 
         .navbar-right ~ .navbar-right {
@@ -8083,7 +8083,7 @@ button.close {
 }
 
 .navbar {
-    border-width: 0 1px 4px 1px;
+    border-width: 0 1px 2px 1px;
 }
 
 .btn {

@@ -35,17 +35,28 @@ namespace FileTracking.Controllers
 
             return View(user);
         }
-        
+        [HttpGet]
+        public JsonResult GetUserBranch()
+        {
+            var adUser = new AdUser(User.Identity.Name);
+
+            var user = _context.AdUsers.Include(u=>u.Branches).Single(u => u.Username == adUser.Username);
+
+            var branch = user.Branches.Branch;
+
+            return Json(new { data = branch }, JsonRequestBehavior.AllowGet);
+        }
+
         public ActionResult About()
         {
-            ViewBag.Message = "Your application description page.";
+            ViewBag.Message = "File tracking system";
 
             return View();
         }
         
         public ActionResult Contact()
         {
-            ViewBag.Message = "Your contact page.";
+            ViewBag.Message = "IT department";
 
             return View();
         }

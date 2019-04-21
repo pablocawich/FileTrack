@@ -1,5 +1,18 @@
 ﻿$(document).ready(function () {
 
+    $.ajax({
+        type: 'GET',
+        cache: false,
+        url: '/Home/GetUserBranch/',
+        dataType: 'json',
+        data: {},
+        error: function () {
+            console.log("nope");
+        },
+        success: function (result) {
+            $("#branchNav").html(result.data);
+        }
+    });
     //-----will check if pending file has data to further enable a notification alert signal--------
 
     //if ensures the function that gives notifications alerts registry only

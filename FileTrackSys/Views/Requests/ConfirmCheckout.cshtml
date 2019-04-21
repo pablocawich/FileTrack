@@ -5,7 +5,7 @@
 
 <div class="row">
 <div class="col-lg-12">
-    <h2 class="page-header">Approve File</h2>
+    <h2 class="page-header"><strong>Accept File</strong></h2>
 </div>
 <!-- /.col-lg-12 -->
 </div>
@@ -22,7 +22,8 @@
                 <th>Volume</th>
                 <th>Accepted By</th>
                 <th>Accepted Date</th>
-                <th><span class="glyphicon glyphicon-hand-down" style="color: aliceblue">Action</span></th>
+                <th>Branch</th>
+                <th>Action</th>
             </tr>
             </thead>
             <tbody>
@@ -48,7 +49,16 @@
                     "datatype": "json"
                 },
                 "columns": [
-                    { "data": "FileVolumes.FileNumber" },
+                    {
+                        "data": "FileVolumes.FileNumber",
+                        render: function(data, type, req) {
+                            var link =
+                                `<a href="#" data-fileId-attr=${req.FileVolumes.FileId
+                                    } class="glyphicon glyphicon-file btn btn-default confirmCheckoutModal">${req
+                                    .FileVolumes.FileNumber}</a>`;
+                            return link;
+                        }
+                    },
                     { "data": "FileVolumes.Volume" },
                     { "data": "AcceptedBy" },
                     {
@@ -57,11 +67,13 @@
                             return getDateString(data);
                         }
                     },
+                    { data: "Branches.Branch" },
                     {
                         data: "Id",
                         "render": function(data, type, req) {
                             var button =
-                                `<button approve-data-id=${data} class="btn js-approve">Checkout</button>`;
+                                `<button approve-data-id=${data} vol-attr="${req.FileVolumes.Volume}" file-attr="${req.FileVolumes.FileNumber
+                                    }" class="btn btn-success js-approve">Checkout</button>`;
                             return button;
                         }
                     }
@@ -73,7 +85,9 @@
                 function() {
                     var $btn = $(this);
                     var requestId = $btn.attr("approve-data-id");
-                    bootbox.confirm("You are approving volume. Do you wish to continue?",
+                    var fileNum = $btn.attr("file-attr");
+                    var volNum = $btn.attr("vol-attr");
+                    bootbox.confirm("You are approving volume <strong>"+volNum+"</strong> for file:<strong> " + fileNum + "</strong>. Do you wish to continue?",
                         function(result) {
                             if (result) {
                                 $.ajax({
@@ -93,10 +107,11 @@
                             }
                         });
                 });
+
             $("#confirmTable").on("click",
-                ".confirmModal",
+                ".confirmCheckoutModal",
                 function() {
-                    var id = $(this).attr("data-confirm-id");
+                    var id = $(this).attr("data-fileId-attr");
                     var url = "/Files/FileDetailsForConfirm/" + id;
                     // alert(url);
 

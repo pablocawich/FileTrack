@@ -85,3 +85,11 @@ thead {
 		opacity: 1;
 		visibility: visible;
 	}
+    #registryVolumeTable tr td{
+        font-style: italic;
+        color: darkcyan;
+    }
+#dfcSideNav {
+    background-color: #cbd4c2;
+    height: 100vh;
+}
