@@ -64,9 +64,7 @@
                     {
                         "data": "FileNumber", "name": "FileNumber",
                         render: function(data, type, file) {
-
                             return "<span data-url='"+file.Id+" 'class='glyphicon glyphicon-file btn btn-xs btn-primary spanModal'>" + file.FileNumber+"</span>";
-
                         }
                     },
                     {
@@ -94,9 +92,8 @@
                     {
                         data: "Id",
 
-                        "render": function (data, type, vol) {
-                            
-                            var buttonRequest = "<button class='btn btn-warning btn-sm js-requestFile' data-request-name='" + vol.FirstName + "' data-request-file-id='" + data + "'>Request</button>";
+                        "render": function (data, type, vol) {                           
+                            var buttonRequest = "<button class='btn js-requestFile' data-request-name='" + vol.FirstName + "'data-request-file-id='" + data + "'><i class='glyphicon glyphicon-transfer'></i></button>";
                             return buttonRequest;
                         }
                     }

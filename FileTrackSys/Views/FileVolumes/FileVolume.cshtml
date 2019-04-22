@@ -6,23 +6,38 @@
 
 <div class="row">
     <div class="col-lg-12">
-        <h2><strong>File Volume</strong></h2>
-        <p>Please select a volume for file @Model.File.FileNumber which belongs to @Model.File.FirstName @Model.File.MiddleName @Model.File.LastName</p>
+        <h2 class="page-header"><strong>File Volume</strong></h2>
     </div>
     <!-- /.col-lg-12 -->
 </div>
 
 <div class="row">
+    <p style="color: chocolate"><i>Volumes listed here are for the file record below:</i></p>
+    <div class="col-lg-4">
+        <ul class="list-group">
+            <li class="list-group-item">
+                <span class="badge"><i class="fa fa-list-alt"></i></span>
+                <strong>File Number:</strong> @Model.File.FileNumber
+            </li>
+            <li class="list-group-item">
+                <span class="badge"><i class="fa fa-user"></i></span>
+                <strong> Client:</strong> @Model.File.FirstName @Model.File.MiddleName @Model.File.LastName
+            </li>
+            <li class="list-group-item">
+                <span class="badge"><i class="fa fa-volume-up"></i></span>
+                <strong>Volumes: </strong>@Model.File.Volume
+            </li>
+        </ul>
+    </div>
     <table id="volumeTable" class="table  table-bordered table-hover">
         <thead>
             <tr class="row100 head">
-                <th>File Number</th>
                 <th>Volume</th>
-                <th>Comment</th>
-                <th>State</th>
-                <th>Location Origin</th>
-                <th>Current location</th>
-                <th>Holding user</th>
+                <th><i class="glyphicon glyphicon-comment"></i> Comment</th>
+                <th><i class="fa fa-ellipsis-h"></i> State</th>
+                <th><i class="glyphicon glyphicon-home"></i> Location Origin</th>
+                <th><i class="glyphicon glyphicon-map-marker"></i> Current location</th>
+                <th><i class="glyphicon glyphicon-user"></i> Holding user</th>
                 <th>Action</th>
             </tr>
         </thead>
@@ -30,7 +45,6 @@
             @foreach (var fileVol in Model.FileVolumes)
             {
                 <tr>
-                    <td>@Model.File.FileNumber </td>
                     <td>@fileVol.Volume</td>
                     @if (fileVol.Comment == null)
                     {
@@ -54,8 +68,8 @@
 
                     <td class="tdBtn">
                         <button type="button" vol-state="@fileVol.States.State" user-loc="@Model.AdUser.BranchesId" originLoc="@fileVol.BranchesId" currLoc-attr="@fileVol.CurrentLocation"
-                                vol-data-id="@fileVol.Id" file-name="@Model.File.FirstName" class="btn btn-yahoo btn-sm js-req-vol">
-                            Request
+                                vol-data-id="@fileVol.Id" file-name="@Model.File.FirstName" location="@fileVol.Branches.Branch" class="btn btn-dropbox js-req-vol">
+                            <i class="glyphicon glyphicon-new-window"></i>
                         </button>
 
                     </td>
@@ -74,6 +88,7 @@
                 ".js-req-vol",
                 function() {
                     var button = $(this);
+                    var loc = button.attr('location');
                     var state = button.attr("vol-state");
                     var originalLoc = button.attr("originLoc");
                     var currentLoc = button.attr("currLoc-attr");
@@ -89,7 +104,7 @@
                         if (!(userLoc == currentLoc)) {
                             bootbox.confirm({
                                 message:
-                                    "<strong style='color: #ff7144'>This volume is outside your branch, thus request will be sent outside your branch. Continue?</strong>",
+                                    "<strong style='color: #ff7144'>This volume is outside your branch. Your request will be sent to <strong>" + loc + "</strong>. Continue?</strong>",
                                 buttons: {
                                     confirm: {
                                         label: 'Yes',

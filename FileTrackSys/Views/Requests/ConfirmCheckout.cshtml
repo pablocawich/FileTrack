@@ -11,9 +11,9 @@
 </div>
 <link rel="stylesheet" href="https://cdn.datatables.net/1.10.19/css/dataTables.bootstrap.min.css">
 <div class="row">
-    <p>File has been accepted by registry and requires you to confirm physical retrieval to end the checkout process.
-        Kindly approve from the table below</p>
- 
+    <p><i>File has been accepted by registry and requires you to confirm physical retrieval to end the checkout process.
+        Kindly approve from the table below</i></p>
+    <br>
     
         <table id="confirmTable" class="table table-hover">
             <thead>
@@ -73,7 +73,7 @@
                         "render": function(data, type, req) {
                             var button =
                                 `<button approve-data-id=${data} vol-attr="${req.FileVolumes.Volume}" file-attr="${req.FileVolumes.FileNumber
-                                    }" class="btn btn-success js-approve">Checkout</button>`;
+                                    }" class="btn btn-success js-approve"><i class='fa fa-check-circle'></i> Checkout</button>`;
                             return button;
                         }
                     }

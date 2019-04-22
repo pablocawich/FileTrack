@@ -35,16 +35,15 @@ namespace FileTracking.Controllers
 
             return View(user);
         }
-        [HttpGet]
-        public JsonResult GetUserBranch()
+
+        public ActionResult BranchNavigationBar()
         {
             var adUser = new AdUser(User.Identity.Name);
 
-            var user = _context.AdUsers.Include(u=>u.Branches).Single(u => u.Username == adUser.Username);
+            var user = _context.AdUsers.Include(u => u.Branches).Single(u => u.Username == adUser.Username);
 
-            var branch = user.Branches.Branch;
-
-            return Json(new { data = branch }, JsonRequestBehavior.AllowGet);
+            ViewBag.Message = user.Branches.Branch;
+            return PartialView("_BranchNav");
         }
 
         public ActionResult About()

@@ -60,7 +60,7 @@
                             var buttonAccept =
                                 "<button class='btn btn-success btn-xs js-accept' data-accept-pending-id='" +
                                     data +
-                                    "'>Check out</button>";
+                                    "' user-attr='"+req.User.Name+"'>Check out</button>";
                             var buttonDeny = "<button class='btn btn-danger btn-xs js-reject'  data-deny-pending-id='" +
                                 data +
                                 "'>Reject</button>";
@@ -76,7 +76,8 @@
                 function() {
                     var button = $(this);
                     var id = button.attr("data-accept-pending-id");
-                    bootbox.confirm("You are about to accept request for: ",
+                    var requester = button.attr("user-attr");
+                    bootbox.confirm("You are about to accept request for: <strong>"+requester+"</strong>",
                         function(result) {
                             if (result) {
                                 $.ajax({
