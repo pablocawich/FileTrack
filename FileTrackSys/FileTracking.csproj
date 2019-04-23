@@ -196,6 +196,7 @@
     <Compile Include="Controllers\FileVolumesController.cs" />
     <Compile Include="Controllers\HomeController.cs" />
     <Compile Include="Controllers\ManageController.cs" />
+    <Compile Include="Controllers\NotificationsController.cs" />
     <Compile Include="Controllers\ProfilesController.cs" />
     <Compile Include="Controllers\RequestsController.cs" />
     <Compile Include="Global.asax.cs">
@@ -425,6 +426,18 @@
     <Compile Include="Migrations\201904120320194_AddRequestTypeToRequest.Designer.cs">
       <DependentUpon>201904120320194_AddRequestTypeToRequest.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201904222038278_AddNotificationTable.cs" />
+    <Compile Include="Migrations\201904222038278_AddNotificationTable.Designer.cs">
+      <DependentUpon>201904222038278_AddNotificationTable.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201904222040126_PopulateMessageTable.cs" />
+    <Compile Include="Migrations\201904222040126_PopulateMessageTable.Designer.cs">
+      <DependentUpon>201904222040126_PopulateMessageTable.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201904222131041_MofifySenderInNotification.cs" />
+    <Compile Include="Migrations\201904222131041_MofifySenderInNotification.Designer.cs">
+      <DependentUpon>201904222131041_MofifySenderInNotification.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Models\AccountViewModels.cs" />
     <Compile Include="Models\AddNumberIfIdentificationSelected.cs" />
@@ -443,6 +456,8 @@
     <Compile Include="Models\Location.cs" />
     <Compile Include="Models\ManageFileNumber.cs" />
     <Compile Include="Models\ManageViewModels.cs" />
+    <Compile Include="Models\Message.cs" />
+    <Compile Include="Models\Notification.cs" />
     <Compile Include="Models\Profile.cs" />
     <Compile Include="Models\Request.cs" />
     <Compile Include="Models\RequestStatus.cs" />
@@ -455,6 +470,7 @@
     <Compile Include="ViewModels\ConfirmRequestViewModel.cs" />
     <Compile Include="ViewModels\FileViewModel.cs" />
     <Compile Include="ViewModels\FileVolumeViewModel.cs" />
+    <Compile Include="ViewModels\RegistryNotificationViewModel.cs" />
     <Compile Include="ViewModels\UserAdModel.cs" />
     <Compile Include="ViewModels\VolumesViewModel.cs" />
   </ItemGroup>
@@ -979,6 +995,8 @@
     <Content Include="Views\Requests\ExternalRequestMade.cshtml" />
     <Content Include="Views\FileVolumes\ApproveExternalReturns.cshtml" />
     <Content Include="Views\Shared\_BranchNav.cshtml" />
+    <Content Include="Views\Notifications\Notifications.cshtml" />
+    <Content Include="Views\Notifications\RegistryNotification.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
@@ -1156,6 +1174,15 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201904120320194_AddRequestTypeToRequest.resx">
       <DependentUpon>201904120320194_AddRequestTypeToRequest.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201904222038278_AddNotificationTable.resx">
+      <DependentUpon>201904222038278_AddNotificationTable.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201904222040126_PopulateMessageTable.resx">
+      <DependentUpon>201904222040126_PopulateMessageTable.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201904222131041_MofifySenderInNotification.resx">
+      <DependentUpon>201904222131041_MofifySenderInNotification.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>

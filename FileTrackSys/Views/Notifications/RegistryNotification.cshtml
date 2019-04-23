@@ -1,0 +1,57 @@
+﻿@model FileTracking.ViewModels.RegistryNotificationViewModel
+
+@{
+    var color = "";
+
+    if (Model.RegistryExReturns.Any() || Model.RegistryInReturns.Any())
+    {
+        color = "style=color:red";
+    }
+
+}
+<li class="dropdown navbar-inverse">
+    <a class="dropdown-toggle" data-toggle="dropdown" href="#">
+        <i class="fa fa-bell fa-fw" id="notifIcon" @color></i> <b class="caret" id="caretIcon" @color></b>
+    </a>
+    <ul class="dropdown-menu dropdown-alerts" id="notifAlert">
+        @foreach (var notif in Model.RegistryInReturns)
+        {
+
+            if (notif.MessageId == "RET" || notif.MessageId == "EX_RET" || notif.MessageId == "RET_ACC")
+            {
+                <li class="alertList" notif-id-attr=@notif.Id>
+                    <a href="#">
+                        <div>
+                            <i class='fa fa-refresh'></i>@notif.Message.MessageType<span class='pull-right text-muted small'>@notif.Message.MessageText</span>
+                        </div>
+                    </a>
+                </li>
+            }
+
+
+        }
+        @foreach (var notif in Model.RegistryExReturns)
+        {
+
+            if (notif.MessageId == "ExRetAcc")
+            {
+                <li class="alertList" notif-id-attr=@notif.Id>
+                    <a href="#">
+                        <div>
+                            <i class='fa fa-refresh'></i>@notif.Message.MessageType<span class='pull-right text-muted small'>@notif.Message.MessageText</span>
+                        </div>
+                    </a>
+                </li>
+            }
+
+
+        }
+        <li class="divider"></li>
+        <li>
+            <a class="text-center" href="#">
+                <strong>The above requires you to take action</strong>
+                <i class="fa fa-angle-right"></i>
+            </a>
+        </li>
+    </ul>
+</li>

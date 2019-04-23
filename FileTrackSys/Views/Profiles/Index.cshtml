@@ -28,11 +28,12 @@
                                     @Model.Name
                                 </h4>
                                 <small>
-                                    <cite title="San Francisco, USA">
-                                        @Model.Branches.Branch <i class="glyphicon glyphicon-map-marker">
+                                    <cite title="Belize">
+                                        @Model.Branches.Branch <i class="glyphicon glyphicon-map-marker"> <br>
                                         </i>
                                     </cite>
                                 </small>
+                                <br>
                                 <p>
                                     @{
                                         var email = "";
@@ -42,31 +43,17 @@
                                         else { email = Model.Email; }
 
                                      }
-                                    <i class="glyphicon glyphicon-envelope"></i>@email
+                                    <i class="glyphicon glyphicon-envelope"></i> @email
                                     <br />
-                                    <i class="glyphicon glyphicon-globe"></i><a href="http://www.jquery2dotnet.com">www.Dfc.net</a>
+                                    <i class="glyphicon glyphicon-globe"></i> <a href="http://www.dfc.net">DFC</a>
                                     <br />
-                                    <i class="glyphicon glyphicon-user"></i>@Model.Username
+                                    <i class="glyphicon glyphicon-user"></i> @Model.Username
                                     <br />
-                                    <i class="glyphicon glyphicon-import"></i>@Model.Role
+                                    <i class="glyphicon glyphicon-import"></i> @Model.Role
                                     <br/>
                                 </p>
                                 <!-- Split button -->
-                                <div class="btn-group">
-                                    <button type="button" class="btn btn-primary">
-                                        Social
-                                    </button>
-                                    <button type="button" class="btn btn-primary dropdown-toggle" data-toggle="dropdown">
-                                        <span class="caret"></span><span class="sr-only">Social</span>
-                                    </button>
-                                    <ul class="dropdown-menu" role="menu">
-                                        <li><a href="#">Twitter</a></li>
-                                        <li><a href="https://plus.google.com/+Jquery2dotnet/posts">Google +</a></li>
-                                        <li><a href="https://www.facebook.com/jquery2dotnet">Facebook</a></li>
-                                        <li class="divider"></li>
-                                        <li><a href="#">Github</a></li>
-                                    </ul>
-                                </div>
+                                
                             </div>
                         </div>
                     </div>

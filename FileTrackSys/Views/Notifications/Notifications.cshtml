@@ -1,0 +1,87 @@
+﻿@model IEnumerable<FileTracking.Models.Notification>
+
+@{
+    var color = "";
+
+    if (Model.Any())
+    {
+        color = "style=color:red";
+    }
+
+}
+<li class="dropdown navbar-inverse">
+    <a class="dropdown-toggle" data-toggle="dropdown" href="#">
+        <i class="fa fa-bell fa-fw" id="notifIcon" @color></i> <b class="caret" id="caretIcon" @color></b>
+    </a>
+    <ul class="dropdown-menu dropdown-alerts" id="notifAlert">
+        @foreach (var notif in Model)
+        {
+            if (notif.MessageId == "ACC" || notif.MessageId == "EX_ACC")
+            {
+                <li class="alertList" notif-id-attr=@notif.Id>
+                    <a href="#">
+                        <div>
+                            <i class='fa fa-check-square-o'></i>@notif.Message.MessageType<span class='pull-right text-muted small'>@notif.Message.MessageText</span>
+                        </div>
+                    </a>
+                </li>
+            }
+            if (notif.MessageId == "REJ" || notif.MessageId == "EX_REJ")
+            {
+                <li class="alertList" notif-id-attr=@notif.Id>
+                    <a href="#">
+                        <div>
+                            <i class='fa fa-times-circle'></i>@notif.Message.MessageType<span class='pull-right text-muted small'>@notif.Message.MessageText</span>
+                        </div>
+                    </a>
+                </li>
+            }
+            if (notif.MessageId == "RET" || notif.MessageId == "EX_RET" || notif.MessageId == "RET_ACC")
+            {
+                <li class="alertList" notif-id-attr=@notif.Id>
+                    <a href="#">
+                        <div>
+                            <i class='fa  fa-refresh'></i>@notif.Message.MessageType<span class='pull-right text-muted small'>@notif.Message.MessageText</span>
+                        </div>
+                    </a>
+                </li>
+            }
+
+
+        }
+        <li class="divider"></li>
+        <li>
+            <a class="text-center" href="#">
+                <strong>The above requires you to take action</strong>
+                <i class="fa fa-angle-right"></i>
+            </a>
+        </li>
+    </ul>
+</li>
+@section scripts{
+    <script>
+        $(document).ready(function () {
+            $(".alertList").on("click",
+                function () {
+                    var list = $(this);
+                    var notifId = $(this).attr("notif-id-attr");
+
+                    $.ajax({
+                        url: '/Notifications/ChangeToRead/' + notifId,
+                        success: function () {
+                            list.remove();
+                            if ($("#notifAlert").length() == 1)
+                                $("#notifIcon").css('color', 'white');
+
+                        },
+                        statusCode: {
+                            404: function (content) { alert('cannot find resource'); },
+                            500: function (content) { alert('internal server error'); }
+                        }
+                    });
+
+                });
+        });
+
+    </script>
+}

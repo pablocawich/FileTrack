@@ -5,49 +5,43 @@
     {
     @Html.AntiForgeryToken()
 
-        <ul class="nav navbar-nav navbar-right navbar-top-links">
+<ul class="nav navbar-nav navbar-right navbar-top-links">
+    @if (User.IsInRole("FMS_Regular"))
+    {
+        @Html.Action("Index", "Notifications")
+    }
+    else
+    {
+        @Html.Action("NotificationRegistry", "Notifications")
+    }
 
-            <li class="dropdown navbar-inverse ">
-                <a class="dropdown-toggle" data-toggle="dropdown" href="#">
-                    <i class="fa fa-bell fa-fw" id="notifIcon"></i> <b class="caret"></b>
-                </a>
-                <ul class="dropdown-menu dropdown-alerts" id="notifAlert">
-                    <li class="divider"></li>
-                    <li>
-                        <a class="text-center" href="#">
-                            <strong>The above requires you to take action</strong>
-                            <i class="fa fa-angle-right"></i>
-                        </a>
-                    </li>
-                </ul>
+    <li class="dropdown">
+        <a class="dropdown-toggle" data-toggle="dropdown" href="#">
+            @{
+                //simply removes 'DEVFINCO' from in front the username
+                var name = User.Identity.GetUserName();
+
+                string newName = "";
+
+                if (name.Contains("DEVFINCO"))
+                {
+                    newName = name.Remove(0, 9);
+                }
+            }
+            <i class="fa fa-user fa-fw"></i>Welcome @newName! <b class="caret"></b>
+        </a>
+        <ul class="dropdown-menu dropdown-user">
+            <li>
+                <a href="@Url.Action("Index","Profiles")"><i class="fa fa-user fa-fw"></i> User Profile</a>
             </li>
-            <li class="dropdown">
-                <a class="dropdown-toggle" data-toggle="dropdown" href="#">
-                    @{
-                       //simply removes 'DEVFINCO' from in front the username
-                        var name = User.Identity.GetUserName();
-               
-                        string newName = "";
-
-                        if(name.Contains("DEVFINCO"))
-                        {
-                            newName = name.Remove(0, 9);
-                        }
-                    }
-                    <i class="fa fa-user fa-fw"></i>Welcome @newName! <b class="caret"></b>
-                </a>
-                <ul class="dropdown-menu dropdown-user">
-                    <li>   
-                        <a href="@Url.Action("Index","Profiles")"><i class="fa fa-user fa-fw"></i> User Profile</a>
-                    </li>
-                    <li class="divider"></li>
-                    <li>
-                        <a href="@Url.Action("Index","Home")"><i class="fa fa-sign-out fa-fw"></i> Logout</a>
-                    </li>
-                </ul>
+            <li class="divider"></li>
+            <li>
+                <a href="@Url.Action("Index","Home")"><i class="fa fa-sign-out fa-fw"></i> Logout</a>
             </li>
-
         </ul>
+    </li>
+
+</ul>
     }
 }
 @section scripts{

@@ -24,6 +24,22 @@ namespace FileTracking.Controllers
             _context.Dispose();
         }
 
+        public void CreateNotification(Request req, string messageId)
+        {
+            var notif = new Notification()
+            {
+                RecipientUserId = req.UserId,
+                MessageId = messageId,
+                Read = false,
+                RequestId = req.Id,
+                DateTriggered = DateTime.Now,
+                SenderUser = req.AcceptedBy
+            };
+
+            _context.Notifications.Add(notif);
+            _context.SaveChanges();
+        }
+
         public string ParseUsername(string adName)
         {
             string newName = "";
@@ -80,6 +96,8 @@ namespace FileTracking.Controllers
             request.ReturnStateId = isReturning;
 
             _context.SaveChanges();
+
+            CreateNotification(request, Message.Return);
 
         }
 
@@ -143,6 +161,7 @@ namespace FileTracking.Controllers
             _context.SaveChanges();
 
             ChangeStateToStored(req.FileVolumesId);
+            CreateNotification(req,Message.ExReturnApproval);
         }
 
         public void ChangeStateToStored(int volId)
@@ -211,6 +230,7 @@ namespace FileTracking.Controllers
             extReq.ReturnAcceptBy = currUser.Username;
 
             _context.SaveChanges();
+            CreateNotification(extReq, Message.ExReturn);
         }
 
         [Authorize(Roles = Role.Registry)]

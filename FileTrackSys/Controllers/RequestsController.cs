@@ -28,6 +28,22 @@ namespace FileTracking.Controllers
             _context.Dispose();
         }
 
+        public void CreateNotification(Request req, string messageId)
+        {
+            var notif = new Notification()
+            {
+                RecipientUserId = req.UserId,
+                MessageId = messageId,
+                Read = false,
+                RequestId = req.Id,
+                DateTriggered = DateTime.Now,
+                SenderUser = req.AcceptedBy
+            };
+
+            _context.Notifications.Add(notif);
+            _context.SaveChanges();
+        }
+
         public ActionResult VolumeStateNotValid()
         {
             return View();
@@ -250,6 +266,8 @@ namespace FileTracking.Controllers
 
                 _context.SaveChanges();
                 UpdateVolumeState(request.FileVolumesId);
+
+                CreateNotification(request, Message.InAccept);
                 return this.Json(new { success = true }, JsonRequestBehavior.AllowGet);
         }
 
@@ -274,8 +292,9 @@ namespace FileTracking.Controllers
 
                 _context.SaveChanges();
                 UpdateVolumeState(volId);
-                //Since the 
-                return this.Json(new { success = true }, JsonRequestBehavior.AllowGet);
+            //Since the 
+            CreateNotification(request, Message.ExAccept);
+            return this.Json(new { success = true }, JsonRequestBehavior.AllowGet);
         }
 
         //note tha once a file vol is accepted by reg that vol should no longer be in a stored or requested state but
@@ -303,6 +322,14 @@ namespace FileTracking.Controllers
             request.IsRequestActive = false;
 
             _context.SaveChanges();
+            if (request.RequestBinder == 0)
+            {
+                CreateNotification(request, Message.InReject);
+            }
+            else if(request.RequestTypeId == RequestType.ExternalRequest)
+            {
+                CreateNotification(request, Message.ExReject);
+            }      
             //say for instance registry rejects a file, recall the request nonetheless changed the volume state to 
             //requested, when we deny a request we do not perform any changing of state so what operation resolves the issue.
             //after a volume's been rejected, better yet, let all request for that specific volume be denied.
@@ -393,6 +420,7 @@ namespace FileTracking.Controllers
 
            volume.CurrentLocation = requestRecord.BranchesId; //we must change the volume's current location to the current user's branch
            _context.SaveChanges();
+           CreateNotification(requestRecord, Message.InAccept);//revise
         }
 
         //now that user's local branch has accepted 
@@ -416,6 +444,7 @@ namespace FileTracking.Controllers
             };
             _context.Requests.Add(internalRequest);
             _context.SaveChanges();
+
         }
 
         public void NeverReceived(int id)
