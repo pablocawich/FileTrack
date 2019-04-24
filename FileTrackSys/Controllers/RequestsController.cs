@@ -393,7 +393,7 @@ namespace FileTracking.Controllers
             requestRecord.IsConfirmed = true;
             _context.SaveChanges();
 
-            CheckoutVolume(requestRecord.FileVolumesId);
+            CheckoutVolume(requestRecord.FileVolumesId, requestRecord.UserId);
             //perhaps here we create a function that performs notifications
 
         }
@@ -403,9 +403,7 @@ namespace FileTracking.Controllers
         {
             //request binded records that sees to registry to registry operations before initiating the local request it is bound by
             var requestRecord = _context.Requests.Single(r => r.Id == id);
-
-           
-
+          
             requestRecord.IsConfirmed = true;
             requestRecord.ReturnStateId = 1;
             requestRecord.IsRequestActive = false;
@@ -468,16 +466,12 @@ namespace FileTracking.Controllers
 
         }
 
-        public void CheckoutVolume(int volId)
-        {
-           
-            var userObj = new AdUser(User.Identity.Name);
-            var currUser = _context.AdUsers.Single(u => u.Username == userObj.Username);
-
+        public void CheckoutVolume(int volId, int requester)
+        {          
             const byte checkoutState = 5;
             var volume = _context.FileVolumes.Single(v => v.Id == volId);
             volume.StatesId = checkoutState;
-            volume.AdUserId = currUser.Id; 
+            volume.AdUserId = requester; 
             _context.SaveChanges();
         }
 

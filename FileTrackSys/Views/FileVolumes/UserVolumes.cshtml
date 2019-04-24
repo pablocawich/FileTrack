@@ -26,10 +26,9 @@
             <tr>
                 <th>File Number</th>
                 <th>Volume</th>
-                <th>Accepted By</th>
-                <th>Accepted Date</th>
+                <th>Checked Out By</th>
+                <th>Checked Out Date</th>
                 <th>Branch</th>
-                <th>Request Type</th>
                 <th>Action</th>
             </tr>
         </thead>
@@ -42,7 +41,6 @@
                 <td>@req.AcceptedBy</td>
                 <td>@req.AcceptedDate</td>
                 <td>@req.Branches.Branch</td>
-                <td>@req.RequestTypeId</td>
                 <td><button class="btn btn-adn js-return" data-return-id="@req.Id">Return</button></td>
             </tr>
         }      

@@ -20,8 +20,8 @@
             <tr>
                 <th>File Number</th>
                 <th>Volume</th>
-                <th>Accepted By</th>
-                <th>Accepted Date</th>
+                <th>Checked Out By</th>
+                <th>Checked Out Date</th>
                 <th>Branch</th>
                 <th>Action</th>
             </tr>
@@ -73,7 +73,7 @@
                         "render": function(data, type, req) {
                             var button =
                                 `<button approve-data-id=${data} vol-attr="${req.FileVolumes.Volume}" file-attr="${req.FileVolumes.FileNumber
-                                    }" class="btn btn-success js-approve"><i class='fa fa-check-circle'></i> Checkout</button>`;
+                                    }" class="btn btn-success js-approve"><i class='fa fa-check-circle'></i> Accept</button>`;
                             return button;
                         }
                     }

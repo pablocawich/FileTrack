@@ -49,6 +49,7 @@ namespace FileTracking.Controllers
                 .Where(n=>n.Request.RequesteeBranch == userInDb.BranchesId).
                 Where(n=>n.MessageId == Message.Return || n.MessageId == Message.ExReturn)
                 .Where(n => n.Read == false).ToList();
+
             var viewModel = new RegistryNotificationViewModel()
             {
                 RegistryInReturns = notifications,

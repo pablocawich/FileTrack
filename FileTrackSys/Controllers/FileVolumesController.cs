@@ -98,6 +98,8 @@ namespace FileTracking.Controllers
             _context.SaveChanges();
 
             CreateNotification(request, Message.Return);
+            //since returning, state should transition to the transfer state. Just to give more detail. Not significant change
+            ChangeStateToTransfer(request.FileVolumesId, request.UserId);
 
         }
 
@@ -174,6 +176,19 @@ namespace FileTracking.Controllers
 
             if(vol.CurrentLocation != vol.BranchesId)//we both locations are different, it means it was an external request and we should reset since the return process is complete
                 vol.CurrentLocation = vol.BranchesId;
+            _context.SaveChanges();
+        }
+
+        public void ChangeStateToTransfer(int volId, int requesterId)
+        {
+            //transfer = 4
+            var vol = _context.FileVolumes.Single(v => v.Id == volId);
+
+            vol.StatesId = 4;
+            vol.AdUserId = requesterId;
+
+            /*if (vol.CurrentLocation != vol.BranchesId)//we both locations are different, it means it was an external request and we should reset since the return process is complete
+                vol.CurrentLocation = vol.BranchesId;*/
             _context.SaveChanges();
         }
 
