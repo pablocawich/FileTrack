@@ -1,0 +1,63 @@
+﻿@model PagedList.IPagedList<FileTracking.Models.Request>
+@using PagedList.Mvc;
+@{
+    ViewBag.Title = "VolumeHistory";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="row">
+    <div class="col-lg-12">
+        <h2 class="page-header"><strong>Volume Activity</strong></h2>
+    </div>
+    <!-- /.col-lg-12 -->
+</div>
+<br>
+@if (Model.Any())
+{
+    <div class="row">
+        <div class="col-lg-12">
+            <table id="historyTable" class="table">
+                <thead style="background-color: #2c3b6b;">
+                <tr>
+                    <th>File Number</th>
+                    <th>Volume</th>
+                    <th>Requester</th>
+                    <th>Requester Branch</th>
+                    <th>Accepted By</th>
+                    <th>Requested Date</th>
+                    <th>Return Accepted By</th>
+                    <th>Return Date</th>
+                </tr>
+                </thead>
+                <tbody>
+                @foreach (var request in Model)
+                {
+                    <tr style="background-color: #a6d6d6">
+                        <td>@request.FileVolumes.FileNumber</td>
+                        <td>@request.FileVolumes.Volume</td>
+                        <td>@request.User.Name</td>
+                        <td>@request.Branches.Branch</td>
+                        <td>@request.AcceptedBy</td>
+                        <td>@request.RequestDate</td>
+                        <td>@request.ReturnAcceptBy</td>
+                        <td>@request.ReturnedDate</td>
+                    </tr>
+                }
+                </tbody>
+            </table>
+            <br>
+            @Html.PagedListPager(Model, page=>Url.Action("VolumeHistory","FileVolumes", 
+                new {page, pageSize = Model.PageSize}))
+            Showing @Model.FirstItemOnPage to @Model.LastItemOnPage of @Model.TotalItemCount
+        </div>
+    </div>
+
+}
+else
+{
+    <div class="row">
+        <div class="col-lg-12">
+            <p style="color: red"><i>This volume has no activity log by users</i></p>
+        </div>
+     </div>
+}

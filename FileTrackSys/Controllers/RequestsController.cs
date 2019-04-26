@@ -212,8 +212,9 @@ namespace FileTracking.Controllers
       
             byte Pending = 1;
             var pendingRequests = _context.Requests.Include(r => r.FileVolumes).
-                Include(r => r.User.Branches).Where(r=>r.RequesteeBranch == user.BranchesId).Where(r => r.RequestStatusId == Pending)
-                .Where(r => r.RequestTypeId == RequestType.ExternalRequest).Where(r => r.IsRequestActive == true).ToList();
+                Include(r => r.User.Branches).Where(r=>r.RequesteeBranch == user.BranchesId).Where(r => r.IsRequestActive == true).
+                Where(r => r.RequestStatusId == Pending || r.RequestStatusId == 4)
+                .Where(r => r.RequestTypeId == RequestType.ExternalRequest).ToList();
 
             
             return Json(new { data = pendingRequests }, JsonRequestBehavior.AllowGet);
@@ -278,12 +279,16 @@ namespace FileTracking.Controllers
             //recall that a person from registry accepts this request so get person name
             const byte acceptedState = 2;
             var request = _context.Requests.Single(r => r.Id == id);
-
-            if (!IsVolumeStateValid(request.FileVolumesId))
+            if (request.RequestStatusId != 4)
             {
-                CancelOtherRequestsForVolume(request.FileVolumesId, id);
-                return this.Json(new { success = false }, JsonRequestBehavior.AllowGet);
+                if (!IsVolumeStateValid(request.FileVolumesId))
+                {
+                    CancelOtherRequestsForVolume(request.FileVolumesId, id);
+                    return this.Json(new { success = false }, JsonRequestBehavior.AllowGet);
+                }
             }
+
+           
                 request.RequestStatusId = acceptedState;
                 request.AcceptedBy = userObj.Username;
                 request.AcceptedDate = DateTime.Now;
@@ -455,14 +460,14 @@ namespace FileTracking.Controllers
 
             var newRequestRecord = requestRecord;//creating a new request so the prior registry may receive the request again. Duplicate
         
-            newRequestRecord.RequestStatusId = 1;
+            newRequestRecord.RequestStatusId = 4;
             newRequestRecord.AcceptedBy = null;
             newRequestRecord.AcceptedDate = null;
             newRequestRecord.IsRequestActive = true;
             _context.Requests.Add(newRequestRecord);
             _context.SaveChanges();
 
-            UpdateVolumeStateStored(requestRecord.FileVolumesId);
+            //UpdateVolumeStateStored(requestRecord.FileVolumesId);
 
         }
 

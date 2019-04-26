@@ -63,10 +63,12 @@ namespace FileTracking.Controllers
 
         public void ChangeToRead(int id)
         {
+            
             var notifInDb = _context.Notifications.Single(n => n.Id == id);
 
-            notifInDb.Read = true;
+           //notifInDb.Read = true;
 
+            _context.Notifications.Remove(notifInDb);
             _context.SaveChanges();
         }
     }

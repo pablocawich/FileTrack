@@ -71,10 +71,9 @@
                         <button vol-data-id="@fileVol.Id" file-name="@Model.File.FirstName" vol-num-attr="@fileVol.Volume" class="btn btn-circle js-edit-vol">
                             <i class="glyphicon glyphicon-pencil"></i>
                         </button> |
-                        <button class="btn btn-circle" style="background-color: "><i class="fa fa-history"></i></button>
+                        <button class="btn btn-circle history-js" vol-id-attr="@fileVol.Id" style="background-color:"><i class="fa fa-history"></i></button>
 
                     </td>
-
                 </tr>
             }
         </tbody>
@@ -108,6 +107,20 @@
                         });
                  
                 });
+            //button that will display recent activities for volume
+           $("#registryVolumeTable").on("click",
+               ".history-js",
+               function () {
+                   var volId = $(this).attr("vol-id-attr");
+                   bootbox.confirm("View recent activity for volume?",
+                       function(result) {
+                           if (result) {
+                               var url = "/FileVolumes/VolumeHistory/" + volId+"/"+1+"/"+5;
+                               window.location.href = url;
+                           }
+                       });
+                 
+               });
 
             //inserting a string value for current location
 

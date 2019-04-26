@@ -6,6 +6,7 @@ using System.Web;
 using System.Web.Mvc;
 using FileTracking.Models;
 using FileTracking.ViewModels;
+using PagedList;
 
 namespace FileTracking.Controllers
 {
@@ -46,6 +47,18 @@ namespace FileTracking.Controllers
             if (adName.Contains("DEVFINCO"))
                 newName = adName.Remove(0, 9);
             return newName;
+        }
+
+        [Route("FileVolumes/VolumeHistory/{volId}/{page}/{pageSize}")]
+        public ActionResult VolumeHistory(int volId, int page, int pageSize)
+        {
+            var requestsInDb = _context.Requests.Include(r=>r.User).Include(r=>r.FileVolumes).Include(r=>r.Branches)
+                .Where(r => r.FileVolumesId == volId).Where(r => r.IsRequestActive == false).Where(r=>r.RequestStatusId == 2)
+                .Where(r => r.ReturnStateId == 3).ToList();
+
+            PagedList<Request> model = new PagedList<Request>(requestsInDb, page, pageSize);
+
+            return View(model);
         }
 
         // GET: FileVolumes for a specific file identified by the id parameter
