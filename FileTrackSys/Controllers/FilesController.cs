@@ -29,12 +29,11 @@ namespace FileTracking.Controllers
 
         //allow users to view file tables and its linked tables
         public ActionResult Index()
-        {        
+        {
             //var file = _context.Files.Include(f => f.Districts).Include(f=>f.FileVolumes).ToList();
             if (User.IsInRole(Role.Registry))
                 return View("RegistryView");
-
-            if (User.IsInRole(Role.RegularUser))
+            else if (User.IsInRole(Role.RegularUser))
                 return View("UserView");
 
             return Content("You do not have permissions to visit this page. Please see or contact admin for further information");

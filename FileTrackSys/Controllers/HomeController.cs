@@ -25,7 +25,7 @@ namespace FileTracking.Controllers
         public ActionResult Index()
         {
             var userName = new AdUser(User.Identity.Name);
-            var user = _context.AdUsers.Include(u=>u.Branches).Single(u => u.Username == userName.Username);
+            var user = _context.AdUsers.Include(u=>u.Branches).SingleOrDefault(u => u.Username == userName.Username);
 
             if (user == null)
             {

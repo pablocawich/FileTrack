@@ -1,0 +1,164 @@
+﻿
+@{
+    ViewBag.Title = "AdminManagement";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<link rel="stylesheet" href="https://cdn.datatables.net/1.10.19/css/dataTables.bootstrap.min.css">
+<div class="row">
+    <div class="col-lg-12">
+        <h2 class="page-header"><strong>Admin Management</strong></h2>
+    </div>
+    <!-- /.col-lg-12 -->
+</div>
+<div class="row" style="height: 80px">
+    <label style="color: #5d5d96"><i>Please select a view below to further perform an action:</i> </label><br>
+    <div class="btn-group"><button type="button" class="btn btn-circle" disabled><i class="fa fa-th-list"></i></button>
+        <button type="button" class="btn btn-circle dropdown-toggle" data-toggle="dropdown">
+            <span class="caret"></span><span class="sr-only">Social</span>
+        </button>
+        <ul class="dropdown-menu" role="menu">
+            <li><a href="#" class='btn' id="addAdBtn"><i class='fa fa-folder'></i> Add From Directory</a></li>
+            <li><a href="#" class='btn' id="editFromDb"><i class='fa fa-database'></i> Modify from Database</a></li>
+            <li class="divider"></li>
+        </ul>
+    </div>
+</div>
+<div class="row" id="AdRow">
+    <table id="adminTableAD" class="table table-hover table-striped table-bordered">
+        <thead>
+        <tr>
+
+            <th scope="col">Name</th>
+            <th scope="col">Email</th>
+            <th scope="col">Username</th>
+            <th scope="col">Branch</th>
+            <th scope="col">Role</th>
+
+        </tr>
+        </thead>
+        <tbody></tbody>
+
+    </table>
+    <button class="btn btn-success" id="addToDbBtn">Add to DB</button>
+</div>
+<div class="row" id="DbRow">
+    <table id="adminTableDb" class="table table-hover table-striped table-bordered display">
+        <thead style="background-color: #5d5d96">
+            <tr>
+                <th scope="col">Name</th>
+                <th scope="col">Email</th>
+                <th scope="col">Username</th>
+                <th scope="col">Branch</th>
+                <th scope="col">Role</th>
+            </tr>
+        </thead>
+        <tbody></tbody>
+    </table>
+</div>
+@section scripts{
+    <script>
+        $(document).ready(function() {
+            //ensures tables are loaded once during page lifetime as DataTables yields error after 1 initialization
+
+            var countNxtTbl = 0;
+            var count = 0;
+            var globalTbl;
+            //ensures at start tables are hidden
+            $("#AdRow").hide();
+            $("#DbRow").hide();
+
+
+            //event that listens for a click and hides the current table and shows the intended
+            $("#addAdBtn").on('click',
+                function() {
+
+                    $("#DbRow").hide();
+                    $("#AdRow").toggle();
+                    if (count == 0) {
+                        globalTbl = $("#adminTableAD").DataTable({
+                            "ajax": {
+                                "url": "/AdUsers/GetAdUsers",
+                                "data": "GET",
+                                "datatype": "json"
+                            },
+                            "columns": [
+                                { "data": "Name" },
+                                { "data": "Email" },
+                                { "data": "Username" },
+                                { data: "BranchesId" },
+                                { "data": "Role" }
+                            ]
+                        });
+                        if (globalTbl.data().count() == 0)
+                            $("#addToDbBtn").attr("disabled", false);
+                    }
+                    count++;
+
+                });
+
+            //implementation for Database DataTable
+            $("#editFromDb").on('click',
+                function() {
+                    $("#AdRow").hide();
+                    $("#DbRow").toggle();
+
+                    if (countNxtTbl == 0) {
+                        var table = $("#adminTableDb").DataTable({
+                            "ajax": {
+                                "url": "/AdUsers/GetDbUsers",
+                                "data": "GET",
+                                "datatype": "json"
+                            },
+                            "columns": [
+                                { "data": "Name" },
+                                { "data": "Email" },
+                                { "data": "Username" },
+                                {
+                                    data: "Branches.Branch",
+                                    "render": function(data) {
+                                        var actionBtns =
+                                            `<button class="btn btn-circle" style="color: green">
+                                                       <i class="glyphicon glyphicon-pencil"></i></button>
+                                                        <button class="btn btn-circle" style="color: red">
+                                                       <i class="glyphicon glyphicon-remove"></i></button>`;
+
+                                        return data + actionBtns;
+                                    }
+                                },
+                                { "data": "Role" }
+                            ]
+                        });
+                    }
+
+                    countNxtTbl++;
+                });
+
+            $("#addToDbBtn").on('click',
+                function() {
+
+                    $.ajax({
+                        url: '/AdUsers/SaveAdUsers',
+                        success: function() {
+                            toastr.success("Accepted",
+                                "Users Saved to the database",
+                                { positionClass: "toast-bottom-right" });
+
+                            //removes row from client side perspective. Not on server side thus 
+                            //console.log(table.data().count());
+                            globalTbl.clear().draw();
+                            $("#addToDbBtn").attr("disabled", true);
+
+                        },
+                        statusCode: {
+                            404: function(content) {
+                                alert('cannot find resource');
+                            },
+                            500: function(content) {
+                                alert('internal server error');
+                            }
+                        }
+                    });
+                });
+        });
+    </script>
+}

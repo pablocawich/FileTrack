@@ -37,6 +37,7 @@
 <body>
     <div id="wrapper">
         <!--The line below can be accept a model as a second argument, although not necessary on this case-->
+        
         @if (User.IsInRole(Role.Registry))
         {
             @Html.Partial("_NavBar");

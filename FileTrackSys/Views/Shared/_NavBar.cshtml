@@ -1,4 +1,5 @@
-﻿<nav id="dfcNav" class="navbar navbar-inverse navbar-fixed-top" role="navigation">
+﻿@using FileTracking.Models
+<nav id="dfcNav" class="navbar navbar-inverse navbar-fixed-top" role="navigation">
     <div class="navbar-header">
         <a class="navbar-brand" rel="home" href="@Url.Action("Index","Home")" title="File Track">
             <img style="max-width:82px; margin-top: -15px;"
@@ -29,7 +30,7 @@
         <div class="sidebar-nav navbar-collapse">
             <ul class="nav" id="dfcSideNav">
                 <li>
-                    @Html.Action("BranchNavigationBar","Home")
+                    @Html.Action("BranchNavigationBar", "Home")
                     <!-- /input-group -->
                 </li>
                 <li class="nav-links">
@@ -72,10 +73,16 @@
                 <li>
                     <a href="@Url.Action("ConfirmCheckout", "Requests")"><i class="fa fa-users fa-fw"></i>Sign in as other user</a>
                 </li>
-            </ul>
+                @if (User.IsInRole(Role.AdminUser))
+                {
+                    <li>
+                        <a href="@Url.Action("AdminManagement","AdUsers")"><i class="fa fa-user-plus"></i>Admin Management</a>
+                    </li>
+                }
+</ul>
+            </div>
+            <!-- /.sidebar-collapse -->
         </div>
-        <!-- /.sidebar-collapse -->
-    </div>
-    <!-- /.navbar-static-side -->
+        <!-- /.navbar-static-side -->
 
-</nav>
+    </nav>
