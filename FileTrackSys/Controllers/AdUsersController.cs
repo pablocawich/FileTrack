@@ -8,6 +8,9 @@ using FileTracking.Models;
 using System.DirectoryServices;
 using System.DirectoryServices.AccountManagement;
 using FileTracking.ViewModels;
+using Microsoft.Ajax.Utilities;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 
 
 namespace FileTracking.Controllers
@@ -190,6 +193,24 @@ namespace FileTracking.Controllers
         {
             return View();
         }
+        [HttpPost]
+        public JsonResult DeleteUser(string function_param)
+        {
+            dynamic func_param = JsonConvert.DeserializeObject(function_param);
 
+            foreach (var user in func_param)
+            {
+                int result = Int32.Parse(user.ToString());
+                var userinDb = _context.AdUsers.Single(u => u.Id == result);
+                userinDb.IsDisabled = true;
+
+            }
+
+            _context.SaveChanges();
+            //return this.Json(new { success = false }, JsonRequestBehavior.AllowGet);
+            
+
+            return this.Json(new { success = true }, JsonRequestBehavior.AllowGet);
+        }
     }
 }

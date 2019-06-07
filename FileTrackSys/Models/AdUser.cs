@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
 using System.Web;
 
@@ -18,6 +19,9 @@ namespace FileTracking.Models
 
         public Branches Branches { get; set; }
         public byte BranchesId { get; set; }
+
+        [DefaultValue(false)]
+        public bool IsDisabled { get; set; }//will store whether a user is enabled or disabled.
 
         public AdUser()
         {

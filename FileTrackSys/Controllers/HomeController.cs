@@ -24,9 +24,14 @@ namespace FileTracking.Controllers
         }
         public ActionResult Index()
         {
+            bool disabled = true;
             var userName = new AdUser(User.Identity.Name);
             var user = _context.AdUsers.Include(u=>u.Branches).SingleOrDefault(u => u.Username == userName.Username);
 
+            if (user.IsDisabled == disabled)
+            {
+                return Content("This account has been disabled. Cannot proceed from this point.");
+            }
             if (user == null)
             {
                 return Content("You are not registered as part of this domain and therefore cannot proceed to this application. Please" +
