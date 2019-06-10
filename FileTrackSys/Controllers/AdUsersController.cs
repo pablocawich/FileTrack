@@ -7,6 +7,7 @@ using System.Web.Mvc;
 using FileTracking.Models;
 using System.DirectoryServices;
 using System.DirectoryServices.AccountManagement;
+using System.Runtime.CompilerServices;
 using FileTracking.ViewModels;
 using Microsoft.Ajax.Utilities;
 using Newtonsoft.Json;
@@ -193,6 +194,49 @@ namespace FileTracking.Controllers
         {
             return View();
         }
+
+        public ActionResult ChangeBranch(int id)
+        {
+            var userInDb = _context.AdUsers.Include(u=>u.Branches).Single(u => u.Id == id);
+            var branchesInDb = _context.Branches.ToList();
+
+            var viewModel = new UserBranchViewModel()
+            {
+                User = userInDb,
+                Branches = branchesInDb
+            };
+
+            return PartialView(viewModel);
+        }
+
+        [HttpPost]
+        public ActionResult SaveNewBranch(AdUser user)
+        {
+           
+            if (!ModelState.IsValid)
+            {
+                return Content("Option selected not valid. Please return and try again.");
+            }
+
+            
+
+            if (user.Id != 0)
+            {
+                var userInDb = _context.AdUsers.Single(u => u.Id == user.Id);
+                userInDb.BranchesId = user.BranchesId;
+                userInDb.Id = user.Id;
+                userInDb.Username = user.Username;
+                userInDb.Email = user.Email;
+                userInDb.Name = user.Name;
+                userInDb.IsDisabled = user.IsDisabled;
+                userInDb.Role = user.Role;
+
+                _context.SaveChanges();
+            }
+
+            return RedirectToAction("AdminManagement", "AdUsers");
+        }
+
         [HttpPost]
         public JsonResult DeleteUser(string function_param)
         {
@@ -212,5 +256,12 @@ namespace FileTracking.Controllers
 
             return this.Json(new { success = true }, JsonRequestBehavior.AllowGet);
         }
+
+        [HttpPost]
+        public JsonResult ReEnableUser(string ids)
+        {
+            return this.Json(new { success = true }, JsonRequestBehavior.AllowGet);
+        }
+
     }
 }

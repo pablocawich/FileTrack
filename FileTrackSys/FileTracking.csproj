@@ -482,6 +482,7 @@
     <Compile Include="ViewModels\FileVolumeViewModel.cs" />
     <Compile Include="ViewModels\RegistryNotificationViewModel.cs" />
     <Compile Include="ViewModels\UserAdModel.cs" />
+    <Compile Include="ViewModels\UserBranchViewModel.cs" />
     <Compile Include="ViewModels\VolumesViewModel.cs" />
   </ItemGroup>
   <ItemGroup>
@@ -1013,6 +1014,7 @@
     <Content Include="Views\Notifications\RegistryNotification.cshtml" />
     <Content Include="Views\FileVolumes\VolumeHistory.cshtml" />
     <Content Include="Views\AdUsers\AdminManagement.cshtml" />
+    <Content Include="Views\AdUsers\ChangeBranch.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

@@ -12,29 +12,22 @@
 </div>
 <div class="row" style="height: 65px">
     <label style="color: #5d5d96"><i>Please select a view below to further perform an action:</i> </label><br>
-    <div class="btn-group"><button type="button" class="btn btn-circle" disabled><i class="fa fa-th-list"></i></button>
-        <button type="button" class="btn btn-circle dropdown-toggle" data-toggle="dropdown">
-            <span class="caret"></span><span class="sr-only">Social</span>
-        </button>
-        <ul class="dropdown-menu" role="menu">
-            <li><a href="#" class='btn' id="addAdBtn"><i class='glyphicon glyphicon-level-up'></i> Add From Directory</a></li>
-            <li><a href="#" class='btn' id="editFromDb"><i class='fa fa-database'></i> Modify from Database</a></li>
-            <li class="divider"></li>
-        </ul>
-    </div>
+    <a href="#" class='btn btn-xs' id="addAdBtn"><i class='glyphicon glyphicon-level-up'></i> Add From Directory</a>
+    <a href="#" class='btn btn-xs' id="editFromDb"><i class='fa fa-database'></i> View Database</a>
+   
 </div>
 <div class="row" id="AdRow">
     <table id="adminTableAD" class="table table-hover table-striped table-bordered">
         <thead>
-        <tr>
+            <tr>
 
-            <th scope="col">Name</th>
-            <th scope="col">Email</th>
-            <th scope="col">Username</th>
-            <th scope="col">Branch</th>
-            <th scope="col">Role</th>
+                <th scope="col">Name</th>
+                <th scope="col">Email</th>
+                <th scope="col">Username</th>
+                <th scope="col">Branch</th>
+                <th scope="col">Role</th>
 
-        </tr>
+            </tr>
         </thead>
         <tbody></tbody>
 
@@ -51,25 +44,31 @@
     </div>
     <table id="adminTableDb" class="table table-hover table-striped table-bordered display">
         <thead style="background-color: #5d5d96">
-        <tr>
-            <th style="text-align: center; width: 45px"><i class="glyphicon glyphicon-check"></i></th>
-            <th scope="col">Name</th>
-            <th scope="col">Email</th>
-            <th scope="col">Username</th>
-            <th scope="col">Role</th>
-            <th scope="col">Status</th>
-            <th scope="col" width="130">Branch</th>
-        </tr>
+            <tr>
+                <th style="text-align: center; width: 45px"><i class="glyphicon glyphicon-check"></i></th>
+                <th scope="col">Name</th>
+                <th scope="col">Email</th>
+                <th scope="col">Username</th>
+                <th scope="col">Role</th>
+                <th scope="col">Status</th>
+                <th scope="col" width="130">Branch</th>
+            </tr>
         </thead>
         <tbody></tbody>
     </table>
-
+    <div class="modal fade" id="changeBranchModal" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" data-backdrop="static" data-keyboard="true">
+        <div class="modal-dialog">
+            <div class="modal-content" id="changeBranchModelContent">
+            </div>
+        </div>
+    </div>
 </div>
 @section scripts{
+    @Scripts.Render("~/bundles/jqueryval")
     <script>
-        $(document).ready(function() {
+        $(document).ready(function () {
             //ensures tables are loaded once during page lifetime as DataTables yields error after 1 initialization
-            //array to stores users to be edited 
+            //array to stores users to be edited
 
             var userIDs = [];
             var countNxtTbl = 0;
@@ -85,7 +84,7 @@
 
             //event that listens for a click and hides the current table and shows the intended
             $("#addAdBtn").on('click',
-                function() {
+                function () {
 
                     $("#DbRow").hide();
                     $("#AdRow").toggle();
@@ -111,7 +110,7 @@
 
             //implementation for Database DataTable
             $("#editFromDb").on('click',
-                function() {
+                function () {
                     $("#AdRow").hide();
                     $("#DbRow").toggle();
 
@@ -125,7 +124,7 @@
                             "columns": [
                                 {
                                     "data": "Id",
-                                    render: function(data, type, user) {
+                                    render: function (data, type, user) {
                                         var checkBox =
                                             `<input type="checkbox" class="selectUser" value="${data}" id="${data}">`;
                                         return checkBox;
@@ -137,7 +136,7 @@
                                 { "data": "Role" },
                                 {
                                     "data": "IsDisabled",
-                                    render: function(data, type, row) {
+                                    render: function (data, type, row) {
                                         if (data == true) {
 
                                             return "Inactive";
@@ -149,16 +148,17 @@
                                 },
                                 {
                                     data: "Branches.Branch",
-                                    "render": function(data) {
+                                    "render": function (data, type, user) {
                                         var actionBtns =
-                                            `<button class="btn btn-circle" style="color: green">
-                                                       <i class="glyphicon glyphicon-pencil"></i></button>`;
+                                            `<button class="btn btn-circle editBranchModal" style="color: green" data-userId=${
+                                                user.Id}>
+                                                           <i class="glyphicon glyphicon-pencil"></i></button>`;
 
                                         return actionBtns + "<i>" + data + "</i>";
                                     }
                                 }
                             ],
-                            "createdRow": function(row, data, dataIndex) {
+                            "createdRow": function (row, data, dataIndex) {
                                 if (data.IsDisabled == true) {
                                     $(row).css({ "opacity": "0.5", "background-color": "#ffffff" });
                                 };
@@ -171,26 +171,26 @@
                 });
 
             $("#addToDbBtn").on('click',
-                function() {
+                function () {
                     if (globalTbl.data().any()) {
                         $.ajax({
                             url: '/AdUsers/SaveAdUsers',
-                            success: function() {
+                            success: function () {
                                 toastr.success("Accepted",
                                     "Users Saved to the database",
                                     { positionClass: "toast-bottom-right" });
 
-                                //removes row from client side perspective. Not on server side thus 
+                                //removes row from client side perspective. Not on server side thus
                                 //console.log(table.data().count());
                                 globalTbl.clear().draw();
                                 $("#addToDbBtn").attr("disabled", true);
 
                             },
                             statusCode: {
-                                404: function(content) {
+                                404: function (content) {
                                     alert('cannot find resource');
                                 },
-                                500: function(content) {
+                                500: function (content) {
                                     alert('internal server error');
                                 }
                             }
@@ -209,52 +209,55 @@
             //listens for checks and unchecks
             $("#adminTableDb").on("change",
                 ".selectUser",
-                function() {
+                function () {
                     if ($(this).prop("checked") && $(this).closest('tr').find('td:eq(5)').text() == "Inactive") {
                         $("#enableBtn").show();
                         $("#delBtn").hide();
                     }
                     if ($(this).prop("checked") && $(this).closest('tr').find('td:eq(5)').text() == "Active") {
                         userIDs.push($(this).val());
-                        //alert(userIDs);                       
+                        //alert(userIDs);
                         $("#delBtn").show();
+                        $("#enableBtn").hide();
                     }
                     //listens for unchecks and removes the value from the array
                     if (!($(this).prop("checked")) && $(this).closest('tr').find('td:eq(5)').text() == "Active") {
                         var remove = $(this).val();
 
-                        userIDs = userIDs.filter(function(val, index, arr) {
+                        userIDs = userIDs.filter(function (val, index, arr) {
                             return val !== remove;
 
-                        });
-                        //alert(userIDs);
-                        //console.log(userIDs.length);                      
+                        });                    
 
                         if (userIDs.length == 0) {
                             $("#delBtn").hide();
                         }
+
                     }
 
                     //alert(userIDs.toString());
                 });
 
             $('#delBtn').on("click",
-                function() {
+                function () {
 
                     bootbox.confirm("You are about to disable <strong>" + userIDs.length + "</strong> user/s.",
-                        function(result) {
+                        function (result) {
                             if (result) {
                                 $.ajax({
                                     type: "POST",
                                     url: "/AdUsers/DeleteUser",
                                     data: { function_param: JSON.stringify(userIDs) },
-                                    success: function(response) {
+                                    success: function (response) {
                                         if (response.success == true) {
                                             toastr.success("User successfully deleted",
                                                 "Action Complete",
                                                 { positionClass: "toast-bottom-right" });
-
-                                            $(".selectUser").each(function() {
+                                            setTimeout(function () {
+                                                location.reload();
+                                            }, 1000);
+                                            /*$(".selectUser").each(function (index) {
+                                                console.log(index);
                                                 if ($(this).prop("checked")) {
                                                     adTable.row($(this).prop('checked', false)).draw();
                                                     adTable.row($(this).parents('tr').css({
@@ -262,9 +265,10 @@
                                                         "background-color": "#ffffff"
                                                     })).draw();
                                                 }
-                                            });
+                                            });*/
 
                                             userIDs = [];
+                                            
                                         } else {
                                             toastr.error("Error",
                                                 "An error occured during the request. Refresh page and try again",
@@ -276,6 +280,29 @@
                             }
                         });
 
+                });
+            //-----------------------------Enable user-------------------------------------------------------------
+            $('#enableBtn').on("click",
+                function () {
+
+                    bootbox.confirm("Are you sure you want to re-enable this user <strong> [user] </strong>?",
+                        function (result) {
+                            if (result) {
+                                
+                            }
+                        });
+
+                });
+            //-------------------------------Modal for editing user branch------------------------------------------
+
+            $("#adminTableDb").on("click",
+                ".editBranchModal",
+                function () {
+                    var id = $(this).attr("data-userId");
+                    var url = "/AdUsers/ChangeBranch/" + id; 
+
+                    $('#changeBranchModelContent').load(url);
+                    $('#changeBranchModal').modal('show');
                 });
         });
     </script>
