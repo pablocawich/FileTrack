@@ -199,7 +199,16 @@ namespace FileTracking.Controllers
         [Authorize(Roles = Role.AdminUser)]
         public ActionResult AdminManagement()
         {
-            return View();
+            var currentUser = new AdUser(User.Identity.Name);
+
+            var userInDb = _context.AdUsers.Single(u => u.Username == currentUser.Username);
+
+            if (userInDb.IsDisabled == false)
+            {
+                return View();
+            }
+
+            return HttpNotFound("User Account Disabled. See IT department or application admins.");
         }
 
         //directs to the change branch modal

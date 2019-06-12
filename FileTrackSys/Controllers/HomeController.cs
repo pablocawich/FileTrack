@@ -45,7 +45,7 @@ namespace FileTracking.Controllers
                Console.WriteLine(e.Message);
            }
 
-           return HttpNotFound();
+           return HttpNotFound("More than likely you have not been registered in the system's database. Visit IT Dept.");
         }
 
         //Labels the branch for the respective user on the navigation panel

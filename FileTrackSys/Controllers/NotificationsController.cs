@@ -29,14 +29,25 @@ namespace FileTracking.Controllers
         {
             var AdUsername = new AdUser(User.Identity.Name);
 
-            var userInDb = _context.AdUsers.Single(u => u.Username == AdUsername.Username);
+            try
+            {
+                var userInDb = _context.AdUsers.Single(u => u.Username == AdUsername.Username);
 
-            var notifications = _context.Notifications.Include(n=>n.RecipientUser).Include(n=>n.Message).Include(n=>n.Request).
-                Where(n => n.RecipientUserId == userInDb.Id).Where(n=>n.Read == false).
-                Where(n => n.MessageId == Message.InAccept || n.MessageId == Message.InReject 
-                                                           || n.MessageId == Message.ExAccept || n.MessageId == Message.ExReject).ToList();
+                var notifications = _context.Notifications.Include(n => n.RecipientUser).Include(n => n.Message).Include(n => n.Request).
+                    Where(n => n.RecipientUserId == userInDb.Id).Where(n => n.Read == false).
+                    Where(n => n.MessageId == Message.InAccept || n.MessageId == Message.InReject
+                                                               || n.MessageId == Message.ExAccept || n.MessageId == Message.ExReject).ToList();
 
-            return PartialView("Notifications",notifications);
+                return PartialView("Notifications", notifications);
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e);
+               //throw;
+            }
+
+            return HttpNotFound("User not yet registered to database");
+
         }
         [Authorize(Roles = Role.Registry)]
         public ActionResult NotificationRegistry()

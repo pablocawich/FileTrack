@@ -51,6 +51,7 @@ namespace FileTracking.Controllers
             return PartialView(file);
         }
         
+        //similar to the above function, displays file info. Allows no edits
         public ActionResult FileDetailsForConfirm(int id)
         {
             var file = _context.Files.Include(f => f.Districts).Include(f => f.FileType).
@@ -62,24 +63,36 @@ namespace FileTracking.Controllers
         [Authorize(Roles = Role.Registry)]
         public ActionResult New()
         {
-            //retrieving table content
-            var districts = _context.Districts.ToList();
-            var fileTypes = _context.FileTypes.ToList();
-            var fileStatuses = _context.FileStatuses.ToList();
-            var identificationStatuses = _context.IdentificationOptions.ToList();
-            var locations = _context.Locations.ToList();
-            //instantiating viewModel objects to the db content
-            var viewModel = new FileViewModel
+            var userObj = new AdUser(User.Identity.Name);
+            var userInDB = _context.AdUsers.Single(u => u.Username == userObj.Username);
+
+            //checks if a user is not disabled
+            if (userInDB.IsDisabled == true)
             {
-                File = new File(),//be sure to initialize this to not get that Id error
-                Districts = districts,
-                FileTypes = fileTypes,
-                FileStatuses = fileStatuses,
-                IdentificationOptions = identificationStatuses,
-                Locations = locations
-            };
-            //passing db (viewModel) content to FileForm 
-            return View("FileForm", viewModel);
+                return HttpNotFound("Your account has been disabled");
+            }
+            else
+            {
+                //retrieving table content
+                var districts = _context.Districts.ToList();
+                var fileTypes = _context.FileTypes.ToList();
+                var fileStatuses = _context.FileStatuses.ToList();
+                var identificationStatuses = _context.IdentificationOptions.ToList();
+                var locations = _context.Locations.ToList();
+                //instantiating viewModel objects to the db content
+                var viewModel = new FileViewModel
+                {
+                    File = new File(),//be sure to initialize this to not get that Id error
+                    Districts = districts,
+                    FileTypes = fileTypes,
+                    FileStatuses = fileStatuses,
+                    IdentificationOptions = identificationStatuses,
+                    Locations = locations
+                };
+                //passing db (viewModel) content to FileForm 
+                return View("FileForm", viewModel);
+            }
+          
         }
        
         //below function should accepts a file objects with its binded values from a form as its parameter
@@ -150,24 +163,33 @@ namespace FileTracking.Controllers
         //update implementation
         public ActionResult Update(int id)
         {
-            var fileInDb = _context.Files.SingleOrDefault(f => f.Id == id);
-            if (fileInDb == null)
-            {
-                return HttpNotFound();
-            }
-            
-            var viewModel = new FileViewModel 
-            {
-                File = fileInDb,
-                Districts = _context.Districts.ToList(),
-                FileTypes = _context.FileTypes.ToList(),
-                FileStatuses = _context.FileStatuses.ToList(),
-                IdentificationOptions = _context.IdentificationOptions.ToList(),
-                Locations = _context.Locations.ToList()
-            };
-           
+            var currUser = new AdUser(User.Identity.Name);
+            var userInDb = _context.AdUsers.Single(u=>u.Username == currUser.Username);
 
-            return View("FileForm", viewModel);
+            if (userInDb.IsDisabled == false)
+            {
+                var fileInDb = _context.Files.SingleOrDefault(f => f.Id == id);
+                if (fileInDb == null)
+                {
+                    return HttpNotFound();
+                }
+
+                var viewModel = new FileViewModel
+                {
+                    File = fileInDb,
+                    Districts = _context.Districts.ToList(),
+                    FileTypes = _context.FileTypes.ToList(),
+                    FileStatuses = _context.FileStatuses.ToList(),
+                    IdentificationOptions = _context.IdentificationOptions.ToList(),
+                    Locations = _context.Locations.ToList()
+                };
+
+
+                return View("FileForm", viewModel);
+            }
+
+            return HttpNotFound("User Disabled. Contact IT Dept or see application admin.");
+
         }
 
         //function retrieves currentFileNumber from ManageFileNumber tables in the db
@@ -236,8 +258,8 @@ namespace FileTracking.Controllers
         }
 
         //directs users to the volumes modal view for a specific file based on the id parameter
-      [Authorize(Roles = Role.Registry)]
-      public ActionResult AddNewVolume(int id)
+        [Authorize(Roles = Role.Registry)]
+        public ActionResult AddNewVolume(int id)
       {
           var fileInDb = _context.Files.SingleOrDefault(f => f.Id == id);
           var viewModel = new FileVolumeViewModel
@@ -248,7 +270,7 @@ namespace FileTracking.Controllers
         return PartialView(viewModel);
       }
 
-      //saves a volume with its associated file infomation 
+        //saves a volume with its associated file infomation 
         [HttpPost]
         public ActionResult SaveVolume(FileVolumes fileVolumes,  File file)
         {
@@ -293,22 +315,29 @@ namespace FileTracking.Controllers
         //view volumes as it pertains to the chosen file
         public ActionResult FileVolumes(int id)
         {
-            string uName = ParseUsername(User.Identity.Name);
+            var uname  = new AdUser(User.Identity.Name);
+            var user = _context.AdUsers.Single(u => u.Username == uname.Username);
 
-            var volFileId = _context.FileVolumes.Include(fv=>fv.File).Include(fv => fv.States).
-                Include(fv => fv.Branches).Include(fv=>fv.AdUser).Where(fv => fv.FileId == id).ToList();
-
-            var file = _context.Files.Include(f => f.FileVolumes).SingleOrDefault(f => f.Id == id);
-
-            var user = _context.AdUsers.Single(u => u.Username == uName);
-
-            var viewModel = new VolumesViewModel()
+            if (user.IsDisabled == false)
             {
-                File = file,
-                FileVolumes = volFileId,
-                AdUser = user
-            };
-            return View(viewModel);
+                var volFileId = _context.FileVolumes.Include(fv => fv.File).Include(fv => fv.States).
+                    Include(fv => fv.Branches).Include(fv => fv.AdUser).Where(fv => fv.FileId == id).ToList();
+
+                var file = _context.Files.Include(f => f.FileVolumes).SingleOrDefault(f => f.Id == id);
+
+
+
+                var viewModel = new VolumesViewModel()
+                {
+                    File = file,
+                    FileVolumes = volFileId,
+                    AdUser = user
+                };
+
+                return View(viewModel);
+            }
+
+            return HttpNotFound("User has been disabled");
         }
 
         //[HttpPost]. Sends our file objects as a set of JSON objects. Enables the possibility of server side processing on our datatable.
