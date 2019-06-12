@@ -8,6 +8,7 @@ using FileTracking.Models;
 using System.DirectoryServices;
 using System.DirectoryServices.AccountManagement;
 using System.Runtime.CompilerServices;
+using System.Web.Security;
 using FileTracking.ViewModels;
 using Microsoft.Ajax.Utilities;
 using Newtonsoft.Json;
@@ -34,6 +35,7 @@ namespace FileTracking.Controllers
         [Route("adUsers/TestUsers/{role}")]
         public ActionResult TestUsers(string role)
         {
+            
             var connection = InitializeAdConnection();
             var userList = new List<AdUser>();
 
@@ -41,14 +43,15 @@ namespace FileTracking.Controllers
             {
                 userList = AdUsers(Role.Registry, connection);
                 ViewBag.Message = "Registry Users";
-            }else if (role == "regular")
+            }else if (role == "web")
             {
-                userList = AdUsers(Role.RegularUser, connection);
+                userList = AdUsers("WEB_IT", connection);
                 ViewBag.Message = "Regular Users";
             }
-            else if (role == null || role != "registry"||role != "regular")
+            else if (role == "admin")
             {
-                return HttpNotFound("Role cannot be anything other than regular or registry. Please provide valid parameters");
+                userList = AdUsers("FMS_Admin", connection);
+                ViewBag.Message = "Admin USers";
             }
 
             var viewModel = new UserAdModel
@@ -59,6 +62,7 @@ namespace FileTracking.Controllers
             return View("TestUsers",viewModel);
         }
 
+        [Authorize(Roles = Role.AdminUser)]
         public ActionResult GetAdUsers()
         {
             var connection = InitializeAdConnection();
@@ -84,6 +88,7 @@ namespace FileTracking.Controllers
 
         }
 
+        [Authorize(Roles = Role.AdminUser)]
         public ActionResult GetDbUsers()
         {
             var usersInDb = _context.AdUsers.Include(u=>u.Branches).ToList();
@@ -97,6 +102,7 @@ namespace FileTracking.Controllers
         }
 
         //retrieves users and their appropriate information based on the role specified
+        [Authorize(Roles = Role.AdminUser)]
         public List<AdUser> AdUsers(string groupName, PrincipalContext context)
         {
             var userList = new List<AdUser>();
@@ -114,10 +120,8 @@ namespace FileTracking.Controllers
                     var users = group.GetMembers(true);
 
                     foreach (UserPrincipal user in users)
-                    {
-
-                        
-                        //this if ensures a check is done to verify that our db records are not duplicated by the instances in the active directory
+                    {                       
+                        //this if block ensures a check is done to verify that our db records are not duplicated by the instances in the active directory
                         if (!(adUsersinDb.Exists(adUser => adUser.Username == user.SamAccountName)))
                         {
                             var branchId = DetermineBranch(user);
@@ -163,6 +167,7 @@ namespace FileTracking.Controllers
         }
 
         //stores user objects into db
+        [Authorize(Roles = Role.AdminUser)]
         public JsonResult SaveAdUsers()
         {
             var connection = InitializeAdConnection();
@@ -190,11 +195,15 @@ namespace FileTracking.Controllers
 
         }
 
+        //directs user to admin page
+        [Authorize(Roles = Role.AdminUser)]
         public ActionResult AdminManagement()
         {
             return View();
         }
 
+        //directs to the change branch modal
+        [Authorize(Roles = Role.AdminUser)]
         public ActionResult ChangeBranch(int id)
         {
             var userInDb = _context.AdUsers.Include(u=>u.Branches).Single(u => u.Id == id);
@@ -210,9 +219,11 @@ namespace FileTracking.Controllers
         }
 
         [HttpPost]
+        [Authorize(Roles = Role.AdminUser)]
         public ActionResult SaveNewBranch(AdUser user)
         {
-           
+            var userParsed = new AdUser(User.Identity.Name);
+
             if (!ModelState.IsValid)
             {
                 return Content("Option selected not valid. Please return and try again.");
@@ -223,22 +234,52 @@ namespace FileTracking.Controllers
             if (user.Id != 0)
             {
                 var userInDb = _context.AdUsers.Single(u => u.Id == user.Id);
-                userInDb.BranchesId = user.BranchesId;
-                userInDb.Id = user.Id;
-                userInDb.Username = user.Username;
-                userInDb.Email = user.Email;
-                userInDb.Name = user.Name;
-                userInDb.IsDisabled = user.IsDisabled;
-                userInDb.Role = user.Role;
+                if (userInDb.Username != userParsed.Username)
+                {
+                    userInDb.BranchesId = user.BranchesId;
+                    userInDb.Id = user.Id;
+                    userInDb.Username = user.Username;
+                    userInDb.Email = user.Email;
+                    userInDb.Name = user.Name;
+                    userInDb.IsDisabled = user.IsDisabled;
+                    userInDb.Role = user.Role;
 
-                _context.SaveChanges();
+                    _context.SaveChanges();
+                }
+                else
+                {
+                    return HttpNotFound("Unfortunately cannot change your own district. Seek another admin to carry this out.");
+                }
+                
             }
 
             return RedirectToAction("AdminManagement", "AdUsers");
         }
 
         [HttpPost]
+        [Authorize(Roles = Role.AdminUser)]
         public JsonResult DeleteUser(string function_param)
+        {
+            var adUser = new AdUser(User.Identity.Name);
+            
+            dynamic func_param = JsonConvert.DeserializeObject(function_param);
+
+            foreach (var user in func_param)
+            {
+                int result = Int32.Parse(user.ToString());
+                var userinDb = _context.AdUsers.Single(u => u.Id == result);
+                if(userinDb.Username != adUser.Username)
+                    userinDb.IsDisabled = true;
+
+            }
+            if (_context.SaveChanges() > 0)
+                return this.Json(new { success = true }, JsonRequestBehavior.AllowGet);
+            return this.Json(new { success = false }, JsonRequestBehavior.AllowGet);
+        }
+
+        [HttpPost]
+        [Authorize(Roles = Role.AdminUser)]
+        public JsonResult ReEnableUser(string function_param)
         {
             dynamic func_param = JsonConvert.DeserializeObject(function_param);
 
@@ -246,21 +287,13 @@ namespace FileTracking.Controllers
             {
                 int result = Int32.Parse(user.ToString());
                 var userinDb = _context.AdUsers.Single(u => u.Id == result);
-                userinDb.IsDisabled = true;
+                userinDb.IsDisabled = false;
 
             }
 
-            _context.SaveChanges();
-            //return this.Json(new { success = false }, JsonRequestBehavior.AllowGet);
-            
-
-            return this.Json(new { success = true }, JsonRequestBehavior.AllowGet);
-        }
-
-        [HttpPost]
-        public JsonResult ReEnableUser(string ids)
-        {
-            return this.Json(new { success = true }, JsonRequestBehavior.AllowGet);
+            if (_context.SaveChanges() > 0)
+                return this.Json(new { success = true }, JsonRequestBehavior.AllowGet);
+            return this.Json(new { success = false }, JsonRequestBehavior.AllowGet);
         }
 
     }

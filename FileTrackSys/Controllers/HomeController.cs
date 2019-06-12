@@ -8,7 +8,6 @@ using FileTracking.Models;
 
 namespace FileTracking.Controllers
 {
-    
     public class HomeController : Controller
     {
         private ApplicationDbContext _context;
@@ -16,31 +15,40 @@ namespace FileTracking.Controllers
         public HomeController()
         {
             _context = new ApplicationDbContext();
+
         }
 
         protected override void Dispose(bool disposing)
         {
             _context.Dispose();
+
         }
+
         public ActionResult Index()
         {
-            bool disabled = true;
-            var userName = new AdUser(User.Identity.Name);
-            var user = _context.AdUsers.Include(u=>u.Branches).SingleOrDefault(u => u.Username == userName.Username);
+            var userObj = new AdUser(User.Identity.Name);
 
-            if (user.IsDisabled == disabled)
+            try
             {
-                return Content("This account has been disabled. Cannot proceed from this point.");
-            }
-            if (user == null)
-            {
-                return Content("You are not registered as part of this domain and therefore cannot proceed to this application. Please" +
-                               "Visit DFC's IT department for further clarification or help.");
-            }
+                var user = _context.AdUsers.Include(u => u.Branches)
+                    .SingleOrDefault(u => u.Username == userObj.Username);
 
-            return View(user);
+                if (user.IsDisabled == true)
+                {
+                    return HttpNotFound("Your account has been disabled. Cannot proceed");
+                }
+               
+                return View(user);
+          }
+          catch (Exception e)
+          {           
+               Console.WriteLine(e.Message);
+           }
+
+           return HttpNotFound();
         }
 
+        //Labels the branch for the respective user on the navigation panel
         public ActionResult BranchNavigationBar()
         {
             var adUser = new AdUser(User.Identity.Name);
@@ -51,16 +59,18 @@ namespace FileTracking.Controllers
             return PartialView("_BranchNav");
         }
 
+        //directs to the about page
         public ActionResult About()
         {
-            ViewBag.Message = "File tracking system";
+            ViewBag.Message = "File Tracking System";
 
             return View();
         }
-        
+
+        //directs to contact page
         public ActionResult Contact()
         {
-            ViewBag.Message = "IT department";
+            ViewBag.Message = "IT Department";
 
             return View();
         }

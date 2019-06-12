@@ -7,26 +7,26 @@
 </div>
 @using (Html.BeginForm("SaveNewBranch", "AdUsers", FormMethod.Post, new { @id = "newBranchId" }))
 {
-<div class="modal-body container-fluid">
-    <h6>Please select a new branch below: </h6>
-    @Html.ValidationSummary(false)
-    <div class="form-group">
-        @Html.LabelFor(f => f.User.BranchesId, new { @class = "control-label" })
-        <div class="input-group">
-            <span class="input-group-addon" style="max-width: 100%;"><i class="glyphicon glyphicon-list"></i></span>
-            @Html.DropDownListFor(f => f.User.BranchesId, new SelectList(Model.Branches, "Id", "Branch"), "Select client's new Branch :", new { @class = "form-control" })
+    <div class="modal-body container-fluid">
+        <h6>Please select a new branch below: </h6>
+        @Html.ValidationSummary(false)
+        <div class="form-group">
+            @Html.LabelFor(f => f.User.BranchesId, new { @class = "control-label" })
+            <div class="input-group">
+                <span class="input-group-addon" style="max-width: 100%;"><i class="glyphicon glyphicon-list"></i></span>
+                @Html.DropDownListFor(f => f.User.BranchesId, new SelectList(Model.Branches, "Id", "Branch"), "Select client's new Branch :", new { @class = "form-control" })
+            </div>
+            @Html.ValidationMessageFor(f => f.User.BranchesId)
         </div>
-        @Html.ValidationMessageFor(f => f.User.BranchesId)
-    </div>
-    
-    @Html.HiddenFor(v => v.User.Username)
-    @Html.HiddenFor(v => v.User.Email)
-    @Html.HiddenFor(v => v.User.Id)
-    @Html.HiddenFor(v => v.User.IsDisabled)
-    @Html.HiddenFor(v => v.User.Name)
-    @Html.HiddenFor(v => v.User.Role)
 
-</div>
+        @Html.HiddenFor(v => v.User.Username)
+        @Html.HiddenFor(v => v.User.Email)
+        @Html.HiddenFor(v => v.User.Id)
+        @Html.HiddenFor(v => v.User.IsDisabled)
+        @Html.HiddenFor(v => v.User.Name)
+        @Html.HiddenFor(v => v.User.Role)
+
+    </div>
     <div class="modal-footer">
         <button class="btn btn-primary" type="submit">Save File</button>
         <button type="button" class="btn btn-google-plus" data-dismiss="modal">
@@ -35,5 +35,12 @@
     </div>
 
 }
-
+@section scripts{
+    @Scripts.Render("~/bundles/jqueryval")
+    <script>
+        $(document).ready(function() {
+            
+        });
+    </script>
+}
 

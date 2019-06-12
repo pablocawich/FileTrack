@@ -15,6 +15,7 @@ namespace FileTracking.Models
         //FMS_Regular
         public const string RegularUser = "FMS_Regular";
 
-        public const string AdminUser = "WEB_IT";
+        //FMS_Admin
+        public const string AdminUser = "FMS_Admin";
     }
 }
