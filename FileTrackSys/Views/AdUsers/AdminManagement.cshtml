@@ -95,7 +95,7 @@
                     if (count == 0) {
                         globalTbl = $("#adminTableAD").DataTable({
                             "ajax": {
-                                "url": "/AdUsers/GetAdUsers",
+                                "url": siteURL+"/AdUsers/GetAdUsers",
                                 "data": "GET",
                                 "datatype": "json"
                             },
@@ -121,7 +121,7 @@
                     if (countNxtTbl == 0) {
                         adTable = $("#adminTableDb").DataTable({
                             "ajax": {
-                                "url": "/AdUsers/GetDbUsers",
+                                "url": siteURL+"/AdUsers/GetDbUsers",
                                 "data": "GET",
                                 "datatype": "json"
                             },
@@ -179,7 +179,7 @@
                 function() {
                     if (globalTbl.data().any()) {
                         $.ajax({
-                            url: '/AdUsers/SaveAdUsers',
+                            url: siteURL+'/AdUsers/SaveAdUsers',
                             success: function() {
                                 toastr.success("Accepted",
                                     "Users Saved to the database",
@@ -281,7 +281,7 @@
                             if (result) {
                                 $.ajax({
                                     type: "POST",
-                                    url: "/AdUsers/DeleteUser",
+                                    url: siteURL+"/AdUsers/DeleteUser",
                                     data: { function_param: JSON.stringify(userIDs) },
                                     success: function(response) {
                                         if (response.success == true) {
@@ -327,7 +327,7 @@
                             if (result) {
                                 $.ajax({
                                     type: "POST",
-                                    url: "/AdUsers/ReEnableUser",
+                                    url: siteURL+"/AdUsers/ReEnableUser",
                                     data: { function_param: JSON.stringify(userEnable) },
                                     success: function(response) {
                                         if (response.success == true) {
@@ -367,7 +367,7 @@
                             { positionClass: "toast-bottom-right" });
                     } else {
                         var id = $(this).attr("data-userId");
-                        var url = "/AdUsers/ChangeBranch/" + id;
+                        var url = siteURL+"/AdUsers/ChangeBranch/" + id;
 
                         $('#changeBranchModelContent').load(url);
                         $('#changeBranchModal').modal('show');

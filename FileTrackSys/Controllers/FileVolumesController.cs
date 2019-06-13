@@ -87,19 +87,27 @@ namespace FileTracking.Controllers
         [Authorize(Roles = Role.RegularUser)]
         public ActionResult UserVolumes()//this interface gets files currently check out to user
         {
-            string username = ParseUsername(User.Identity.Name);
-            var user = _context.AdUsers.Single(u => u.Username == username);
+            var currentUser = new AdUser(User.Identity.Name);
+            var userInDb = _context.AdUsers.Single(u => u.Username == currentUser.Username);
 
-            var request = _context.Requests.Include(r=>r.FileVolumes).Include(r=>r.Branches).Where(r => r.UserId == user.Id).Where(r=>r.IsRequestActive == true)
-                .Where(r => r.IsConfirmed == true).
-                Where(r=>r.ReturnStateId == 1).Where(r=>r.RequestTypeId == RequestType.InternalRequest).ToList();
+            if (userInDb.IsDisabled == false)
+            {
+                string username = ParseUsername(User.Identity.Name);
+                var user = _context.AdUsers.Single(u => u.Username == username);
 
-           // var reqList = new List<Request>();
+                var request = _context.Requests.Include(r => r.FileVolumes).Include(r => r.Branches).Where(r => r.UserId == user.Id).Where(r => r.IsRequestActive == true)
+                    .Where(r => r.IsConfirmed == true).
+                    Where(r => r.ReturnStateId == 1).Where(r => r.RequestTypeId == RequestType.InternalRequest).ToList();
 
-            //reqList = request;
-            //run query that shows volume currently assigned to the signed in user
-                      
-            return View("UserVolumes", request);
+                // var reqList = new List<Request>();
+
+                //reqList = request;
+                //run query that shows volume currently assigned to the signed in user
+
+                return View("UserVolumes", request);
+            }
+
+            return HttpNotFound("Your account is Disabled");
         }
 
         public void ReturnVolume(int id)

@@ -66,7 +66,7 @@
                             function(result) {
                                 if (result) {
                                     $.ajax({
-                                        url: '/FileVolumes/ReturnVolume/' + requestId,
+                                        url: siteURL+'/FileVolumes/ReturnVolume/' + requestId,
                                         success: function() {
                                             toastr.success("Return Request Sent to registry", "Return", { positionClass: "toast-bottom-right" });
 
@@ -84,7 +84,7 @@
                 $("#myFiles").on("click", ".returnModal",
                     function() {
                         var id = $(this).attr("data-return-id");
-                        var url = "/Files/FileDetailsForConfirm/" + id;
+                        var url = siteURL+"/Files/FileDetailsForConfirm/" + id;
                         // alert(url);
 
                         $('#returnModelContent').load(url);

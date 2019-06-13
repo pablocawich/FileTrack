@@ -119,7 +119,7 @@
                                     if (result) {
                                         //write code tht routes volumes id to an action result in volumes controller.
                                         window.location.href =
-                                            "/Requests/Index/" + button.attr("vol-data-id");
+                                            siteURL+"/Requests/Index/" + button.attr("vol-data-id");
                                     }
                                 }
                             });
@@ -145,7 +145,7 @@
                                                 //write code tht routes volumes id to an action result in volumes controller
                                                 // window.location.href = "/FileVolumes/RequestFile/" + button.attr("data-request-file-id");
                                                 window.location.href =
-                                                    "/Requests/Index/" + button.attr("vol-data-id");
+                                                    siteURL+"/Requests/Index/" + button.attr("vol-data-id");
                                             }
                                         }
                                     });
@@ -153,8 +153,6 @@
                         }
                     }
                     
-
-
                 });
             //inserting a string value for current location
             $(".currentLoc").each(function() {

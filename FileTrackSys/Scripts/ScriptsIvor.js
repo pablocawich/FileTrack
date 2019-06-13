@@ -6,7 +6,7 @@
         var notifId = $(this).attr("notif-id-attr");
 
         $.ajax({
-            url: '/Notifications/ChangeToRead/' + notifId,
+            url: siteURL+'/Notifications/ChangeToRead/' + notifId,
             success: function () {
                 list.remove();
                 //alert($(".alertList").length);
@@ -43,25 +43,26 @@
        var button = $(this);
        bootbox.confirm("Are you sure you want to add volume to this file?", function (result) {
            if (result) {
-               var url = "/Files/AddNewVolume/" + button.attr("data-file-id");
+               var url = siteURL+"/Files/AddNewVolume/" + button.attr("data-file-id");
               
                $('#modelContent').load(url);
                $('#myModal').modal('show');
            }
        });
-   });
+    });
+
    $("#fileTable").on("click", ".js-editFile", function () {
        var button = $(this);
        bootbox.confirm("Are you sure you want to edit this file?", function (result) {
            if (result) {
-               window.location.href = "/Files/Update/" + button.attr("data-edit-file-id");
+               window.location.href = siteURL + "/Files/Update/" + button.attr("data-edit-file-id");
            }
        });
     });
 
     $("#fileTable").on("click", ".js-viewVolumes", function () {
        var button = $(this);
-       window.location.href = "/Files/FileVolumes/" + button.attr("data-view-vol-id");
+        window.location.href = siteURL+"/Files/FileVolumes/" + button.attr("data-view-vol-id");
           
       
    });
@@ -70,7 +71,7 @@
         var value = $(this).val();
         
         $.ajax({
-            url: '/Files/GetLocationsByDistrict/' + value,
+            url: siteURL+'/Files/GetLocationsByDistrict/' + value,
             type: 'POST',
             dataType: 'json',
             success: function (data) {
@@ -102,4 +103,14 @@
         e.preventDefault();
         $('html, body').animate({ scrollTop: 0 }, '300');
     });
+
+    //functionality for the drop down list navigation menu on external transfer interface
+    $("#extTransferNav").on("click", function () {
+
+        if($("#extTransferUl").hasClass("in"))
+             $("#extTransferUl").removeClass("in");
+        else
+            $("#extTransferUl").addClass("in");
+    });
+
 });

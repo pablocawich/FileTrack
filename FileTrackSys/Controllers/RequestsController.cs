@@ -57,46 +57,50 @@ namespace FileTracking.Controllers
             return false;
         }
 
+        //this is invoked whenever a user makes a request from the 'FileVolume' page where the parameters with the exact volume is provided.
         [Route("Requests/Index/{volId}")]
         public ActionResult Index(int volId)
         {
             //pulls records associated with a request such as volume and user
-            var userObj = new AdUser(User.Identity.Name);
-
-            var volume = _context.FileVolumes.Single(v => v.Id == volId);
+            var userObj = new AdUser(User.Identity.Name);          
 
             var user = _context.AdUsers.Single(u => u.Username == userObj.Username);
 
-            //check if this volume number has not already been requested by this user
-            if (volume.StatesId == 1)
+            if (user.IsDisabled == false)
             {
-                if (HasBeenRequested(volume, user))
-                    return View("AlreadyRequested");
-            }
+                var volume = _context.FileVolumes.Single(v => v.Id == volId);
 
-            if (CheckBranchValidity(user, volume))
-            {
-                if (PopulateRequest(volume, user))
+                //check if this volume number has not already been requested by this user
+                if (volume.StatesId == 1)
                 {
-                    UpdateVolumeState(volume);
-                    return View();
+                    if (HasBeenRequested(volume, user))
+                        return View("AlreadyRequested");
+                }
+
+                if (CheckBranchValidity(user, volume))
+                {
+                    if (PopulateRequest(volume, user))
+                    {
+                        UpdateVolumeState(volume);
+                        return View();
+                    }
+                    else
+                        return Content("Saving to request database failed");
+
                 }
                 else
-                    return Content("Saving to request database failed");
-               
-            }
-            else
-            {
-                if (PopulateExternalRequests(volume, user))
-                    return View("ExternalRequestMade");
-                else
                 {
-                    return Content(
-                        "Sorry it appears something occured with the methods of inserting into your database. Check your query or logic");
+                    if (PopulateExternalRequests(volume, user))
+                        return View("ExternalRequestMade");
+                    else
+                    {
+                        return Content(
+                            "Sorry it appears something occured with the methods of inserting into your database. Check your query or logic");
+                    }
                 }
             }
 
-                                      
+            return HttpNotFound("User Account Disabled");
         }
 
         //checks that a volume is not requested more than once by the same user
@@ -366,9 +370,18 @@ namespace FileTracking.Controllers
         [Authorize(Roles = Role.RegularUser)]
         public ActionResult ConfirmCheckout()
         {
-            return View();
+            var currentUser = new AdUser(User.Identity.Name);
+            var userInDb = _context.AdUsers.Single(u => u.Username == currentUser.Username);
+
+            if (userInDb.IsDisabled == false)
+            {
+                return View();
+            }
+
+            return HttpNotFound("Your Account is disabled");
         }
 
+        //where REGULAR USERS will be able to see those requests accepted by registry
         [Authorize(Roles = Role.RegularUser)]
         public ActionResult GetConfirmCheckout()
         {
@@ -468,7 +481,6 @@ namespace FileTracking.Controllers
             _context.SaveChanges();
 
             //UpdateVolumeStateStored(requestRecord.FileVolumesId);
-
         }
 
         public void CheckoutVolume(int volId, int requester)

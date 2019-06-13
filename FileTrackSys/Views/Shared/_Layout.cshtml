@@ -17,7 +17,8 @@
 
     <script>
         //Creates a global variable with user signed in and their respective roles
-        var siteURL = "FMS";//assign site name here, will serve as global variable
+
+        var siteURL = "";//assign site name here, will serve as global variable
         var userRole = '';
         if ("@(User.IsInRole(Role.Registry))" == "True") {
             userRole = "@(Role.Registry)";

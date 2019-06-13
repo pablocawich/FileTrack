@@ -56,7 +56,7 @@
         $(document).ready(function () {
   var userFileTable = $("#userFileTable").DataTable({
                 "ajax": {
-                    "url": "/Files/GetFiles",
+                    "url": siteURL+"/Files/GetFiles",
                     "data": "POST",
                     "datatype": "json"
                 },
@@ -154,8 +154,8 @@
             }
             //opens modal that displays file information for a specif file
             $("#userFileTable").on("click",".spanModal",function() {
-                    var id = $(this).attr("data-url");
-                    var url = "/Files/FileDetails/" + id;
+                var id = $(this).attr("data-url");
+                var url = siteURL+"/Files/FileDetails/" + id;
                     // alert(url);
 
                     $('#modelContent').load(url);
@@ -167,10 +167,11 @@
                 var name = button.attr("data-request-name");
                 bootbox.confirm("You are to request a file for "+name.toUpperCase()+". To request this file you need to specify a volume. Do you wish to proceed", function (result) {
                     if (result) {
-                        window.location.href = "/FileVolumes/RequestFile/" + button.attr("data-request-file-id");
+                        window.location.href = siteURL+"/FileVolumes/RequestFile/" + button.attr("data-request-file-id");
                     }
                 });
             });
+            //clear form button functionality
             $("#userSearchClearBtn").on('click',function () {
                                 
                       userFileTable.column(0).search('').draw();

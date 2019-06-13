@@ -35,7 +35,7 @@
             //gets json objects from the request controller in order to populate the dataTable
             var table = $("#extBranchReturnsTable").DataTable({
                 "ajax": {
-                    "url": "/FileVolumes/GetReturnToBranchFiles",
+                    "url": siteURL+"/FileVolumes/GetReturnToBranchFiles",
                     "data": "GET",
                     "datatype": "json"
                 },
@@ -83,7 +83,7 @@
                         function(result) {
                             if (result) {
                                 $.ajax({
-                                    url: '/FileVolumes/ReturnToBranchAction/' + id,
+                                    url: siteURL+'/FileVolumes/ReturnToBranchAction/' + id,
                                     success: function() {
 
                                         toastr.success("Accepted return for client",

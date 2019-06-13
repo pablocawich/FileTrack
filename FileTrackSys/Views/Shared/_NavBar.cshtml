@@ -33,39 +33,43 @@
                     @Html.Action("BranchNavigationBar", "Home")
                     <!-- /input-group -->
                 </li>
-                <li class="nav-links">
+                <li>
                     <a href="@Url.Action("New", "Files")" id="createFile"><i class="fa fa-edit fa-fw"></i>Create File</a>
                 </li>
-                <li class="nav-links">
+                <li>
                     <a href="@Url.Action("Index", "Files")" id="indexFile"><i class="fa fa-files-o fa-fw"></i>Search</a>
 
                 </li>
-                <li class="nav-links">
+                <li>
                     <a href="@Url.Action("PendingFiles","Requests")" id="pendingFiles"><i class="fa fa-hourglass-2 fa-fw"></i>Pending Files</a>
                 </li>
                 <li>
                     <a href="@Url.Action("ReturnApproval", "FileVolumes")"><i class="fa fa-reply fa-fw"></i> Accept Returns</a>
                 </li>
+               
                 <li class="sidebar-search">
 
                     <!-- /input-group -->
                 </li>
-                <li class="nav-links">
-                    <a href="@Url.Action("ExternalBranchRequest","Requests")"><i class="fa fa-external-link-square fa-fw"></i>Pending (External Branch)</a>
-                </li>
-                <li class="sidebar-search">
-
-                    <!-- /input-group -->
-                </li>
-                <li class="nav-links">
-                    <a href="@Url.Action("ExternalTransferApproval","Requests")"><i class="fa fa-sign-in fa-fw"></i>Accept External Transfer</a>
-                </li>
                 <li>
-                    <a href="@Url.Action("ReturnToBranch","FileVolumes")"><i class="fa  fa-truck fa-fw"></i>Return to Branch</a>
+                    <a href="#" id="extTransferNav"><i class="fa fa-external-link fa-fw"></i> External Transfers<span class="fa arrow"></span></a>
+                    <ul id="extTransferUl" class="nav nav-second-level collapse">
+                        <li>
+                            <a href="@Url.Action("ExternalBranchRequest","Requests")"><i class="fa fa-external-link-square fa-fw"></i>Pending</a>
+                        </li>
+                        <li>
+                            <a href="@Url.Action("ExternalTransferApproval", "Requests")"><i class="fa fa-sign-in fa-fw"></i>Accept External Transfer</a>
+                        </li>
+                        <li>
+                            <a href="@Url.Action("ReturnToBranch", "FileVolumes")"><i class="fa  fa-truck fa-fw"></i>Return to Branch</a>
+                        </li>
+                        <li>
+                            <a href="@Url.Action("ApproveExternalReturns", "FileVolumes")"><i class="fa fa-chevron-circle-left fa-fw"></i> Accept External Return</a>
+                        </li>
+                    </ul>
+                    <!-- /.nav-second-level -->
                 </li>
-                <li>
-                    <a href="@Url.Action("ApproveExternalReturns", "FileVolumes")"><i class="fa fa-chevron-circle-left fa-fw"></i> Accept External Return</a>
-                </li>
+                             
                 <li class="sidebar-search">
 
                     <!-- /input-group -->

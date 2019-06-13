@@ -71,7 +71,7 @@
                         <button vol-data-id="@fileVol.Id" file-name="@Model.File.FirstName" vol-num-attr="@fileVol.Volume" class="btn btn-circle js-edit-vol">
                             <i class="glyphicon glyphicon-pencil"></i>
                         </button> |
-                        <button class="btn btn-circle history-js" vol-id-attr="@fileVol.Id" style="background-color:"><i class="fa fa-history"></i></button>
+                        <button class="btn btn-circle history-js" vol-id-attr="@fileVol.Id" ><i class="fa fa-history"></i></button>
 
                     </td>
                 </tr>
@@ -99,7 +99,7 @@
                     bootbox.confirm("Are you sure you want to edit this volume's <strong>"+volNum+"</strong> ?",
                         function(result) {
                             if (result) {
-                                var url = "/FileVolumes/UpdateVolumeDescription/" + volId;
+                                var url = siteURL+"/FileVolumes/UpdateVolumeDescription/" + volId;
                                 // alert(url);
                                 $('#volEditModelContent').load(url);
                                 $('#volumeEditModal').modal('show');
@@ -115,7 +115,7 @@
                    bootbox.confirm("View recent activity for volume?",
                        function(result) {
                            if (result) {
-                               var url = "/FileVolumes/VolumeHistory/" + volId+"/"+1+"/"+5;
+                               var url = siteURL+"/FileVolumes/VolumeHistory/" + volId+"/"+1+"/"+5;
                                window.location.href = url;
                            }
                        });

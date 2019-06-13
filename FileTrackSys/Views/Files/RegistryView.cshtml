@@ -56,7 +56,7 @@
 
             var fileTable = $("#fileTable").DataTable({
                 "ajax": {
-                    "url":"/Files/GetFiles",
+                    "url": siteURL+"/Files/GetFiles",
                     "data": "POST",
                     "datatype": "json"
                 },
@@ -112,7 +112,7 @@
                 "order": [0, "asc"],
                 "processing": "true",
                 "language": {
-                    "processing": "Processing Files... Kindly hold"
+                    "processing": "Processing DFC Files... Kindly hold"
                 },
                 "dom": '<"top"l>rt<"bottom"ip><"clear">',
                 "fnInitComplete": function(oSettings, json) {
@@ -169,7 +169,7 @@
             //opens modal that displays file information for a specif file
             $("#fileTable").on("click",".spanModal", function() {
                     var id = $(this).attr("data-url");
-                    var url = "/Files/FileDetails/" + id;
+                var url = siteURL+"/Files/FileDetails/" + id;
                     // alert(url);
 
                     $('#modelContent').load(url);

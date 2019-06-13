@@ -37,7 +37,7 @@ link rel="stylesheet" href="https://cdn.datatables.net/1.10.19/css/dataTables.bo
             //gets json objects from the request controller in order to populate the dataTable
             var table = $("#extReturnsTable").DataTable({
                 "ajax": {
-                    "url": "/FileVolumes/GetExternalReturns",
+                    "url": siteURL+"/FileVolumes/GetExternalReturns",
                     "data": "GET",
                     "datatype": "json"
                 },

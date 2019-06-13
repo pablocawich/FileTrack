@@ -43,7 +43,7 @@
             //gets json objects from the request controller in order to populate the dataTable
             var table = $("#returnedTable").DataTable({
                 "ajax": {
-                    "url": "/FileVolumes/GetReturnedRequests",
+                    "url": siteURL+"/FileVolumes/GetReturnedRequests",
                     "data": "GET",
                     "datatype": "json"
                 },
@@ -98,7 +98,7 @@
                         function(result) {
                             if (result) {
                                 $.ajax({
-                                    url: '/FileVolumes/AcceptReturn/' + id,
+                                    url: siteURL+'/FileVolumes/AcceptReturn/' + id,
                                     success: function() {
 
                                         toastr.success("Accepted return for client",
@@ -128,7 +128,7 @@
                 ".acceptRetModal",
                 function() {
                     var id = $(this).attr("data-acct-ret-id");
-                    var url = "/Files/FileDetailsForConfirm/" + id;
+                    var url = siteURL+"/Files/FileDetailsForConfirm/" + id;
                     // alert(url);
 
                     $('#acceptReturnModelContent').load(url);

@@ -37,7 +37,7 @@
             //gets json objects from the request controller in order to populate the dataTable
             var table = $("#extReturnsApprovalTable").DataTable({
                 "ajax": {
-                    "url": "/FileVolumes/GetExternalApproveReturns",
+                    "url": siteURL+"/FileVolumes/GetExternalApproveReturns",
                     "data": "GET",
                     "datatype": "json"
                 },
@@ -85,7 +85,7 @@
                         function(result) {
                             if (result) {
                                 $.ajax({
-                                    url: '/FileVolumes/AcceptExternalReturn/' + id,
+                                    url: siteURL+'/FileVolumes/AcceptExternalReturn/' + id,
                                     success: function() {
 
                                         toastr.success("Accepted return for client","Return",{ positionClass: "toast-bottom-right" });
@@ -103,6 +103,7 @@
 
                         });
                 });
+
             function determineBranch(branchId) {
                 var num = parseInt(branchId);
                 switch (num) {
