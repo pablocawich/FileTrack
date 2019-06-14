@@ -112,5 +112,4 @@
         else
             $("#extTransferUl").addClass("in");
     });
-
 });

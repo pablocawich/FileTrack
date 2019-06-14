@@ -39,7 +39,7 @@ namespace FileTracking.Controllers
             else if (User.IsInRole(Role.RegularUser) && userInDB.IsDisabled == false)
                 return View("UserView");
 
-            return HttpNotFound("You do not have any permissions to be at this point. Check to see if account has been disabled by admins");
+            return View("Locked");
 
         }
 
@@ -69,7 +69,7 @@ namespace FileTracking.Controllers
             //checks if a user is not disabled
             if (userInDB.IsDisabled == true)
             {
-                return HttpNotFound("Your account has been disabled");
+                return View("Locked");
             }
             else
             {
@@ -188,7 +188,7 @@ namespace FileTracking.Controllers
                 return View("FileForm", viewModel);
             }
 
-            return HttpNotFound("User Disabled. Contact IT Dept or see application admin.");
+            return View("Locked");
 
         }
 
@@ -337,7 +337,7 @@ namespace FileTracking.Controllers
                 return View(viewModel);
             }
 
-            return HttpNotFound("User has been disabled");
+            return View("Locked");
         }
 
         //[HttpPost]. Sends our file objects as a set of JSON objects. Enables the possibility of server side processing on our datatable.

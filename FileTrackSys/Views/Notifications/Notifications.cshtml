@@ -67,7 +67,7 @@
                     var notifId = $(this).attr("notif-id-attr");
 
                     $.ajax({
-                        url: '/Notifications/ChangeToRead/' + notifId,
+                        url: siteURL+'/Notifications/ChangeToRead/' + notifId,
                         success: function () {
                             list.remove();
                             if ($("#notifAlert").length() == 1)

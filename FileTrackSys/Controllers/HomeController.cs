@@ -35,17 +35,19 @@ namespace FileTracking.Controllers
 
                 if (user.IsDisabled == true)
                 {
-                    return HttpNotFound("Your account has been disabled. Cannot proceed");
+                    return View("Locked");
+                    //return HttpNotFound("Your user account has been disabled. Cannot proceed.");
                 }
                
                 return View(user);
-          }
-          catch (Exception e)
-          {           
-               Console.WriteLine(e.Message);
-           }
+            }
+            catch (Exception e)
+            {           
+       
+                return HttpNotFound(e.Message);
+            }
 
-           return HttpNotFound("More than likely you have not been registered in the system's database. Visit IT Dept.");
+          
         }
 
         //Labels the branch for the respective user on the navigation panel

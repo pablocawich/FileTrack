@@ -208,7 +208,7 @@ namespace FileTracking.Controllers
                 return View();
             }
 
-            return HttpNotFound("User Account Disabled. See IT department or application admins.");
+            return View("Locked");
         }
 
         //directs to the change branch modal

@@ -643,6 +643,7 @@
     <Content Include="Content\morris.css" />
     <Content Include="Content\PagedList.css" />
     <Content Include="Content\startmin.css" />
+    <Content Include="Content\style.css" />
     <Content Include="Content\timeline.css" />
     <Content Include="Content\toastr.css" />
     <Content Include="Content\toastr.min.css" />
@@ -790,6 +791,7 @@
     <None Include="Properties\PublishProfiles\FolderProfile.pubxml" />
     <None Include="Properties\PublishProfiles\FolderProfile1.pubxml" />
     <None Include="Properties\PublishProfiles\FolderProfile2.pubxml" />
+    <None Include="Properties\PublishProfiles\PostInternship.pubxml" />
     <None Include="Scripts\jquery-3.3.1.intellisense.js" />
     <Content Include="Scripts\flot-data.js" />
     <Content Include="Scripts\flot\excanvas.min.js" />
@@ -1015,6 +1017,7 @@
     <Content Include="Views\FileVolumes\VolumeHistory.cshtml" />
     <Content Include="Views\AdUsers\AdminManagement.cshtml" />
     <Content Include="Views\AdUsers\ChangeBranch.cshtml" />
+    <Content Include="Views\Shared\Locked.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

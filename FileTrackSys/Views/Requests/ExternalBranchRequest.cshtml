@@ -38,7 +38,7 @@
             //gets json objects from the request controller in order to populate the dataTable
             var table = $("#externalBranchPendingTable").DataTable({
                 "ajax": {
-                    "url": "/Requests/GetExternalBranchPendingFiles",
+                    "url": siteURL+"/Requests/GetExternalBranchPendingFiles",
                     "data": "GET",
                     "datatype": "json"
                 },
@@ -86,7 +86,7 @@
                         function(result) {
                             if (result) {
                                 $.ajax({
-                                    url: '/Requests/AcceptExternalUserRequest/' + id,
+                                    url: siteURL+'/Requests/AcceptExternalUserRequest/' + id,
                                     success: function() {
                                         toastr.success("Accepted",
                                             "External Request",
@@ -127,7 +127,7 @@
                         function(result) {
                             if (result) {
                                 $.ajax({
-                                    url: '/Requests/DeclineRequest/' + id,
+                                    url: siteURL+'/Requests/DeclineRequest/' + id,
                                     success: function() {
                                         toastr.success("This request has been declined",
                                             "Request Declined",
@@ -163,7 +163,7 @@
                 ".extBranchModal-js",
                 function() {
                     var id = $(this).attr("data-ext-branch-id");
-                    var url = "/Files/FileDetailsForConfirm/" + id;
+                    var url = siteURL+"/Files/FileDetailsForConfirm/" + id;
                     // alert(url);
 
                     $('#extBranchModelContent').load(url);

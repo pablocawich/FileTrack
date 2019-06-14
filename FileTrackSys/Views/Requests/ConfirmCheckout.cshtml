@@ -44,7 +44,7 @@
         $(document).ready(function() {
             var table = $("#confirmTable").DataTable({
                 "ajax": {
-                    "url": "/Requests/GetConfirmCheckout",
+                    "url": siteURL+"/Requests/GetConfirmCheckout",
                     "data": "GET",
                     "datatype": "json"
                 },
@@ -91,7 +91,7 @@
                         function(result) {
                             if (result) {
                                 $.ajax({
-                                    url: '/Requests/AcceptCheckout/' + requestId,
+                                    url: siteURL+'/Requests/AcceptCheckout/' + requestId,
                                     success: function() {
                                         toastr.success("File volume checked out",
                                             "Approval",
@@ -112,7 +112,7 @@
                 ".confirmCheckoutModal",
                 function() {
                     var id = $(this).attr("data-fileId-attr");
-                    var url = "/Files/FileDetailsForConfirm/" + id;
+                    var url = siteURL+"/Files/FileDetailsForConfirm/" + id;
                     // alert(url);
 
                     $('#confirmModelContent').load(url);

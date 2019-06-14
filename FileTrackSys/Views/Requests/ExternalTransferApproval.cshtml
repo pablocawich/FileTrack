@@ -35,7 +35,7 @@
             //gets json objects from the request controller in order to populate the dataTable
             var table = $("#externalBranchTransferTable").DataTable({
                 "ajax": {
-                    "url": "/Requests/GetExternalTransferRecords",
+                    "url": siteURL+"/Requests/GetExternalTransferRecords",
                     "data": "GET",
                     "datatype": "json"
                 },
@@ -85,7 +85,7 @@
                     function (result) {
                         if (result) {
                             $.ajax({
-                                url: '/Requests/AcceptForeignRegistryTransfer/' + id,
+                                url: siteURL+'/Requests/AcceptForeignRegistryTransfer/' + id,
                                 success: function () {
                                     toastr.success("Accepted", "Transfer Approval", { positionClass: "toast-bottom-right" });
                                     //removes row from client side perspective. Not on server side thus 
@@ -114,7 +114,7 @@
                         function (result) {
                             if (result) {
                                 $.ajax({
-                                    url: '/Requests/NeverReceived/' + id,
+                                    url: siteURL+'/Requests/NeverReceived/' + id,
                                     success: function () {
                                         toastr.success("Not received", "Confirmation", { positionClass: "toast-bottom-right" });
                                         //removes row from client side perspective. Not on server side thus 

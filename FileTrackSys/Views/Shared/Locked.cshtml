@@ -1,0 +1,42 @@
+﻿@model System.Web.Mvc.HandleErrorInfo
+@{
+    Layout = null;
+}
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <!-- The above 3 meta tags *must* come first in the head; any other head content must come *after* these tags -->
+
+    <title>Locked Error</title>
+
+    <!-- Google font -->
+    <link href="https://fonts.googleapis.com/css?family=Montserrat:400" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css?family=Chango" rel="stylesheet">
+
+    <!-- Custom stlylesheet -->
+    <link type="text/css" rel="stylesheet" href="~/Content/style.css"/>
+
+</head>
+
+<body class="body">
+
+<div id="notfound">
+    <div class="notfound">
+        <div>
+            <div class="notfound-404">
+                <h1 class="header1">!</h1>
+            </div>
+            <h4 class="header4">Sorry!<br> Can't go beyond this point</h4>
+        </div>
+        <p>Your user account has been disabled by the application administrators. Please contact admins or visit the IT department <a href="@Url.Action("Index","Home")">Back to homepage</a></p>
+    </div>
+</div>
+
+</body>
+
+</html>

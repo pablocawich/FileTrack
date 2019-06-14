@@ -37,7 +37,7 @@
             //gets json objects from the request controller in order to populate the dataTable
             var table = $("#pendingTable").DataTable({
                 "ajax": {
-                    "url": "/Requests/GetPendingFiles",
+                    "url": siteURL+"/Requests/GetPendingFiles",
                     "data": "GET",
                     "datatype": "json"
                 },
@@ -79,7 +79,7 @@
                         function(result) {
                             if (result) {
                                 $.ajax({
-                                    url: '/Requests/AcceptRequest/' + id,
+                                    url: siteURL+'/Requests/AcceptRequest/' + id,
                                     success: function(response) {
                                         if (response.success == true) {
                                             toastr.success("Accepted", "Request", { positionClass: "toast-bottom-right" });
@@ -123,7 +123,7 @@
                         function(result) {
                             if (result) {
                                 $.ajax({
-                                    url: '/Requests/DeclineRequest/' + id,
+                                    url: siteURL+'/Requests/DeclineRequest/' + id,
                                     success: function(data) {
                                         toastr.success("Successfully Declined",
                                             "Request",

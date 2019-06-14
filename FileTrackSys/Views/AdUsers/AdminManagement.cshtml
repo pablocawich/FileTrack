@@ -95,7 +95,7 @@
                     if (count == 0) {
                         globalTbl = $("#adminTableAD").DataTable({
                             "ajax": {
-                                "url": siteURL+"/AdUsers/GetAdUsers",
+                                "url": siteURL + "/AdUsers/GetAdUsers",
                                 "data": "GET",
                                 "datatype": "json"
                             },
@@ -121,7 +121,7 @@
                     if (countNxtTbl == 0) {
                         adTable = $("#adminTableDb").DataTable({
                             "ajax": {
-                                "url": siteURL+"/AdUsers/GetDbUsers",
+                                "url": siteURL + "/AdUsers/GetDbUsers",
                                 "data": "GET",
                                 "datatype": "json"
                             },
@@ -130,7 +130,8 @@
                                     "data": "Id",
                                     render: function(data, type, user) {
                                         var checkBox =
-                                            `<input type="checkbox" class="selectUser" uname-attr="${user.Username}" value="${data
+                                            `<input type="checkbox" class="selectUser" uname-attr="${user.Username
+                                                }" value="${data
                                                 }" id="${data}">`;
                                         return checkBox;
                                     }
@@ -165,7 +166,7 @@
                             ],
                             "createdRow": function(row, data, dataIndex) {
                                 if (data.IsDisabled == true) {
-                                    $(row).css({ "opacity": "0.5", "background-color": "#ffffff","color":"red" });
+                                    $(row).css({ "opacity": "0.5", "background-color": "#ffffff", "color": "red" });
                                 };
                             }
 
@@ -177,41 +178,46 @@
 
             $("#addToDbBtn").on('click',
                 function() {
-                    if (globalTbl.data().any()) {
-                        $.ajax({
-                            url: siteURL+'/AdUsers/SaveAdUsers',
-                            success: function() {
-                                toastr.success("Accepted",
-                                    "Users Saved to the database",
-                                    { positionClass: "toast-bottom-right" });
+                    bootbox.confirm("You are about to add users from the given table to your database. Continue?",
+                        function(result) {
+                            if (result) {
+                                if (globalTbl.data().any()) {
+                                    $.ajax({
+                                        url: siteURL + '/AdUsers/SaveAdUsers',
+                                        success: function() {
+                                            toastr.success("Accepted",
+                                                "Users Saved to the database",
+                                                { positionClass: "toast-bottom-right" });
 
-                                //removes row from client side perspective. Not on server side thus
-                                //console.log(table.data().count());
-                                globalTbl.clear().draw();
-                                $("#addToDbBtn").attr("disabled", true);
-                                setTimeout(function() {
-                                        location.reload();
-                                    },
-                                    1000);
+                                            //removes row from client side perspective. Not on server side thus
+                                            //console.log(table.data().count());
+                                            globalTbl.clear().draw();
+                                            $("#addToDbBtn").attr("disabled", true);
+                                            setTimeout(function() {
+                                                    location.reload();
+                                                },
+                                                1000);
 
-                            },
-                            statusCode: {
-                                404: function(content) {
-                                    alert('cannot find resource');
-                                },
-                                500: function(content) {
-                                    alert('internal server error');
+                                        },
+                                        statusCode: {
+                                            404: function(content) {
+                                                alert('cannot find resource');
+                                            },
+                                            500: function(content) {
+                                                alert('internal server error');
+                                            }
+                                        }
+                                    });
+                                } else {
+                                    bootbox.alert({
+                                        message: "<label style='color: red'>Cannot save to database if no data exist!<label>",
+                                        size: 'small',
+                                        className: 'rubberBand animated'
+                                    });
+
                                 }
                             }
                         });
-                    } else {
-                        bootbox.alert({
-                            message: "<label style='color: red'>Cannot save to database if no data exist!<label>",
-                            size: 'small',
-                            className: 'rubberBand animated'
-                        });
-
-                    }
 
                 });
 
@@ -230,7 +236,7 @@
                     if ($(this).prop("checked") && $(this).closest('tr').find('td:eq(5)').text() == "Active") {
                         var currUser = $("#uname").attr('data-username');
                         if (currUser.includes($(this).attr('uname-attr'))) {
-                            toastr.error("Cannot include yourself","Error",{ positionClass: "toast-bottom-right" });
+                            toastr.error("Cannot include yourself", "Error", { positionClass: "toast-bottom-right" });
                             $(this).prop("checked", false);
                         }
 
@@ -281,7 +287,7 @@
                             if (result) {
                                 $.ajax({
                                     type: "POST",
-                                    url: siteURL+"/AdUsers/DeleteUser",
+                                    url: siteURL + "/AdUsers/DeleteUser",
                                     data: { function_param: JSON.stringify(userIDs) },
                                     success: function(response) {
                                         if (response.success == true) {
@@ -322,12 +328,14 @@
             $('#enableBtn').on("click",
                 function() {
                     //alert(userEnable.length);
-                    bootbox.confirm("Are you sure you want to re-enable user/s? Count: <strong> "+userEnable.length+"</strong>",
+                    bootbox.confirm("Are you sure you want to re-enable user/s? Count: <strong> " +
+                        userEnable.length +
+                        "</strong>",
                         function(result) {
                             if (result) {
                                 $.ajax({
                                     type: "POST",
-                                    url: siteURL+"/AdUsers/ReEnableUser",
+                                    url: siteURL + "/AdUsers/ReEnableUser",
                                     data: { function_param: JSON.stringify(userEnable) },
                                     success: function(response) {
                                         if (response.success == true) {
@@ -362,18 +370,19 @@
                     var uname = $(this).attr("btn-uname-attr");
 
                     if (currUser.includes(uname)) {
-                        toastr.error("Sorry! Cannot change your own branch. Kindly see that another admin carries this out.",
+                        toastr.error(
+                            "Sorry! Cannot change your own branch. Kindly see that another admin carries this out.",
                             "Error",
                             { positionClass: "toast-bottom-right" });
                     } else {
                         var id = $(this).attr("data-userId");
-                        var url = siteURL+"/AdUsers/ChangeBranch/" + id;
+                        var url = siteURL + "/AdUsers/ChangeBranch/" + id;
 
                         $('#changeBranchModelContent').load(url);
                         $('#changeBranchModal').modal('show');
                     }
 
-                    
+
                 });
         });
     </script>

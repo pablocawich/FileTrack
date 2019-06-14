@@ -100,7 +100,7 @@ namespace FileTracking.Controllers
                 }
             }
 
-            return HttpNotFound("User Account Disabled");
+            return View("Locked");
         }
 
         //checks that a volume is not requested more than once by the same user
@@ -371,14 +371,22 @@ namespace FileTracking.Controllers
         public ActionResult ConfirmCheckout()
         {
             var currentUser = new AdUser(User.Identity.Name);
-            var userInDb = _context.AdUsers.Single(u => u.Username == currentUser.Username);
-
-            if (userInDb.IsDisabled == false)
+            try
             {
-                return View();
+                var userInDb = _context.AdUsers.Single(u => u.Username == currentUser.Username);
+
+                if (userInDb.IsDisabled == false)
+                {
+                    return View();
+                }
+
+                return View("Locked");
+            }
+            catch (Exception e)
+            {
+                return HttpNotFound(e.Message);
             }
 
-            return HttpNotFound("Your Account is disabled");
         }
 
         //where REGULAR USERS will be able to see those requests accepted by registry
