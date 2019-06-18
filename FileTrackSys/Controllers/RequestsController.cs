@@ -182,7 +182,13 @@ namespace FileTracking.Controllers
         [Authorize(Roles = Role.Registry)]
         public ActionResult PendingFiles()
         {           
-            return View();
+            var currentUser = new AdUser(User.Identity.Name);
+
+            var user = _context.AdUsers.Single(u => u.Username == currentUser.Username);
+
+            if(user.IsDisabled == false)
+                return View();
+            return View("Locked");
         }
 
         //sends all request records with a Request status of pending to be approved by registry

@@ -42,8 +42,7 @@ namespace FileTracking.Controllers
                 return View(user);
             }
             catch (Exception e)
-            {           
-       
+            {                  
                 return HttpNotFound(e.Message);
             }
 
