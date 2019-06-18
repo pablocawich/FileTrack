@@ -137,7 +137,7 @@
                 @Html.LabelFor(f => f.File.Comments, new { @class = "control-label" })
                 <div class="input-group">
                     <span class="input-group-addon"><i class="glyphicon glyphicon-comment"></i>
-                    </span>@Html.TextAreaFor(f => f.File.Comments, new { @class = "form-control", @placeholder = "E.g. User is pending an a loan numbers" })
+                    </span>@Html.TextAreaFor(f => f.File.Comments, new { @class = "form-control", @placeholder = "Maximum of 255 characters permitted..." })
                 </div>
                 @Html.ValidationMessageFor(f => f.File.Comments)
             </div>
@@ -153,7 +153,7 @@
                      @Html.LabelFor(f => f.File.VolumeOneDescription, new {@class = "control-label"})
                      <div class="input-group">
                          <span class="input-group-addon"><i class="glyphicon glyphicon-comment"></i>
-                         </span>@Html.TextAreaFor(f => f.File.VolumeOneDescription, new {@class = "form-control", @placeholder = "Kindly provide a description for volume's 1 of this file"})
+                         </span>@Html.TextAreaFor(f => f.File.VolumeOneDescription, new {@class = "form-control", @placeholder = "200 character limit..."})
                      </div>
                      @Html.ValidationMessageFor(f => f.File.VolumeOneDescription)
                  </div>
