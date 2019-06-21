@@ -10,7 +10,7 @@
     </div>
     <!-- /.col-lg-12 -->
 </div>
-
+<p id="thisUser" data-this-user="@Model.AdUser.Id" hidden></p>
 <div class="row">
     <p style="color: chocolate"><i>Volumes listed here are for the file record below:</i></p>
     <div class="col-lg-4">
@@ -66,13 +66,16 @@
                         <td>@fileVol.AdUser.Username</td>
                     }
 
-                    <td class="tdBtn">
-                        <button type="button" vol-state="@fileVol.States.State" user-loc="@Model.AdUser.BranchesId" originLoc="@fileVol.BranchesId" currLoc-attr="@fileVol.CurrentLocation"
-                                vol-data-id="@fileVol.Id" file-name="@Model.File.FirstName" location="@fileVol.Branches.Branch" class="btn btn-dropbox js-req-vol">
-                            <i class="glyphicon glyphicon-new-window"></i>
-                        </button>
-
-                    </td>
+                        <td class="tdBtn">
+                            <button type="button" vol-state="@fileVol.States.State" user-loc="@Model.AdUser.BranchesId" originLoc="@fileVol.BranchesId" currLoc-attr="@fileVol.CurrentLocation"
+                                    vol-data-id="@fileVol.Id" file-name="@Model.File.FirstName" location="@fileVol.Branches.Branch" class="btn btn-dropbox js-req-vol">
+                                <i class="glyphicon glyphicon-new-window"></i>
+                            </button>
+                            <button type="button" class="btn btn-bitbucket js-transfer-vol" original-Loc="@fileVol.BranchesId" my-loc="@Model.AdUser.BranchesId"
+                                    data-current-loc="@fileVol.CurrentLocation" data-state="@fileVol.StatesId" data-holdingUser="@fileVol.AdUserId">
+                                <i class="glyphicon glyphicon-paste"></i>
+                            </button>
+                        </td>
 
                 </tr>
             }
@@ -93,6 +96,7 @@
                     var originalLoc = button.attr("originLoc");
                     var currentLoc = button.attr("currLoc-attr");
                     var userLoc = button.attr("user-loc");
+
                     //------------------------------the above retrieves attributes necessary for routing ----------
                     if (state === "Checked Out" || state === "Transfer") {
                         toastr.error(
@@ -104,7 +108,9 @@
                         if (!(userLoc == currentLoc)) {
                             bootbox.confirm({
                                 message:
-                                    "<strong style='color: #ff7144'>This volume is outside your branch. Your request will be sent to <strong>" + loc + "</strong>. Continue?</strong>",
+                                    "<strong style='color: #ff7144'>This volume is outside your branch. Your request will be sent to <strong>" +
+                                        loc +
+                                        "</strong>. Continue?</strong>",
                                 buttons: {
                                     confirm: {
                                         label: 'Yes',
@@ -115,11 +121,11 @@
                                         className: 'btn-github'
                                     }
                                 },
-                                callback: function (result) {
+                                callback: function(result) {
                                     if (result) {
                                         //write code tht routes volumes id to an action result in volumes controller.
                                         window.location.href =
-                                            siteURL+"/Requests/Index/" + button.attr("vol-data-id");
+                                            siteURL + "/Requests/Index/" + button.attr("vol-data-id");
                                     }
                                 }
                             });
@@ -129,31 +135,76 @@
                                 if (state === "Stored" || state === "Requested") {
                                     bootbox.confirm({
                                         message:
-                                            "Volume within the vicinity thus if you proceed your request will be sent to your registry and you must await approval",
+                                            "<p style='color: #21a6e8'>Volume is within branch vicinity thus if you proceed your request will be sent to " +
+                                                "<br><strong>local registry</strong> and you must await approval</p>",
                                         buttons: {
                                             confirm: {
-                                                label: 'Proceed',
+                                                label: 'Accept',
                                                 className: 'btn-success'
                                             },
                                             cancel: {
-                                                label: 'Never mind',
-                                                className: 'btn-github'
+                                                label: 'Cancel',
+                                                className: 'btn-danger'
                                             }
                                         },
-                                        callback: function (result) {
+                                        callback: function(result) {
                                             if (result) {
                                                 //write code tht routes volumes id to an action result in volumes controller
                                                 // window.location.href = "/FileVolumes/RequestFile/" + button.attr("data-request-file-id");
                                                 window.location.href =
-                                                    siteURL+"/Requests/Index/" + button.attr("vol-data-id");
+                                                    siteURL + "/Requests/Index/" + button.attr("vol-data-id");
                                             }
                                         }
                                     });
-                                } 
+                                }
                         }
                     }
-                    
+
                 });
+            
+            var thisUser = $("#thisUser").attr("data-this-user");//holds the id of the user in session
+            //user file transfer button functionality 
+            $("#volumeTable").on("click",
+                ".js-transfer-vol",
+                function() {
+                    var btn = $(this);
+                    var state = btn.attr("data-state");
+                    var currentLoc = btn.attr("data-current-loc");
+                    var holdingUser = btn.attr("data-holdingUser");
+                    var myLoc = btn.attr("my-loc");
+                    var originLoc = btn.attr("original-Loc");
+                    
+
+                    //the val 5 represents the CHECKED OUT state in the db
+                    if (state == 5 && holdingUser != "" && currentLoc == myLoc && currentLoc == originLoc) {
+                        //ensures user cannot send request to his/herself
+                        if (!(thisUser == holdingUser)) {
+                            bootbox.confirm({
+                                message: "You are requesting a local user file transfer from" + " user" + ". Are you sure?",
+                                buttons: {
+                                    confirm: {
+                                        label: 'Accept',
+                                        className: 'btn-success'
+                                    },
+                                    cancel: {
+                                        label: 'Cancel',
+                                        className: 'btn-danger'
+                                    }
+                                },
+                                callback: function(result) {
+                                    if (result) {
+                                        alert("Your request will be sent to the user. Please await response.");
+                                    }
+                                }
+                            });
+                        } else
+                            toastr.error("Cannot make a request to oneself","Sorry!",{ positionClass: "toast-bottom-right" });
+
+                        
+                    } else
+                        alert("Not eligible for this request at the moment.");
+                });
+
             //inserting a string value for current location
             $(".currentLoc").each(function() {
                 var locNum = $(this).attr("currLoc-data");

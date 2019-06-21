@@ -8,7 +8,10 @@ namespace FileTracking.Models
 {
     public class Transfers
     {
-        //
+        //model of an almost duplicate version to the request table except that it instead acts as a permanent and more substantial role for
+        //recording checks-ins and check-outs process and lifetime.
+
+        //Not yet implemented to DB, controllers, or anywhere besides it's definition
         public int Id { get; set; }
 
         public FileVolumes Volume { get; set; }

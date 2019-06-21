@@ -200,6 +200,7 @@ namespace FileTracking.Controllers
            
             var user = _context.AdUsers.Single(u => u.Username == userObj.Username);
             byte Pending = 1;
+
             var pendingRequests = _context.Requests.Include(r => r.FileVolumes).
                 Include(r => r.User.Branches).Where(r=>r.RequesteeBranch == user.BranchesId).Where(r => r.RequestStatusId == Pending).
                 Where(r=>r.IsRequestActive == true).Where(r=>r.RequestTypeId == RequestType.InternalRequest).ToList();
@@ -213,6 +214,7 @@ namespace FileTracking.Controllers
             return View();
         }
 
+        //Gets files that are awaiting external approval
         [Authorize(Roles = Role.Registry)]
         public ActionResult GetExternalBranchPendingFiles()
         {
@@ -358,6 +360,7 @@ namespace FileTracking.Controllers
             return View();
         }
 
+        //After getting external approval a file must then make its way back to internal registry to gain further confirmation
         [Authorize(Roles = Role.Registry)]
         public ActionResult GetExternalTransferRecords()
         {
@@ -513,7 +516,80 @@ namespace FileTracking.Controllers
             volume.StatesId = stored;
 
             _context.SaveChanges();
-        }      
+        }
+
+
+        //--------------------------------Initiating User Transfer feature------------------------------------------------------------------ 
+
+
+        public ActionResult UserPendingTransfer()
+        {
+            return View();
+        }
+
+        //get a the user transfer that are pending so the requestee user may choose to accept or deny
+        [Authorize(Roles = Role.RegularUser)]
+        public ActionResult GetUserPendingTransfers()
+        {
+            var userObj = new AdUser(User.Identity.Name);
+
+            var user = _context.AdUsers.Single(u => u.Username == userObj.Username);
+
+            if (user.IsDisabled)
+            {
+                return View("Locked");
+            }
+
+            var request = _context.Requests.Include(r => r.FileVolumes).Include(r => r.UserRequestedFrom).Where(r=>r.UserRequestedFromId == user.Id)
+                .Where(r=>r.IsRequestActive == true).Where(r=>r.RequestStatusId == 1).ToList();
+
+            return Json(new { data = request }, JsonRequestBehavior.AllowGet);
+        }
+
+        [Authorize(Roles = Role.RegularUser)]
+        [Route("Requests/Index/{volId}/{userId}/{currentLocation}")]
+        public ActionResult OnUserTransferAccept(int volId, int userId,byte currentLocation)
+        {
+            //user in session
+            var userObj = new AdUser(User.Identity.Name);
+
+            var thisUser = _context.AdUsers.Single(u => u.Username == userObj.Username);
+
+            //Checks if user account in session is not disabled
+            if (thisUser.IsDisabled)
+                return View("Locked");
+
+            //checks that user in session is not requesting from his/her own self
+            if (thisUser.Id == userId)
+                return HttpNotFound("It appears your request of transfer is being processed to yourself. Cannot proceed.");
+
+            var volInDb = _context.FileVolumes.Single(v => v.Id == volId);
+
+            //checks is file volumes is eligible for a transfer
+            if (volInDb.StatesId != 5 || volInDb.AdUserId == null)
+                return HttpNotFound("Cannot make this requests as the file as the file is not at the hands of the requestee. ");
+
+            //creating that new request record
+            var newRequest = new Request()
+            {
+                UserId = thisUser.Id,//this is the new user making the request
+                FileVolumesId = volId,
+                RequesteeBranch = currentLocation,//the requesteeBranch is the brnacch where the request will be sent to, based in the volume's current location
+                BranchesId = thisUser.BranchesId,//we get the branch based on the signed on user, since user must match volume branch atm
+                RequestStatusId = 1, //1 signifies pending
+                ReturnStateId = 1,//1 signifies idle state, meaning the return process is not in order
+                IsRequestActive = true,//meaning this request has been initiated, switched to false when file is returned and back to stored state
+                RequestDate = DateTime.Now,//assigns immediate date as the request was made in this moment of time
+                RequestTypeId = RequestType.InternalRequest,
+                UserRequestedFromId = userId //THIS is the user from who the transfer is being requested
+            };
+
+            return View("ExternalRequestMade"); //user file transfer button functionality ;
+            //this will be the record we marked as completed with the prior user who had the file. 
+            //DO NOT mark old record as inactive as the rightful user can still decline a request to a file
+
+            //After that we create a new record with almost the same fields as the old request, also ensuring we switch
+        }
     }
 
 }

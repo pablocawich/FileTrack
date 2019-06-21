@@ -448,6 +448,10 @@
     <Compile Include="Migrations\201906061800063_AddDisabledToAduser.Designer.cs">
       <DependentUpon>201906061800063_AddDisabledToAduser.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201906201955183_AddRequestedFromUserColumnToRequest.cs" />
+    <Compile Include="Migrations\201906201955183_AddRequestedFromUserColumnToRequest.Designer.cs">
+      <DependentUpon>201906201955183_AddRequestedFromUserColumnToRequest.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Models\AccountViewModels.cs" />
     <Compile Include="Models\AddNumberIfIdentificationSelected.cs" />
@@ -1019,6 +1023,8 @@
     <Content Include="Views\AdUsers\AdminManagement.cshtml" />
     <Content Include="Views\AdUsers\ChangeBranch.cshtml" />
     <Content Include="Views\Shared\Locked.cshtml" />
+    <Content Include="Views\Requests\UserPendingTransfer.cshtml" />
+    <Content Include="Views\ErrNotifs\RequestMade.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
@@ -1208,6 +1214,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201906061800063_AddDisabledToAduser.resx">
       <DependentUpon>201906061800063_AddDisabledToAduser.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201906201955183_AddRequestedFromUserColumnToRequest.resx">
+      <DependentUpon>201906201955183_AddRequestedFromUserColumnToRequest.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>

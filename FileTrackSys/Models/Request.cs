@@ -55,5 +55,9 @@ namespace FileTracking.Models
 
         public int RequestBinder { get; set; }
 
+        //This will be used to track the using the file is being requested from
+        public AdUser UserRequestedFrom{ get; set; }
+        public int? UserRequestedFromId { get; set; }
+
     }
 }

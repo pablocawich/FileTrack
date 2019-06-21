@@ -54,7 +54,7 @@
 @section scripts{
     <script>
         $(document).ready(function () {
-  var userFileTable = $("#userFileTable").DataTable({
+            var userFileTable = $("#userFileTable").DataTable({
                 "ajax": {
                     "url": siteURL+"/Files/GetFiles",
                     "data": "POST",
@@ -93,7 +93,7 @@
                         data: "Id",
 
                         "render": function (data, type, vol) {                           
-                            var buttonRequest = "<button class='btn js-requestFile' data-request-name='" + vol.FirstName + "'data-request-file-id='" + data + "'><i class='glyphicon glyphicon-transfer'></i></button>";
+                            var buttonRequest = "<button class='btn js-requestFile' data-request-name='" + vol.FirstName + "'data-request-file-id='" + data + "'><i class='fa fa-outdent'></i></button>";
                             return buttonRequest;
                         }
                     }
@@ -152,6 +152,7 @@
                 var dateObj = new Date(parseInt(date.substr(6)));
                 return dateObj.toDateString();
             }
+
             //opens modal that displays file information for a specif file
             $("#userFileTable").on("click",".spanModal",function() {
                 var id = $(this).attr("data-url");
@@ -160,12 +161,13 @@
 
                     $('#modelContent').load(url);
                     $('#myModal').modal('show');
-                });
+            });
+
             //sends user to the volumes page to be able specify and request a volume
             $("#userFileTable").on("click", ".js-requestFile", function () {
                 var button = $(this);
                 var name = button.attr("data-request-name");
-                bootbox.confirm("You are to request a file for "+name.toUpperCase()+". To request this file you need to specify a volume. Do you wish to proceed", function (result) {
+                bootbox.confirm("Please specify the volume you want for <strong>"+name.toUpperCase()+"</strong>. Click Ok to choose.", function (result) {
                     if (result) {
                         window.location.href = siteURL+"/FileVolumes/RequestFile/" + button.attr("data-request-file-id");
                     }

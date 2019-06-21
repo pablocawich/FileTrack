@@ -65,14 +65,19 @@ namespace FileTracking.Controllers
         [Authorize(Roles = Role.RegularUser)]
         public ActionResult RequestFile(int id)
         {
-            string uName = ParseUsername(User.Identity.Name);
+            var thisUser = new AdUser(User.Identity.Name);
+            var user = _context.AdUsers.Single(u => u.Username == thisUser.Username);
+
+            if (user.IsDisabled)
+            {
+                return View("Locked");
+            }
 
             var volFileId = _context.FileVolumes.Include(fv=>fv.States).
                 Include(fv=>fv.Branches).Include(fv=>fv.AdUser).Where(fv => fv.FileId == id).ToList();
 
             var file = _context.Files.Include(f => f.FileVolumes).SingleOrDefault(f => f.Id == id );
-
-            var user = _context.AdUsers.Single(u=>u.Username == uName);
+            
 
             var viewModel = new VolumesViewModel()
             {

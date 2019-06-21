@@ -3,9 +3,11 @@
 @{
     ViewBag.Title = "Error";
 }
- @Model.ActionName
-@Model.ControllerName
-@Model.Exception.Message
+
 <h1 class="text-danger">Error.</h1>
 <h2 class="text-danger">An error occurred while processing your request.</h2>
+<p> @Model.ActionName
+    @Model.ControllerName
+    @Model.Exception.Message
+</p>
 
