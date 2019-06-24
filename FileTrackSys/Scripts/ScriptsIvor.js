@@ -1,6 +1,7 @@
 ﻿$(document).ready(function () {
 
     //notification front end code
+    //listens for a click event so that link can be mark as read and removed from the database
     $(".alertList").on("click", function () {
         var list = $(this);
         var notifId = $(this).attr("notif-id-attr");
@@ -25,17 +26,8 @@
 
     });
 
-    //-----will check if pending file has data to further enable a notification alert signal--------
-
-    $("#indexFile").removeClass('active');
-
     $("#createFile").on('click', function () {  
         $(this).addClass('active');        
-    });
-
-    $("#indexFile").on('click', function () { 
-      $(this).addClass('active');
-      //background-color: #eee;
     });
 
    //Implementation for action buttons on the dataTable (File/index)

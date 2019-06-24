@@ -39,7 +39,7 @@
                 "columns": [
                     { "data": "FileVolumes.FileNumber" },
                     { "data": "FileVolumes.Volume" },
-                    { "data": "UserRequestedFrom.Name"},
+                    { "data": "User.Name" },
                     { "data": "Branches.Branch" },
                     {
                         data: "RequestDate",
@@ -51,18 +51,54 @@
                         data: "Id",
                         "render": function(data, type, req) {
                             var buttonAccept =
-                                "<button class='btn btn-success btn-xs'>Transfer</button>";
-                            var buttonDeny = "<button class='btn btn-danger btn-xs js-reject'  data-deny-pending-id='" +
-                                data +
-                                "'>Decline</button>";
+                                `<button class='btn btn-success btn-xs js-transferBtn' data-reqId='${
+                                    data}'>Transfer</button>`;
+                            var buttonDeny = `<button class='btn btn-danger btn-xs js-declineTransfer'>Decline</button>`;
 
                             return buttonAccept + " " + buttonDeny;
                         }
                     }
                 ]
             });
+            //Implementing button actions
+            $("#userTransferPending").on('click',
+                '.js-transferBtn',
+                function() {
+                    var reqId = $(this).attr("data-reqId");
 
-            //returns a readable c# dateTime object to JS string
+                    bootbox.confirm("You are accepting this transfer. Continue?",
+                        function(result) {
+                            if (result) {
+                                $.ajax({
+                                    url: siteURL + '/Requests/AcceptTransfer/' + reqId,
+                                    success: function(response) {
+                                        if(response.success)
+                                            toastr.success(response.message,
+                                                "Transfer", { positionClass: "toast-bottom-right" });
+                                        else
+                                            toastr.error(response.message,
+                                                "Transfer", { positionClass: "toast-bottom-right" });
+           
+                                        //table.row(button.parents('tr')).remove().draw();
+                                    },
+                                    statusCode: {
+                                        404: function(content) { alert('cannot find resource'); },
+                                        500: function(content) { alert('internal server error'); }
+                                    }
+                                });
+                            }
+
+                        });
+
+                });
+            //decline transfer button
+            $("#userTransferPending").on('click',
+                '.js-declineTransfer',
+                function() {
+                    alert("You have chosen to decline a transfer to this user");
+                });
+
+            //Converts and returns a readable DateTime Objects as a javaScript string
             function getDateString(date) {
                 var dateObj = new Date(parseInt(date.substr(6)));
                 return dateObj.toDateString();

@@ -1,0 +1,17 @@
+﻿
+@{
+    ViewBag.Title = "RequestSuccessful";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="row">
+    <div class="col-lg-12">
+        <h2 class="page-header">Request Status</h2>  
+    </div>
+    <!-- /.col-lg-12 -->
+</div>
+
+<div class="row">
+    <h4>Request Successful. Kindly await a response.</h4>
+    <a href="@Url.Action("Index","Files")" class="btn btn-success">Return</a>
+</div>

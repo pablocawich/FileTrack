@@ -28,7 +28,7 @@ namespace FileTracking.Controllers
         }
 
         //allow users to view file tables and its linked tables
-        public ActionResult Index()
+        public ActionResult SearchFiles()
         {
             var userObj = new AdUser(User.Identity.Name);
             var userInDB = _context.AdUsers.Single(u => u.Username == userObj.Username);

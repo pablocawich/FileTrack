@@ -178,7 +178,7 @@ namespace FileTracking.Controllers
             //the state then. In that case we should simply do nothing
         }
 
-        // GET pendingFiles
+        // Direct to pendingFiles page (RegistryOnly)
         [Authorize(Roles = Role.Registry)]
         public ActionResult PendingFiles()
         {           
@@ -186,24 +186,31 @@ namespace FileTracking.Controllers
 
             var user = _context.AdUsers.Single(u => u.Username == currentUser.Username);
 
-            if(user.IsDisabled == false)
-                return View();
-            return View("Locked");
+            if (user.IsDisabled)
+                return View("Locked");
+
+            return View();
         }
 
         //sends all request records with a Request status of pending to be approved by registry
         [Authorize(Roles = Role.Registry)]
         public ActionResult GetPendingFiles()
         {
+            //for the most part, requesteeBranchId will always be the currentLocation Branch
             //we must ensure to take into account branches. registry is only to see request from user made within their respective branch
             var userObj = new AdUser(User.Identity.Name);
            
             var user = _context.AdUsers.Single(u => u.Username == userObj.Username);
-            byte Pending = 1;
 
+            if (user.IsDisabled)
+                return View("Locked");
+            
+            //PENDING = 1 (RequestStatusID)
+            //where a User RequesteeFrom field is NULL, Registry users in general are represented
             var pendingRequests = _context.Requests.Include(r => r.FileVolumes).
-                Include(r => r.User.Branches).Where(r=>r.RequesteeBranch == user.BranchesId).Where(r => r.RequestStatusId == Pending).
-                Where(r=>r.IsRequestActive == true).Where(r=>r.RequestTypeId == RequestType.InternalRequest).ToList();
+                Include(r => r.User.Branches).Where(r=>r.RequesteeBranch == user.BranchesId).Where(r => r.RequestStatusId == 1).
+                Where(r=>r.IsRequestActive == true).Where(r=>r.RequestTypeId == RequestType.InternalRequest)
+                .Where(r => r.UserRequestedFromId == null).ToList();
 
             return Json(new { data = pendingRequests }, JsonRequestBehavior.AllowGet);
         }
@@ -520,35 +527,12 @@ namespace FileTracking.Controllers
 
 
         //--------------------------------Initiating User Transfer feature------------------------------------------------------------------ 
-
-
-        public ActionResult UserPendingTransfer()
-        {
-            return View();
-        }
-
-        //get a the user transfer that are pending so the requestee user may choose to accept or deny
+        //----------------------------------------------------------------------------------------------------------------------------------
+        
+        //When a user makes attemps to have a file transferred to them this function is invoked to create a new record
         [Authorize(Roles = Role.RegularUser)]
-        public ActionResult GetUserPendingTransfers()
-        {
-            var userObj = new AdUser(User.Identity.Name);
-
-            var user = _context.AdUsers.Single(u => u.Username == userObj.Username);
-
-            if (user.IsDisabled)
-            {
-                return View("Locked");
-            }
-
-            var request = _context.Requests.Include(r => r.FileVolumes).Include(r => r.UserRequestedFrom).Where(r=>r.UserRequestedFromId == user.Id)
-                .Where(r=>r.IsRequestActive == true).Where(r=>r.RequestStatusId == 1).ToList();
-
-            return Json(new { data = request }, JsonRequestBehavior.AllowGet);
-        }
-
-        [Authorize(Roles = Role.RegularUser)]
-        [Route("Requests/Index/{volId}/{userId}/{currentLocation}")]
-        public ActionResult OnUserTransferAccept(int volId, int userId,byte currentLocation)
+        [Route("Requests/OnUserTransferAccept/{volId}/{userId}/{currentLocation}")]
+        public ActionResult OnUserTransferAccept(int volId, int userId, byte currentLocation)
         {
             //user in session
             var userObj = new AdUser(User.Identity.Name);
@@ -584,11 +568,56 @@ namespace FileTracking.Controllers
                 UserRequestedFromId = userId //THIS is the user from who the transfer is being requested
             };
 
-            return View("ExternalRequestMade"); //user file transfer button functionality ;
-            //this will be the record we marked as completed with the prior user who had the file. 
-            //DO NOT mark old record as inactive as the rightful user can still decline a request to a file
+            _context.Requests.Add(newRequest);
+            _context.SaveChanges();
 
-            //After that we create a new record with almost the same fields as the old request, also ensuring we switch
+            return View("RequestSuccessful"); //user file transfer button functionality      
+        }
+
+        //the view page function
+        public ActionResult UserPendingTransfer()
+        {
+            return View();//Navigational link to page
+        }
+
+        //GET: a user's transfers that are pending so the user currently with the file may choose to accept or deny
+        [Authorize(Roles = Role.RegularUser)]
+        public ActionResult GetUserPendingTransfers()
+        {
+            var userObj = new AdUser(User.Identity.Name);
+
+            var user = _context.AdUsers.Single(u => u.Username == userObj.Username);
+
+            if (user.IsDisabled)
+                return View("Locked");
+            
+            var request = _context.Requests.Include(r => r.FileVolumes).Include(r=>r.Branches).Include(r => r.UserRequestedFrom).Include(r=>r.User)
+                .Where(r=>r.UserRequestedFromId == user.Id)
+                .Where(r=>r.IsRequestActive == true).Where(r=>r.RequestStatusId == 1).ToList();
+
+            return Json(new { data = request }, JsonRequestBehavior.AllowGet);
+        }
+
+        //user accepts the pending transfer
+        public JsonResult AcceptTransfer(int id)
+        {
+            var requestInDb = _context.Requests.Single(r => r.Id == id);
+
+            var volumeInDb = _context.FileVolumes.Single(v => v.Id == requestInDb.FileVolumesId);
+
+            //CHECKED OUT state = 5.
+            //Recall a file must be checked out to a regular user (Will specify Id, so not NULL is the criteria) in order for transfer to be possible
+            if (volumeInDb.AdUserId != null && volumeInDb.StatesId == 5)
+            {
+                //we are getting the request for the holding user to transfer some content 
+                var holdingUserReq = _context.Requests.Single(r => r.UserId == requestInDb.UserRequestedFromId 
+                                     && r.IsRequestActive == true &&  r.FileVolumesId == requestInDb.FileVolumesId);
+                
+                //copy related contents with the exception of the requester user Id which will now be this user
+                //make the new request active and the old record inactive
+                return this.Json(new { success = true, message = "Transfer successfully accepted" }, JsonRequestBehavior.AllowGet);                      
+            }
+            return this.Json(new { success = false, message = "Something occured on the server. Try again." }, JsonRequestBehavior.AllowGet);
         }
     }
 

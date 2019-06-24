@@ -33,7 +33,7 @@
                     <!-- /input-group -->
                 </li>
                 <li class="nav-links">
-                    <a href="@Url.Action("Index", "Files")"><i class="fa  fa-search fa-fw"></i>Search</a>
+                    <a href="@Url.Action("SearchFiles", "Files")"><i class="fa  fa-search fa-fw"></i>Search</a>
                 </li>
                 <li>
                     <a href="@Url.Action("ConfirmCheckout","Requests")"><i class="fa fa-check fa-fw"></i>Pending</a>
@@ -50,6 +50,13 @@
                 </li>
                 <li>
                     <a href="@Url.Action("UserPendingTransfer","Requests")"><i class="fa fa-exchange fa-fw"> </i>User Transfer</a>
+                </li>
+                <li>
+                    <a href="#"><i class="fa fa-thumbs-o-up fa-fw"> </i>Confirm Transfer</a>
+                </li>
+                <li class="sidebar-search">
+
+                    <!-- /input-group -->
                 </li>
                 @if (User.IsInRole(Role.AdminUser))
                 {

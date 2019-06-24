@@ -37,7 +37,7 @@
                     <a href="@Url.Action("New", "Files")" id="createFile"><i class="fa fa-edit fa-fw"></i>Create File</a>
                 </li>
                 <li>
-                    <a href="@Url.Action("Index", "Files")" id="indexFile"><i class="fa fa-files-o fa-fw"></i>Search</a>
+                    <a href="@Url.Action("SearchFiles", "Files")" id="indexFile"><i class="fa fa-files-o fa-fw"></i>Search</a>
 
                 </li>
                 <li>
@@ -52,7 +52,7 @@
                     <!-- /input-group -->
                 </li>
                 <li>
-                    <a href="#" id="extTransferNav"><i class="fa fa-external-link fa-fw"></i> External Transfers<span class="fa arrow"></span></a>
+                    <a href="#" id="extTransferNav"><strong><i class="fa fa-external-link fa-fw"></i> </strong>External Transfers<span class="fa arrow"></span></a>
                     <ul id="extTransferUl" class="nav nav-second-level collapse">
                         <li>
                             <a href="@Url.Action("ExternalBranchRequest","Requests")"><i class="fa fa-external-link-square fa-fw"></i>Pending</a>
@@ -75,7 +75,7 @@
                     <!-- /input-group -->
                 </li>
                 <li>
-                    <a href="@Url.Action("ConfirmCheckout", "Requests")"><i class="fa fa-users fa-fw"></i>Sign in as other user</a>
+                    <a href="@Url.Action("ConfirmCheckout", "Requests")" target="_blank"><i class="fa fa-users fa-fw"></i>Sign in as other user</a>
                 </li>
                 @if (User.IsInRole(Role.AdminUser))
                 {

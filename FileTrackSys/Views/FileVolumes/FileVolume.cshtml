@@ -72,9 +72,8 @@
                                 <i class="glyphicon glyphicon-new-window"></i>
                             </button>
                             <button type="button" class="btn btn-bitbucket js-transfer-vol" original-Loc="@fileVol.BranchesId" my-loc="@Model.AdUser.BranchesId"
-                                    data-current-loc="@fileVol.CurrentLocation" data-state="@fileVol.StatesId" data-holdingUser="@fileVol.AdUserId">
-                                <i class="glyphicon glyphicon-paste"></i>
-                            </button>
+                                    data-vol-id="@fileVol.Id" data-current-loc="@fileVol.CurrentLocation" data-state="@fileVol.StatesId" data-holdingUser="@fileVol.AdUserId">
+                                <i class="glyphicon glyphicon-paste"></i></button>
                         </td>
 
                 </tr>
@@ -161,8 +160,8 @@
                     }
 
                 });
-            
-            var thisUser = $("#thisUser").attr("data-this-user");//holds the id of the user in session
+
+            var thisUser = $("#thisUser").attr("data-this-user"); //holds the id of the user in session
             //user file transfer button functionality 
             $("#volumeTable").on("click",
                 ".js-transfer-vol",
@@ -173,14 +172,18 @@
                     var holdingUser = btn.attr("data-holdingUser");
                     var myLoc = btn.attr("my-loc");
                     var originLoc = btn.attr("original-Loc");
-                    
+                    var volId = btn.attr("data-vol-id");
 
-                    //the val 5 represents the CHECKED OUT state in the db
+                    //the val 5 represents the CHECKED OUT state in our db
                     if (state == 5 && holdingUser != "" && currentLoc == myLoc && currentLoc == originLoc) {
                         //ensures user cannot send request to his/herself
                         if (!(thisUser == holdingUser)) {
+                            var holdingUsername = btn.parent().siblings().eq(5).text();
+                            
                             bootbox.confirm({
-                                message: "You are requesting a local user file transfer from" + " user" + ". Are you sure?",
+                                message: "You are requesting a local user file transfer from <strong>" +
+                                    holdingUsername.toUpperCase() +
+                                    "</strong>. Are you sure?",
                                 buttons: {
                                     confirm: {
                                         label: 'Accept',
@@ -193,16 +196,20 @@
                                 },
                                 callback: function(result) {
                                     if (result) {
-                                        alert("Your request will be sent to the user. Please await response.");
+                                        //Requests/OnUserTransferAccept/{volId}/{userId}/{currentLocation}
+                                        window.location.href =
+                                            siteURL + `/Requests/OnUserTransferAccept/${volId}/${holdingUser}/${currentLoc}`;
                                     }
                                 }
                             });
                         } else
-                            toastr.error("Cannot make a request to oneself","Sorry!",{ positionClass: "toast-bottom-right" });
+                            toastr.error("Cannot make a request to oneself",
+                                "Sorry!",
+                                { positionClass: "toast-bottom-right" });
 
-                        
+
                     } else
-                        alert("Not eligible for this request at the moment.");
+                        toast.error("Not eligible for this at the moment","Oops!",{ positionClass: "toast-bottom-right" });
                 });
 
             //inserting a string value for current location
