@@ -416,8 +416,9 @@ namespace FileTracking.Controllers
             var user = _context.AdUsers.Single(u => u.Username == userObj.Username);
 
             var request = _context.Requests.Include(r=>r.FileVolumes).Include(r=>r.Branches).Where(r => r.UserId == user.Id).Where(r=>r.IsRequestActive == true)
-                .Where(r=>r.RequestTypeId == RequestType.InternalRequest).Where(r=>r.RequestStatusId == reqStatus).Where(r=>r.IsConfirmed == false).ToList();
-
+                .Where(r=>r.RequestTypeId == RequestType.InternalRequest).Where(r=>r.RequestStatusId == reqStatus).Where(r=>r.IsConfirmed == false).
+                Where(r=>r.UserRequestedFromId == null).ToList();
+            //UserRequestedFromId = = NULL signifies we only get accepted files from REGISTRY.
             return Json(new { data = request }, JsonRequestBehavior.AllowGet);
             
         }
@@ -525,11 +526,11 @@ namespace FileTracking.Controllers
             _context.SaveChanges();
         }
 
-
-        //--------------------------------Initiating User Transfer feature------------------------------------------------------------------ 
+        //----------------------------------------------------------------------------------------------------------------------------------
+        //--------------------------------Initiating User Transfer functionality ----------------------------------------------------------- 
         //----------------------------------------------------------------------------------------------------------------------------------
         
-        //When a user makes attemps to have a file transferred to them this function is invoked to create a new record
+        //When a user makes attempts to have a file transferred to them this function is invoked to create a new record
         [Authorize(Roles = Role.RegularUser)]
         [Route("Requests/OnUserTransferAccept/{volId}/{userId}/{currentLocation}")]
         public ActionResult OnUserTransferAccept(int volId, int userId, byte currentLocation)
@@ -575,6 +576,7 @@ namespace FileTracking.Controllers
         }
 
         //the view page function
+        [Authorize(Roles = Role.RegularUser)]
         public ActionResult UserPendingTransfer()
         {
             return View();//Navigational link to page
@@ -592,15 +594,18 @@ namespace FileTracking.Controllers
                 return View("Locked");
             
             var request = _context.Requests.Include(r => r.FileVolumes).Include(r=>r.Branches).Include(r => r.UserRequestedFrom).Include(r=>r.User)
-                .Where(r=>r.UserRequestedFromId == user.Id)
-                .Where(r=>r.IsRequestActive == true).Where(r=>r.RequestStatusId == 1).ToList();
+                .Where(r=>r.UserRequestedFromId == user.Id).Where(r=>r.IsRequestActive == true).Where(r=>r.RequestStatusId == 1).ToList();
 
             return Json(new { data = request }, JsonRequestBehavior.AllowGet);
         }
 
         //user accepts the pending transfer
+        [Authorize(Roles = Role.RegularUser)]
         public JsonResult AcceptTransfer(int id)
         {
+            var userInSession = new AdUser(User.Identity.Name);
+
+            //the main request to be worked with
             var requestInDb = _context.Requests.Single(r => r.Id == id);
 
             var volumeInDb = _context.FileVolumes.Single(v => v.Id == requestInDb.FileVolumesId);
@@ -612,12 +617,95 @@ namespace FileTracking.Controllers
                 //we are getting the request for the holding user to transfer some content 
                 var holdingUserReq = _context.Requests.Single(r => r.UserId == requestInDb.UserRequestedFromId 
                                      && r.IsRequestActive == true &&  r.FileVolumesId == requestInDb.FileVolumesId);
-                
-                //copy related contents with the exception of the requester user Id which will now be this user
-                //make the new request active and the old record inactive
+
+                holdingUserReq.IsRequestActive = false;
+
+                //Set new record Accept state criteria for the user the file is to be transferred to. 
+                requestInDb.RequestStatusId = 2;
+                requestInDb.AcceptedDate = DateTime.Now;
+                requestInDb.AcceptedBy = userInSession.Username;
+
+                //create ACCEPT NOTIFICATION
+                var acceptNotif = new Notification()
+                {
+                    RecipientUserId = requestInDb.UserId,
+                    MessageId = Message.InAccept,
+                    Read = false,
+                    RequestId = requestInDb.Id,
+                    DateTriggered = DateTime.Now,
+                    SenderUser = requestInDb.AcceptedBy
+                };
+
+                _context.Notifications.Add(acceptNotif);
+
+                //canceling other request to the same file. Except the req id just granted
+                CancelOtherTransferRequests(volumeInDb, requestInDb.Id);
+
+                //now we change the file volume to TRANSFER state (4) since transfer was granted
+                volumeInDb.StatesId = 4;
+                _context.SaveChanges();
+
                 return this.Json(new { success = true, message = "Transfer successfully accepted" }, JsonRequestBehavior.AllowGet);                      
             }
-            return this.Json(new { success = false, message = "Something occured on the server. Try again." }, JsonRequestBehavior.AllowGet);
+            return this.Json(new { success = false, message = "It appears the file has been sent back to registry and cannot commit to transfer." }, JsonRequestBehavior.AllowGet);
+        }
+
+        //will cancel all other requests to the same file once a request is accepted
+        [Authorize(Roles = Role.RegularUser)]
+        public void CancelOtherTransferRequests(FileVolumes fv, int reqId)
+        {
+            //cancel every other request record except for the provided in the parameter
+            var reqsInDb = _context.Requests.Where(r => r.UserRequestedFromId == fv.AdUserId).Where(r => r.Id != reqId)
+                .Where(r => r.FileVolumesId == fv.Id).ToList();
+
+            foreach (var req in reqsInDb)
+            {
+                req.IsRequestActive = false;
+                //request record will be set to rejected = 3
+                req.RequestStatusId = 3;
+
+                //we must also make a function that creates a new record in the notifications table, informing th user their file got canceled.
+                NotifyUserOfTransferDenials(req,Message.InReject);
+            }
+           
+        }
+
+        //Notification of requests being discarded.
+        public void NotifyUserOfTransferDenials(Request req, string messageId)
+        {
+            //REJ - that a file's been rejected
+            var notif = new Notification()
+            {
+                RecipientUserId = req.UserId,
+                MessageId = messageId,
+                Read = false,
+                RequestId = req.Id,
+                DateTriggered = DateTime.Now,
+                SenderUser = req.AcceptedBy
+            };
+           _context.Notifications.Add(notif);
+        }
+
+        //Creating view navigation Page ---------------------------------------------------------------------
+        [Authorize(Roles = Role.RegularUser)]
+        public ActionResult UserConfirmTransfer()
+        {
+            return View();
+        }
+
+        //Json request function that returns a serialized list of request objects
+        [Authorize(Roles = Role.RegularUser)]
+        public JsonResult GetConfirmationTransfers()
+        {
+            var userInSession = new AdUser(User.Identity.Name);
+
+            var adUserInDb = _context.AdUsers.Single(u => u.Username == userInSession.Username);
+
+            var requestsInDb = _context.Requests.Include(r=>r.User).Include(r=>r.FileVolumes).Include(r=>r.Branches).
+                Where(r => r.UserId == adUserInDb.Id).Where(r => r.IsConfirmed == false)
+                .Where(r => r.IsRequestActive == true).ToList();
+
+            return Json(new { data = requestsInDb }, JsonRequestBehavior.AllowGet);
         }
     }
 

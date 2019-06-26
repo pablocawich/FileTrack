@@ -30,7 +30,7 @@
     <script>
         $(document).ready(function() {
             //dataTable declaration
-            $("#userTransferPending").dataTable({
+            var tableTransfer = $("#userTransferPending").dataTable({
                 "ajax": {
                     "url": siteURL + "/Requests/GetUserPendingTransfers",
                     "data": "GET",
@@ -52,10 +52,12 @@
                         "render": function(data, type, req) {
                             var buttonAccept =
                                 `<button class='btn btn-success btn-xs js-transferBtn' data-reqId='${
-                                    data}'>Transfer</button>`;
-                            var buttonDeny = `<button class='btn btn-danger btn-xs js-declineTransfer'>Decline</button>`;
+                                    data}' data-acc-user='${req.User.Name}'>Transfer</button>`;
+                            var buttonDeny =
+                                `<button class='btn btn-danger btn-xs js-declineTransfer' data-dec-reqId='${
+                                    data}' data-dec-user='${req.User.Name}'>Decline</button>`;
 
-                            return buttonAccept + " " + buttonDeny;
+                            return buttonAccept + " | " + buttonDeny;
                         }
                     }
                 ]
@@ -63,23 +65,29 @@
             //Implementing button actions
             $("#userTransferPending").on('click',
                 '.js-transferBtn',
-                function() {
+                function () {
+                    var button = $(this);
                     var reqId = $(this).attr("data-reqId");
+                    var requester = $(this).attr('data-acc-user');
 
-                    bootbox.confirm("You are accepting this transfer. Continue?",
+                    bootbox.confirm(
+                        `You are accepting this transfer request from <strong>${requester}</strong>. Continue?`,
                         function(result) {
                             if (result) {
                                 $.ajax({
                                     url: siteURL + '/Requests/AcceptTransfer/' + reqId,
                                     success: function(response) {
-                                        if(response.success)
+                                        if (response.success)
                                             toastr.success(response.message,
-                                                "Transfer", { positionClass: "toast-bottom-right" });
+                                                "Transfer",
+                                                { positionClass: "toast-bottom-right" });
                                         else
                                             toastr.error(response.message,
-                                                "Transfer", { positionClass: "toast-bottom-right" });
-           
-                                        //table.row(button.parents('tr')).remove().draw();
+                                                "Transfer",
+                                                { positionClass: "toast-bottom-right" });
+
+                                        //console.log(tableTransfer);
+                                        tableTransfer.api().row(button.parents('tr')).remove().draw();
                                     },
                                     statusCode: {
                                         404: function(content) { alert('cannot find resource'); },
@@ -95,7 +103,34 @@
             $("#userTransferPending").on('click',
                 '.js-declineTransfer',
                 function() {
-                    alert("You have chosen to decline a transfer to this user");
+                    var reqId = $(this).attr("data-dec-reqId");
+                    var requester = $(this).attr('data-dec-user');
+                    var button = $(this);
+                    bootbox.confirm(`You are denying a user:<strong> ${requester}</strong> this transfer. Continue?`,
+                        function(result) {
+                            if (result) {
+                                $.ajax({
+                                    url: siteURL + '/Requests/DenyUserTransfer' + reqId,
+                                    success: function(response) {
+                                        if (response.success)
+                                            toastr.success(response.message,
+                                                "Trasfer Declined",
+                                                { positionClass: "toast-bottom-right" });
+                                        else
+                                            toastr.error(response.message,
+                                                "Deny Transfer",
+                                                { positionClass: "toast-bottom-right" });
+
+                                        //table.row(button.parents('tr')).remove().draw();
+                                    },
+                                    statusCode: {
+                                        404: function(content) { alert('cannot find resource'); },
+                                        500: function(content) { alert('internal server error'); }
+                                    }
+                                });
+                            }
+
+                        });
                 });
 
             //Converts and returns a readable DateTime Objects as a javaScript string
