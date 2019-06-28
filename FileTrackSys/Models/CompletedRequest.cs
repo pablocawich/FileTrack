@@ -6,7 +6,7 @@ using System.Web;
 
 namespace FileTracking.Models
 {
-    public class Transfers
+    public class CompletedRequest
     {
         //model of an almost duplicate version to the request table except that it instead acts as a permanent and more substantial role for
         //recording checks-ins and check-outs process and lifetime.

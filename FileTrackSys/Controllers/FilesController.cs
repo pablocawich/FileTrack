@@ -119,8 +119,7 @@ namespace FileTracking.Controllers
 
             //first if block is run in the event that we are creating a new file
             if (file.Id == 0)
-            {
-               
+            {               
                 file.DateCreated = DateTime.Now;
                 file.Volume = 1;
                 file.FileNumber = GetFileNumber();
@@ -128,7 +127,6 @@ namespace FileTracking.Controllers
                     file.LoanNumber = "";
 
                 _context.Files.Add(file);
-
                 _context.SaveChanges();
                 
                 //Upon that record being created, we immediately create volume one for that file based on the file number
@@ -153,11 +151,9 @@ namespace FileTracking.Controllers
                 fileInDb.IdentificationNumber = file.IdentificationNumber;
                 fileInDb.LoanNumber = file.LoanNumber;
                 _context.SaveChanges();
-            }
+            }           
 
-            
-
-            return RedirectToAction("Index", "Files");
+            return RedirectToAction("SearchFiles", "Files");
         }
 
         //update implementation
@@ -309,7 +305,7 @@ namespace FileTracking.Controllers
 
             }
             //redirect to table with record info
-            return RedirectToAction("Index", "Files");
+            return RedirectToAction("SearchFiles", "Files");
         }
 
         //view volumes as it pertains to the chosen file

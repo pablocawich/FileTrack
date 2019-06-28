@@ -21,7 +21,7 @@
             </thead>
             <tbody>
             <tr style="background-color: white">
-                <td><button id="searchClearBtn" class="btn btn-reddit btn-sm" style="background-color: #FF7D7D">Clear search</button></td>
+                <td><button id="searchClearBtn" type="button" class="btn btn-danger"><i class="fa fa-search-minus"></i></button></td>
             </tr>
             </tbody>
         </table>
@@ -68,7 +68,7 @@
 
                             return "<span data-url='" +
                                 file.Id +
-                                " 'class='glyphicon glyphicon-file btn btn-sm btn-primary spanModal'>" +
+                                " 'class='glyphicon glyphicon-file btn btn-block btn-sm btn-primary spanModal'>" +
                                 file.FileNumber +
                                 "</span>";
 

@@ -276,7 +276,7 @@ namespace FileTracking.Controllers
             if (!IsVolumeStateValid(request.FileVolumesId))
             {
                 CancelOtherRequestsForVolume(request.FileVolumesId, id);
-                return this.Json(new {success = false }, JsonRequestBehavior.AllowGet);//we return a false ajax request
+                return this.Json(new {success = false, message = "Unfortunately This file has been checked already or is being transferred as of this moment" }, JsonRequestBehavior.AllowGet);//we return a false ajax request
             }
             
                 request.RequestStatusId = acceptedState;
@@ -288,7 +288,7 @@ namespace FileTracking.Controllers
                 UpdateVolumeState(request.FileVolumesId);
 
                 CreateNotification(request, Message.InAccept);
-                return this.Json(new { success = true }, JsonRequestBehavior.AllowGet);
+                return this.Json(new { success = true, message = "Successfully Checked Out. Kindly await confirmation from user." }, JsonRequestBehavior.AllowGet);
         }
 
         //for external requests, as opposed to the above's local request
@@ -336,7 +336,7 @@ namespace FileTracking.Controllers
             _context.SaveChanges();
         }
 
-        //here we accept the request id and change its status to Deny/reject
+        //here we get the request id and change its status to Deny/reject
         public void DeclineRequest(int id)
         {
             const byte rejectedState = 3;
@@ -346,19 +346,13 @@ namespace FileTracking.Controllers
             request.IsRequestActive = false;
 
             _context.SaveChanges();
+
+            //creates the notifications based on binder which distinguishes between internal and external requests
             if (request.RequestBinder == 0)
-            {
                 CreateNotification(request, Message.InReject);
-            }
             else if(request.RequestTypeId == RequestType.ExternalRequest)
-            {
                 CreateNotification(request, Message.ExReject);
-            }      
-            //say for instance registry rejects a file, recall the request nonetheless changed the volume state to 
-            //requested, when we deny a request we do not perform any changing of state so what operation resolves the issue.
-            //after a volume's been rejected, better yet, let all request for that specific volume be denied.
-            //What do we do then? since the state will remain at requested and never changed due to it never being accepted.
-            //does this affect the flow of things
+                
         }
 
         [Authorize(Roles = Role.Registry)]
@@ -423,6 +417,7 @@ namespace FileTracking.Controllers
             
         }
 
+        //CONFIRM checkout interface
         public void AcceptCheckout(int id)
         {
             //search in request table based on the id parameter
@@ -437,7 +432,6 @@ namespace FileTracking.Controllers
             _context.SaveChanges();
 
             CheckoutVolume(requestRecord.FileVolumesId, requestRecord.UserId);
-            //perhaps here we create a function that performs notifications
 
         }
 
@@ -554,6 +548,9 @@ namespace FileTracking.Controllers
             if (volInDb.StatesId != 5 || volInDb.AdUserId == null)
                 return HttpNotFound("Cannot make this requests as the file as the file is not at the hands of the requestee. ");
 
+            //if request has not been already made
+            if (HasBeenRequested(volInDb, thisUser))
+                return View("AlreadyRequested");
             //creating that new request record
             var newRequest = new Request()
             {
@@ -606,7 +603,7 @@ namespace FileTracking.Controllers
             var userInSession = new AdUser(User.Identity.Name);
 
             //the main request to be worked with
-            var requestInDb = _context.Requests.Single(r => r.Id == id);
+            var requestInDb = _context.Requests.Include(r=>r.User).Single(r => r.Id == id);
 
             var volumeInDb = _context.FileVolumes.Single(v => v.Id == requestInDb.FileVolumesId);
 
@@ -619,6 +616,9 @@ namespace FileTracking.Controllers
                                      && r.IsRequestActive == true &&  r.FileVolumesId == requestInDb.FileVolumesId);
 
                 holdingUserReq.IsRequestActive = false;
+                holdingUserReq.ReturnedDate = DateTime.Now;
+                holdingUserReq.ReturnAcceptBy = requestInDb.User.Username; //the user requesting the transfer will now as the return stage entity, rather than the indicated actor which is a registry user
+                holdingUserReq.ReturnStateId = 3; //completing the request cycle and marking the record as returned
 
                 //Set new record Accept state criteria for the user the file is to be transferred to. 
                 requestInDb.RequestStatusId = 2;
@@ -648,6 +648,24 @@ namespace FileTracking.Controllers
                 return this.Json(new { success = true, message = "Transfer successfully accepted" }, JsonRequestBehavior.AllowGet);                      
             }
             return this.Json(new { success = false, message = "It appears the file has been sent back to registry and cannot commit to transfer." }, JsonRequestBehavior.AllowGet);
+        }
+
+        //can reuse the function stated a bit above but for scrolling sake, i'll create another one here where it more fits 
+        [Authorize(Roles =  Role.RegularUser)]
+        public JsonResult DeclineTransfer(int id)
+        {
+            var requestInDb = _context.Requests.Single(r=>r.Id == id);
+            requestInDb.IsRequestActive = false;
+            requestInDb.RequestStatusId = 3;
+
+            _context.SaveChanges();
+
+            if (requestInDb.RequestBinder == 0)
+                CreateNotification(requestInDb, Message.InReject);
+            else if (requestInDb.RequestTypeId == RequestType.ExternalRequest)
+                CreateNotification(requestInDb, Message.ExReject);
+
+            return this.Json(new { success = true, message = "Transfer successfully accepted" }, JsonRequestBehavior.AllowGet);
         }
 
         //will cancel all other requests to the same file once a request is accepted
@@ -686,7 +704,7 @@ namespace FileTracking.Controllers
            _context.Notifications.Add(notif);
         }
 
-        //Creating view navigation Page ---------------------------------------------------------------------
+        //Creating view navigation Page ---------------------------------------------------------------
         [Authorize(Roles = Role.RegularUser)]
         public ActionResult UserConfirmTransfer()
         {
@@ -701,11 +719,33 @@ namespace FileTracking.Controllers
 
             var adUserInDb = _context.AdUsers.Single(u => u.Username == userInSession.Username);
 
-            var requestsInDb = _context.Requests.Include(r=>r.User).Include(r=>r.FileVolumes).Include(r=>r.Branches).
-                Where(r => r.UserId == adUserInDb.Id).Where(r => r.IsConfirmed == false)
+            var requestsInDb = _context.Requests.Include(r=>r.User).Include(r=>r.UserRequestedFrom).Include(r=>r.FileVolumes).Include(r=>r.Branches).
+                Where(r => r.UserId == adUserInDb.Id).Where(r => r.IsConfirmed == false).Where(r=>r.RequestStatusId == 2)
                 .Where(r => r.IsRequestActive == true).ToList();
 
             return Json(new { data = requestsInDb }, JsonRequestBehavior.AllowGet);
+        }
+        
+        //Function that handles confirmation button functionality
+        [Authorize(Roles = Role.RegularUser)]
+        public JsonResult OnConfirmAccept(int id)
+        {
+            var adUserObj = new AdUser(User.Identity.Name);
+            var userInSession = _context.AdUsers.Single(u => u.Username == adUserObj.Username);
+            //user account not disable carry on
+            if (!userInSession.IsDisabled)
+            {
+                var requestInDb = _context.Requests.Single(r => r.Id == id);
+                requestInDb.IsConfirmed = true;
+                _context.SaveChanges();
+
+                //volume record must be updated
+                CheckoutVolume(requestInDb.FileVolumesId, userInSession.Id);
+
+                //FROM obj in the return statement indicates from whom the confirmation is being made in response to.
+                return Json(new { success = true, message = "Confirmation Successful", from = requestInDb.AcceptedBy}, JsonRequestBehavior.AllowGet);
+            }
+            return Json(new { success = false, message = "This account is not active. Kindly exit" }, JsonRequestBehavior.AllowGet);
         }
     }
 

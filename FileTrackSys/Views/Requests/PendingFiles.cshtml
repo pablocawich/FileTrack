@@ -93,7 +93,7 @@
                                             }
                                         }
                                         else if (response.success == false) {
-                                            toastr.error("Rejected", "Unfortunately this request cannot be made as the volume has been registered to another user", { positionClass: "toast-bottom-right" });
+                                            toastr.error(response.message, "Rejected", { positionClass: "toast-bottom-right" });
                                             table.row(button.parents('tr')).remove().draw();
                                             //window.location.href = "/Requests/PendingFiles";
                                         }

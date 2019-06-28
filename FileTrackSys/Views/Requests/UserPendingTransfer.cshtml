@@ -102,26 +102,23 @@
             //decline transfer button
             $("#userTransferPending").on('click',
                 '.js-declineTransfer',
-                function() {
-                    var reqId = $(this).attr("data-dec-reqId");
-                    var requester = $(this).attr('data-dec-user');
+                function () {
                     var button = $(this);
+                    var reqId = button.attr("data-dec-reqId");
+                    var requester = button.attr('data-dec-user');
+                    
                     bootbox.confirm(`You are denying a user:<strong> ${requester}</strong> this transfer. Continue?`,
                         function(result) {
                             if (result) {
                                 $.ajax({
-                                    url: siteURL + '/Requests/DenyUserTransfer' + reqId,
+                                    url: siteURL + '/Requests/DeclineTransfer/' + reqId,
                                     success: function(response) {
                                         if (response.success)
-                                            toastr.success(response.message,
-                                                "Trasfer Declined",
-                                                { positionClass: "toast-bottom-right" });
+                                            toastr.success(response.message,"Trasfer Declined",{ positionClass: "toast-bottom-right" });
                                         else
-                                            toastr.error(response.message,
-                                                "Deny Transfer",
-                                                { positionClass: "toast-bottom-right" });
+                                            toastr.error(response.message,"Deny Transfer",{ positionClass: "toast-bottom-right" });
 
-                                        //table.row(button.parents('tr')).remove().draw();
+                                        tableTransfer.api().row(button.parents('tr')).remove().draw();
                                     },
                                     statusCode: {
                                         404: function(content) { alert('cannot find resource'); },

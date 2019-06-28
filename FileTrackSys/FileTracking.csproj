@@ -479,7 +479,7 @@
     <Compile Include="Models\ReturnState.cs" />
     <Compile Include="Models\Role.cs" />
     <Compile Include="Models\States.cs" />
-    <Compile Include="Models\Transfers.cs" />
+    <Compile Include="Models\CompletedRequest.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Startup.cs" />
     <Compile Include="ViewModels\ConfirmRequestViewModel.cs" />
