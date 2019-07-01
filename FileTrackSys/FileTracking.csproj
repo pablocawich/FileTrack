@@ -779,6 +779,7 @@
     <Content Include="WelcomePage\img\elements\success-check.png" />
     <Content Include="WelcomePage\img\elements\success-radio.png" />
     <Content Include="WelcomePage\img\elements\work-arrow.png" />
+    <Content Include="WelcomePage\img\error-exclamation-512.png" />
     <Content Include="WelcomePage\img\ftp.png" />
     <Content Include="WelcomePage\img\logo.png" />
     <Content Include="WelcomePage\img\FileTrack.png" />

@@ -65,8 +65,8 @@ namespace FileTracking.Controllers
             var userObj = new AdUser(User.Identity.Name);          
 
             var user = _context.AdUsers.Single(u => u.Username == userObj.Username);
-
-            if (user.IsDisabled == false)
+            
+            if (!user.IsDisabled)//user not disabled
             {
                 var volume = _context.FileVolumes.Single(v => v.Id == volId);
 
@@ -77,7 +77,7 @@ namespace FileTracking.Controllers
                         return View("AlreadyRequested");
                 }
 
-                if (CheckBranchValidity(user, volume))
+                if (CheckBranchValidity(user, volume))//will check if user branch matches the file branch, makes internal requests
                 {
                     if (PopulateRequest(volume, user))
                     {
@@ -86,16 +86,14 @@ namespace FileTracking.Controllers
                     }
                     else
                         return Content("Saving to request database failed");
-
                 }
-                else
+                else//if user branch and file branch does not match, external request made
                 {
                     if (PopulateExternalRequests(volume, user))
                         return View("ExternalRequestMade");
                     else
                     {
-                        return Content(
-                            "Sorry it appears something occured with the methods of inserting into your database. Check your query or logic");
+                        return Content("Sorry something went wrong with the methods of inserting into your database. Check your query or logic");
                     }
                 }
             }
@@ -261,6 +259,8 @@ namespace FileTracking.Controllers
             {
                 req.IsRequestActive = false;//here we also need to update the notification system when its implemented (for a later time)
                 req.RequestStatusId = 3; //we set the request status to rejected
+                //here we need to notify other user, so we call the createNotification() function 
+                //......
             }
 
             _context.SaveChanges();
@@ -306,16 +306,14 @@ namespace FileTracking.Controllers
                     return this.Json(new { success = false }, JsonRequestBehavior.AllowGet);
                 }
             }
-
-           
+                //we proceed with processing the request since no other request to the same volume was found
                 request.RequestStatusId = acceptedState;
                 request.AcceptedBy = userObj.Username;
                 request.AcceptedDate = DateTime.Now;
                 //request.UserId = 
-                int volId = request.FileVolumesId;
 
                 _context.SaveChanges();
-                UpdateVolumeState(volId);
+                UpdateVolumeState(request.FileVolumesId);
             //Since the 
             CreateNotification(request, Message.ExAccept);
             return this.Json(new { success = true }, JsonRequestBehavior.AllowGet);
@@ -528,31 +526,26 @@ namespace FileTracking.Controllers
         [Authorize(Roles = Role.RegularUser)]
         [Route("Requests/OnUserTransferAccept/{volId}/{userId}/{currentLocation}")]
         public ActionResult OnUserTransferAccept(int volId, int userId, byte currentLocation)
-        {
-            //user in session
-            var userObj = new AdUser(User.Identity.Name);
+        {           
+            var userObj = new AdUser(User.Identity.Name); //user in session
 
-            var thisUser = _context.AdUsers.Single(u => u.Username == userObj.Username);
+            var thisUser = _context.AdUsers.Single(u => u.Username == userObj.Username);//user in session dataBase information
 
-            //Checks if user account in session is not disabled
-            if (thisUser.IsDisabled)
+            if (thisUser.IsDisabled)//Checks if user account in session is not disabled
                 return View("Locked");
 
-            //checks that user in session is not requesting from his/her own self
-            if (thisUser.Id == userId)
+            if (thisUser.Id == userId)//checks that user in session is not requesting from his/her own self
                 return HttpNotFound("It appears your request of transfer is being processed to yourself. Cannot proceed.");
 
             var volInDb = _context.FileVolumes.Single(v => v.Id == volId);
-
-            //checks is file volumes is eligible for a transfer
-            if (volInDb.StatesId != 5 || volInDb.AdUserId == null)
+          
+            if (volInDb.StatesId != 5 || volInDb.AdUserId == null) //checks is file volumes is eligible for a transfer
                 return HttpNotFound("Cannot make this requests as the file as the file is not at the hands of the requestee. ");
 
-            //if request has not been already made
-            if (HasBeenRequested(volInDb, thisUser))
+            if (HasBeenRequested(volInDb, thisUser))//if request has not been already made
                 return View("AlreadyRequested");
-            //creating that new request record
-            var newRequest = new Request()
+           
+            var newRequest = new Request() //creating that new request record
             {
                 UserId = thisUser.Id,//this is the new user making the request
                 FileVolumesId = volId,
@@ -647,6 +640,7 @@ namespace FileTracking.Controllers
 
                 return this.Json(new { success = true, message = "Transfer successfully accepted" }, JsonRequestBehavior.AllowGet);                      
             }
+
             return this.Json(new { success = false, message = "It appears the file has been sent back to registry and cannot commit to transfer." }, JsonRequestBehavior.AllowGet);
         }
 
@@ -665,7 +659,7 @@ namespace FileTracking.Controllers
             else if (requestInDb.RequestTypeId == RequestType.ExternalRequest)
                 CreateNotification(requestInDb, Message.ExReject);
 
-            return this.Json(new { success = true, message = "Transfer successfully accepted" }, JsonRequestBehavior.AllowGet);
+            return this.Json(new { success = true, message = "This transfer request has been declined." }, JsonRequestBehavior.AllowGet);
         }
 
         //will cancel all other requests to the same file once a request is accepted
@@ -745,6 +739,7 @@ namespace FileTracking.Controllers
                 //FROM obj in the return statement indicates from whom the confirmation is being made in response to.
                 return Json(new { success = true, message = "Confirmation Successful", from = requestInDb.AcceptedBy}, JsonRequestBehavior.AllowGet);
             }
+
             return Json(new { success = false, message = "This account is not active. Kindly exit" }, JsonRequestBehavior.AllowGet);
         }
     }
