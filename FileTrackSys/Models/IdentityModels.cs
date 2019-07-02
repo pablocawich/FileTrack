@@ -37,6 +37,7 @@ namespace FileTracking.Models
         public DbSet<ExternalRequestsBinder> ExternalRequestsBinder { get; set; }
         public DbSet<RequestType> RequestTypes { get; set; }
         public DbSet<Notification> Notifications { get; set; }
+        public DbSet<CompletedRequest> CompletedRequests { get; set; }
 
 
         public ApplicationDbContext()

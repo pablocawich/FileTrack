@@ -38,9 +38,9 @@
             <tr>
                 <td><span data-return-id="@req.FileVolumes.FileId" class="glyphicon glyphicon-file btn btn-success btn-sm returnModal"> @req.FileVolumes.FileNumber</span></td>
                 <td>@req.FileVolumes.Volume</td>
-                <td>@req.AcceptedBy</td>
+                <td>@req.AcceptedBy.Name</td>
                 <td>@req.AcceptedDate</td>
-                <td>@req.Branches.Branch</td>
+                <td>@req.RequesterBranch.Branch</td>
                 <td><button class="btn btn-adn js-return" data-return-id="@req.Id">Return</button></td>
             </tr>
         }      

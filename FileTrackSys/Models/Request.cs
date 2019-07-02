@@ -22,11 +22,13 @@ namespace FileTracking.Models
         public RequestType RequestType { get; set; }
         public string RequestTypeId { get; set; }
 
-        public Branches Branches { get; set; }
+        public Branches RequesterBranch { get; set; }//changed name 
         [Required]
-        public byte BranchesId { get; set; }
+        public byte RequesterBranchId { get; set; }
 
-        public byte RequesteeBranch { get; set; }
+        public Branches CurrentFileBranch { get; set; }//change
+        [Required]
+        public byte CurrentFileBranchId { get; set; }
 
         public RequestStatus RequestStatus { get; set; }
         [Required]
@@ -36,11 +38,13 @@ namespace FileTracking.Models
 
         public DateTime? AcceptedDate { get; set; }//date accepted by registry
 
-        public string AcceptedBy { get; set; }//specific registry member
+        public AdUser AcceptedBy { get; set; }
+        public int? AcceptedById { get; set; }//specific registry member
 
         public DateTime? ReturnedDate { get; set; } //date file was returned to registry, triggered when registry accepts return
 
-        public string ReturnAcceptBy { get; set; }//Specific reg member who did the accept
+        public AdUser ReturnAcceptBy { get; set; }
+        public int? ReturnAcceptById { get; set; }//Specific reg member who did the accept
 
         [DefaultValue(false)]
         public bool IsConfirmed { get; set; }

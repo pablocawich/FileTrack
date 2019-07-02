@@ -60,14 +60,14 @@
                         }
                     },
                     { "data": "FileVolumes.Volume" },
-                    { "data": "AcceptedBy" },
+                    { "data": "AcceptedBy.Name"},
                     {
                         data: "AcceptedDate",
                         "render": function(data) {
                             return getDateString(data);
                         }
                     },
-                    { data: "Branches.Branch" },
+                    { data: "RequesterBranch.Branch" },
                     {
                         data: "Id",
                         "render": function(data, type, req) {

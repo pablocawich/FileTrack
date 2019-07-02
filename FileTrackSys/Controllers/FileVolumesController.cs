@@ -34,25 +34,17 @@ namespace FileTracking.Controllers
                 Read = false,
                 RequestId = req.Id,
                 DateTriggered = DateTime.Now,
-                SenderUser = req.AcceptedBy
+                SenderUserId = req.AcceptedById
             };
 
             _context.Notifications.Add(notif);
             _context.SaveChanges();
         }
 
-        public string ParseUsername(string adName)
-        {
-            string newName = "";
-            if (adName.Contains("DEVFINCO"))
-                newName = adName.Remove(0, 9);
-            return newName;
-        }
-
         [Route("FileVolumes/VolumeHistory/{volId}/{page}/{pageSize}")]
         public ActionResult VolumeHistory(int volId, int page, int pageSize)
         {
-            var requestsInDb = _context.Requests.Include(r=>r.User).Include(r=>r.FileVolumes).Include(r=>r.Branches)
+            var requestsInDb = _context.Requests.Include(r=>r.User).Include(r=>r.FileVolumes).Include(r=>r.RequesterBranch)
                 .Where(r => r.FileVolumesId == volId).Where(r => r.IsRequestActive == false).Where(r=>r.RequestStatusId == 2)
                 .Where(r => r.ReturnStateId == 3).ToList();
 
@@ -97,10 +89,11 @@ namespace FileTracking.Controllers
 
             if (userInDb.IsDisabled == false)
             {
-                string username = ParseUsername(User.Identity.Name);
-                var user = _context.AdUsers.Single(u => u.Username == username);
+                var UserInSession = new AdUser(User.Identity.Name);
+                var user = _context.AdUsers.Single(u => u.Username == UserInSession.Username);
 
-                var request = _context.Requests.Include(r => r.FileVolumes).Include(r => r.Branches).Where(r => r.UserId == user.Id).Where(r => r.IsRequestActive == true)
+                var request = _context.Requests.Include(r => r.FileVolumes).Include(r => r.RequesterBranch).Include(r=>r.AcceptedBy).
+                    Where(r => r.UserId == user.Id).Where(r => r.IsRequestActive == true)
                     .Where(r => r.IsConfirmed == true).
                     Where(r => r.ReturnStateId == 1).Where(r => r.RequestTypeId == RequestType.InternalRequest).ToList();
 
@@ -141,7 +134,7 @@ namespace FileTracking.Controllers
             var username = new AdUser(User.Identity.Name);
             var adUser = _context.AdUsers.Single(a => a.Username == username.Username);
             var returnedReq = _context.Requests.Include(r => r.FileVolumes).
-                Include(r => r.User.Branches).Where(r=>r.RequesteeBranch == adUser.BranchesId).Where(r=>r.RequestTypeId == RequestType.InternalRequest)
+                Include(r => r.User.Branches).Where(r=>r.CurrentFileBranchId == adUser.BranchesId).Where(r=>r.RequestTypeId == RequestType.InternalRequest)
                 .Where(r=>r.IsRequestActive == true).Where(r=>r.ReturnStateId == 2).ToList();
 
 
@@ -152,10 +145,11 @@ namespace FileTracking.Controllers
         public void AcceptReturn(int id)
         {
             var user = new AdUser(User.Identity.Name);//we get the current registry user and initialize its username
+            var userInSessionInDb = _context.AdUsers.Single(u => u.Username == user.Username);
             var req = _context.Requests.Single(r => r.Id == id);
             
             req.ReturnedDate = DateTime.Now;
-            req.ReturnAcceptBy = user.Username;
+            req.ReturnAcceptById = userInSessionInDb.Id;
             req.ReturnStateId = 3;
             req.IsRequestActive = false;
             
@@ -179,10 +173,11 @@ namespace FileTracking.Controllers
         public void AcceptExternalReturn(int id)
         {
            var user = new AdUser(User.Identity.Name);//we get the current registry user and initialize its username
+           var userInSessionInDb = _context.AdUsers.Single(u => u.Username == user.Username);
             var req = _context.Requests.Single(r => r.Id == id);
 
             req.ReturnedDate = DateTime.Now;
-            req.ReturnAcceptBy = user.Username;
+            req.ReturnAcceptById = userInSessionInDb.Id;
             req.ReturnStateId = 3;
             req.IsRequestActive = false;
 
@@ -232,7 +227,7 @@ namespace FileTracking.Controllers
         public void InitiateExternalReturn(int binderId)
         {
             var extReturnReq = _context.Requests.Single(r=>r.RequestBinder == binderId && r.RequestTypeId == RequestType.ExternalRequest &&
-                                                           r.RequestStatusId == 2 && r.IsConfirmed == true);
+                               r.RequestStatusId == 2 && r.IsConfirmed == true);
             //if(extReturnReq == null)
                 
             extReturnReq.IsRequestActive = true;
@@ -255,7 +250,7 @@ namespace FileTracking.Controllers
             var user = _context.AdUsers.Single(u => u.Username == userObj.Username);
 
             var request = _context.Requests.Include(r => r.FileVolumes).Include(r => r.User.Branches).
-                Where(r => r.BranchesId == user.BranchesId).Where(r => r.RequestTypeId == RequestType.ExternalRequest).
+                Where(r => r.RequesterBranchId == user.BranchesId).Where(r => r.RequestTypeId == RequestType.ExternalRequest).
                 Where(r => r.IsConfirmed == true).Where(r=>r.ReturnStateId == 1).Where(r=>r.IsRequestActive == true).ToList();
 
             return Json(new { data = request }, JsonRequestBehavior.AllowGet);
@@ -264,11 +259,12 @@ namespace FileTracking.Controllers
         public void ReturnToBranchAction(int id)
         {
             var currUser = new AdUser(User.Identity.Name);
+            var userInSessionInDb = _context.AdUsers.Single(u => u.Username == currUser.Username);
             //return sent => 2
             var extReq = _context.Requests.Single(r => r.Id == id);
             extReq.ReturnStateId = 2;
             extReq.ReturnedDate = DateTime.Now;
-            extReq.ReturnAcceptBy = currUser.Username;
+            extReq.ReturnAcceptById = userInSessionInDb.Id;
 
             _context.SaveChanges();
             CreateNotification(extReq, Message.ExReturn);
@@ -289,7 +285,7 @@ namespace FileTracking.Controllers
             var user = _context.AdUsers.Single(u => u.Username == userObj.Username);
 
             var request = _context.Requests.Include(r => r.FileVolumes).Include(r => r.User.Branches).
-                Where(r => r.RequesteeBranch == user.BranchesId).Where(r => r.RequestTypeId == RequestType.ExternalRequest).
+                Where(r => r.CurrentFileBranchId == user.BranchesId).Where(r => r.RequestTypeId == RequestType.ExternalRequest).
                 Where(r => r.IsConfirmed == true).Where(r => r.ReturnStateId == 2).Where(r => r.IsRequestActive == true).ToList();
 
             return Json(new { data = request }, JsonRequestBehavior.AllowGet);

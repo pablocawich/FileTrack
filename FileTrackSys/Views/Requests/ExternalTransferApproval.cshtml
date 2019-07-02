@@ -46,11 +46,8 @@
                     { "data": "User.Name" },
                     { "data": "User.Branches.Branch" },
                     { "data": "AcceptedBy" },
-                    {
-                        "data": "RequesteeBranch",
-                        "render": function (data) {
-                            return determineBranch(data);
-                        }
+                    { "data": "CurrentFileBranch.Branch"//please recall here we removed the determine branch function, which was useless
+
                     },
                     {
                         data: "RequestDate",

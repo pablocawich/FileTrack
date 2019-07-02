@@ -452,6 +452,18 @@
     <Compile Include="Migrations\201906201955183_AddRequestedFromUserColumnToRequest.Designer.cs">
       <DependentUpon>201906201955183_AddRequestedFromUserColumnToRequest.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201907012106366_RequestAndNotificationModifications.cs" />
+    <Compile Include="Migrations\201907012106366_RequestAndNotificationModifications.Designer.cs">
+      <DependentUpon>201907012106366_RequestAndNotificationModifications.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201907021625461_RenameOriginBranchToRequesterbranchInRequest.cs" />
+    <Compile Include="Migrations\201907021625461_RenameOriginBranchToRequesterbranchInRequest.Designer.cs">
+      <DependentUpon>201907021625461_RenameOriginBranchToRequesterbranchInRequest.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201907021722110_AddCompletedRequestTable.cs" />
+    <Compile Include="Migrations\201907021722110_AddCompletedRequestTable.Designer.cs">
+      <DependentUpon>201907021722110_AddCompletedRequestTable.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Models\AccountViewModels.cs" />
     <Compile Include="Models\AddNumberIfIdentificationSelected.cs" />
@@ -1220,6 +1232,15 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201906201955183_AddRequestedFromUserColumnToRequest.resx">
       <DependentUpon>201906201955183_AddRequestedFromUserColumnToRequest.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201907012106366_RequestAndNotificationModifications.resx">
+      <DependentUpon>201907012106366_RequestAndNotificationModifications.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201907021625461_RenameOriginBranchToRequesterbranchInRequest.resx">
+      <DependentUpon>201907021625461_RenameOriginBranchToRequesterbranchInRequest.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201907021722110_AddCompletedRequestTable.resx">
+      <DependentUpon>201907021722110_AddCompletedRequestTable.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>

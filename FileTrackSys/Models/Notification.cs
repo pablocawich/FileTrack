@@ -10,8 +10,8 @@ namespace FileTracking.Models
     {
         public int Id { get; set; }
 
-        [StringLength(32)]
-        public string SenderUser { get; set; }
+        public AdUser SenderUser { get; set; }
+        public int? SenderUserId { get; set; }
 
         public AdUser RecipientUser { get; set; }
         public int? RecipientUserId { get; set; }
