@@ -29,19 +29,19 @@
                 <th>Checked Out By</th>
                 <th>Checked Out Date</th>
                 <th>Branch</th>
-                <th>Action</th>
+                <th>Return</th>
             </tr>
         </thead>
         <tbody>
         @foreach (var req in Model)
         {
             <tr>
-                <td><span data-return-id="@req.FileVolumes.FileId" class="glyphicon glyphicon-file btn btn-success btn-sm returnModal"> @req.FileVolumes.FileNumber</span></td>
+                <td><span data-return-id="@req.FileVolumes.FileId" class="glyphicon glyphicon-file btn btn-success btn-block btn-xs returnModal"> @req.FileVolumes.FileNumber</span></td>
                 <td>@req.FileVolumes.Volume</td>
                 <td>@req.AcceptedBy.Name</td>
                 <td>@req.AcceptedDate</td>
                 <td>@req.RequesterBranch.Branch</td>
-                <td><button class="btn btn-adn js-return" data-return-id="@req.Id">Return</button></td>
+                <td><button class="btn btn-circle btn-block js-return" data-return-id="@req.Id"><i class="fa fa-share-square-o"></i></button></td>
             </tr>
         }      
         </tbody>
@@ -55,41 +55,71 @@
 </div>
 @section scripts{
     <script>
-        $(document).ready(function () {
-     
-                $("#myFiles").on('click',
-                    '.js-return',
-                    function () {
-                        var $btn = $(this);
-                        var requestId = $btn.attr("data-return-id");
-                        bootbox.confirm("You are sending a return request to registry, Do you wish to continue",
-                            function(result) {
-                                if (result) {
-                                    $.ajax({
-                                        url: siteURL+'/FileVolumes/ReturnVolume/' + requestId,
-                                        success: function() {
-                                            toastr.success("Return Request Sent to registry", "Return", { positionClass: "toast-bottom-right" });
+        $(document).ready(function() {
+
+            $("#myFiles").on('click',
+                '.js-return',
+                function() {
+                    var $btn = $(this);
+                    var requestId = $btn.attr("data-return-id");
+                    bootbox.confirm(
+                        "Are you sure?. Might be you have transfer requests from other users. Kindly check if not already done so.",
+                        function(result) {
+                            if (result) {
+                                $.ajax({
+                                    url: siteURL + '/FileVolumes/ReturnVolume/' + requestId,
+                                    success: function(response) {
+                                        if (response.success == false) {
+                                            bootbox.confirm(
+                                                "you have transfer requests. Continue?.",
+                                                function(res) {
+                                                    if (res) {
+                                                        $.ajax({
+                                                            url: siteURL + '/FileVolumes/VerifiedReturnOfVolume/' + requestId,
+                                                            success: function(response){
+                                                                toastr.success("Return Request Sent to registry",
+                                                                    "Return",
+                                                                    { positionClass: "toast-bottom-right" });
+
+                                                                $($btn).closest("tr").remove();
+                                                            },
+                                                            error: function( jqXhr, textStatus, errorThrown ){
+                                                                alert(errorThrown);
+                                                            }
+                                                        });
+                                                    } else {
+                                                        window.location.href = siteURL +"/Requests/UserPendingTransfer";
+                                                    }
+
+                                                });
+                                        } else {
+                                            toastr.success("Return Request Sent to registry",
+                                                "Return",
+                                                { positionClass: "toast-bottom-right" });
 
                                             $($btn).closest("tr").remove();
-                                        },
-                                        statusCode: {
-                                            404: function(content) { alert('cannot find resource'); },
-                                            500: function(content) { alert('internal server error'); }
                                         }
-                                    });
-                                }
-                            });
+
+                                    },
+                                    statusCode: {
+                                        404: function(content) { alert('cannot find resource'); },
+                                        500: function(content) { alert('internal server error'); }
+                                    }
+                                });
+                            }
+                        });
                 });
 
-                $("#myFiles").on("click", ".returnModal",
-                    function() {
-                        var id = $(this).attr("data-return-id");
-                        var url = siteURL+"/Files/FileDetailsForConfirm/" + id;
-                        // alert(url);
+            $("#myFiles").on("click",
+                ".returnModal",
+                function() {
+                    var id = $(this).attr("data-return-id");
+                    var url = siteURL + "/Files/FileDetailsForConfirm/" + id;
+                    // alert(url);
 
-                        $('#returnModelContent').load(url);
-                        $('#userReturnModal').modal('show');
-                    });
+                    $('#returnModelContent').load(url);
+                    $('#userReturnModal').modal('show');
+                });
         });
     </script>
 }

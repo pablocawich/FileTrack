@@ -43,7 +43,7 @@
             //gets json objects from the request controller in order to populate the dataTable
             var table = $("#returnedTable").DataTable({
                 "ajax": {
-                    "url": siteURL+"/FileVolumes/GetReturnedRequests",
+                    "url": siteURL + "/FileVolumes/GetReturnedRequests",
                     "data": "GET",
                     "datatype": "json"
                 },
@@ -51,7 +51,8 @@
                     {
                         "data": "FileVolumes.FileNumber",
                         render: function(data, type, req) {
-                            return `<a href="#" data-acct-ret-id="${req.FileVolumes.FileId}" class="btn btn-default btn-sm acceptRetModal">
+                            return `<a href="#" data-acct-ret-id="${req.FileVolumes.FileId
+                                }" class="btn btn-default btn-sm acceptRetModal">
                                 <i class="fa fa-wpforms"> ${data}</i></a>`;
                         }
                     },
@@ -78,9 +79,10 @@
                     {
                         data: "Id",
                         "render": function(data, type, req) {
-                            var buttonAccept = "<button class='btn btn-success js-return' data-return-id='" +
-                                data +
-                                "'>Check In</button>";
+                            var buttonAccept =
+                                `<button class='btn btn-success js-return' data-user='${req.User.Name
+                                    }' data-return-id='${
+                                    data}'>Check In</button>`;
 
                             return buttonAccept;
                         }
@@ -94,11 +96,12 @@
                 function() {
                     var button = $(this);
                     var id = button.attr("data-return-id");
-                    bootbox.confirm("You are about to confirm request for this user: ",
+                    var user = button.attr("data-user");
+                    bootbox.confirm(`You are about to confirm a file return from user: <strong>${user}</strong>`,
                         function(result) {
                             if (result) {
                                 $.ajax({
-                                    url: siteURL+'/FileVolumes/AcceptReturn/' + id,
+                                    url: siteURL + '/FileVolumes/AcceptReturn/' + id,
                                     success: function() {
 
                                         toastr.success("Accepted return for client",
@@ -128,7 +131,7 @@
                 ".acceptRetModal",
                 function() {
                     var id = $(this).attr("data-acct-ret-id");
-                    var url = siteURL+"/Files/FileDetailsForConfirm/" + id;
+                    var url = siteURL + "/Files/FileDetailsForConfirm/" + id;
                     // alert(url);
 
                     $('#acceptReturnModelContent').load(url);

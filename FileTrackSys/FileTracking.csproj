@@ -198,6 +198,7 @@
     <Compile Include="App_Start\WebApiConfig.cs" />
     <Compile Include="Controllers\AccountController.cs" />
     <Compile Include="Controllers\AdUsersController.cs" />
+    <Compile Include="Controllers\CompletedRequestController.cs" />
     <Compile Include="Controllers\FilesController.cs" />
     <Compile Include="Controllers\FileVolumesController.cs" />
     <Compile Include="Controllers\HomeController.cs" />
@@ -1043,6 +1044,7 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
+    <Folder Include="Views\CompletedRequest\" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />

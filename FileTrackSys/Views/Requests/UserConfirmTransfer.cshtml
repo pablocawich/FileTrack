@@ -76,7 +76,6 @@
                         "render": function(data, type, req) {
                             //req.User.Name -> is requesting user not the user who made the transfer or 
                             //from whom the transfer was requested from
-               
                             var buttonAccept =
                                 `<button class='btn btn-info btn-circle btn-sm js-confirmBtn' data-prevUser='${
                                 req.UserRequestedFrom.Name}' data-confirm-reqId='${

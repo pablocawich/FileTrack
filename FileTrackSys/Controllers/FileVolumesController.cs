@@ -6,6 +6,7 @@ using System.Web;
 using System.Web.Mvc;
 using FileTracking.Models;
 using FileTracking.ViewModels;
+using Microsoft.Ajax.Utilities;
 using PagedList;
 
 namespace FileTracking.Controllers
@@ -108,11 +109,35 @@ namespace FileTracking.Controllers
             return HttpNotFound("Your account is Disabled");
         }
 
-        public void ReturnVolume(int id)
+        public JsonResult ReturnVolume(int id)
         {
-            const byte isReturning = 2;
             var request = _context.Requests.Single(r => r.Id == id);
-            request.ReturnStateId = isReturning;
+ 
+            if (HasOtherTransfers(request.UserId, request.FileVolumesId))
+            {
+                return Json(new { success = false }, JsonRequestBehavior.AllowGet);
+            }
+            else
+            {
+                request.ReturnStateId = 2;//2 means return is initiated, return sent
+
+                _context.SaveChanges();
+
+                CreateNotification(request, Message.Return);
+                //since returning, state should transition to the transfer state. Just to give more detail. Not significant change
+                ChangeStateToTransfer(request.FileVolumesId, request.UserId);
+
+                return Json(new { success = true }, JsonRequestBehavior.AllowGet);
+            }
+          
+        }
+
+        //return file function after prompt was accepted
+        public JsonResult VerifiedReturnOfVolume(int id)
+        {
+            var request = _context.Requests.Single(r => r.Id == id);
+
+            request.ReturnStateId = 2;//2 means return is initiated, return sent
 
             _context.SaveChanges();
 
@@ -120,8 +145,62 @@ namespace FileTracking.Controllers
             //since returning, state should transition to the transfer state. Just to give more detail. Not significant change
             ChangeStateToTransfer(request.FileVolumesId, request.UserId);
 
+            //having a string value indicates we are asking for a list of objects to be returned from the dynamic type function
+            //requests returned are those associated with our file
+            var requestsToBeCanceled = HasOtherTransfers(request.UserId, request.FileVolumesId, "GetRequestObjects");
+            CancelOtherTransferRequests(requestsToBeCanceled);
+
+            return Json(new { success = true }, JsonRequestBehavior.AllowGet);
+
         }
 
+        //Checks if other transfers were made to the file we are returning.
+        public dynamic HasOtherTransfers(int adUserId, int volumeId, string firstCheck = "")
+        {
+            var transferRequests = _context.Requests.Where(r => r.IsRequestActive == true).Where(r => r.FileVolumesId == volumeId)
+                .Where(r => r.UserRequestedFromId == adUserId).Where(r => r.RequestStatusId == 1).ToList();
+
+            if (firstCheck.IsNullOrWhiteSpace())
+            {                
+                if (transferRequests.Any())
+                    return true;
+                return false;
+            }
+            else
+            {
+                return transferRequests;
+            }
+        }
+
+        public void CancelOtherTransferRequests(List<Request> requests)
+        {
+            foreach (var req in requests)
+            {
+                req.IsRequestActive = false;
+                req.RequestStatusId = 3;//rejected state
+                //ensure that on each request, a notification is dispatched to the respective user about file being rejected
+                CreateNotificationForTransfers(req, Message.InReject);
+            }
+        }
+
+        //creates a notification for transfer activities
+        public void CreateNotificationForTransfers(Request req, string messageId)
+        {
+            var notif = new Notification()
+            {
+                RecipientUserId = req.UserId,
+                MessageId = messageId,
+                Read = false,
+                RequestId = req.Id,
+                DateTriggered = DateTime.Now,
+                SenderUserId = req.UserRequestedFromId
+            };
+
+            _context.Notifications.Add(notif);
+            _context.SaveChanges();
+        }
+        
+        //
         [Authorize(Roles = Role.Registry)]
         public ActionResult ReturnApproval()
         {
@@ -146,6 +225,7 @@ namespace FileTracking.Controllers
         {
             var user = new AdUser(User.Identity.Name);//we get the current registry user and initialize its username
             var userInSessionInDb = _context.AdUsers.Single(u => u.Username == user.Username);
+
             var req = _context.Requests.Single(r => r.Id == id);
             
             req.ReturnedDate = DateTime.Now;
@@ -165,6 +245,12 @@ namespace FileTracking.Controllers
             {
                 _context.SaveChanges();
                 ChangeStateToStored(req.FileVolumesId);
+
+                var completedRequestOperation = new CompletedRequestController();
+                completedRequestOperation.SaveToCompletedRequestTable(req);
+                //we want to remove the record from Requests as we kinda duplicated the fields and stored in CompletedRequest
+                _context.Requests.Remove(req);
+                _context.SaveChanges();
             }
                        
         }
