@@ -65,30 +65,34 @@ thead {
 	visibility: hidden;
 	z-index: 1000;
 }
-    #regScrollToTop::after {
-        content: "\f077";
-        font-family: FontAwesome;
-        font-weight: normal;
-        font-style: normal;
-        font-size: 2em;
-        line-height: 38px;
-        color: #fff;
-    }
+#regScrollToTop::after {
+    content: "\f077";
+    font-family: FontAwesome;
+    font-weight: normal;
+    font-style: normal;
+    font-size: 2em;
+    line-height: 38px;
+    color: #fff;
+}
 #regScrollToTop:hover {
 	cursor: pointer;
 	background-color: #333;
 }
-	#regScrollToTop:active {
-		background-color: #555;
-	}
-	#regScrollToTop.show {
-		opacity: 1;
-		visibility: visible;
-	}
-    #registryVolumeTable tr td{
-        font-style: italic;
-        color: darkcyan;
-    }
+#regScrollToTop:active {
+	background-color: #555;
+}
+#regScrollToTop.show {
+	opacity: 1;
+	visibility: visible;
+}
+#registryVolumeTable tr td{
+    font-style: italic;
+    color: darkcyan;
+}
+#volumeTable tr td {
+    font-style: italic;
+    color: darkcyan;
+}
 #dfcSideNav {
     background-color: #cbd4c2;
     height: 100vh;

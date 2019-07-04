@@ -205,6 +205,7 @@
     <Compile Include="Controllers\ManageController.cs" />
     <Compile Include="Controllers\NotificationsController.cs" />
     <Compile Include="Controllers\ProfilesController.cs" />
+    <Compile Include="Controllers\RejectedRequestController.cs" />
     <Compile Include="Controllers\RequestsController.cs" />
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
@@ -465,6 +466,14 @@
     <Compile Include="Migrations\201907021722110_AddCompletedRequestTable.Designer.cs">
       <DependentUpon>201907021722110_AddCompletedRequestTable.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201907032217437_AddRejectedRequestTable.cs" />
+    <Compile Include="Migrations\201907032217437_AddRejectedRequestTable.Designer.cs">
+      <DependentUpon>201907032217437_AddRejectedRequestTable.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201907032246168_RemoveUnecessaryFieldsFromRejTable.cs" />
+    <Compile Include="Migrations\201907032246168_RemoveUnecessaryFieldsFromRejTable.Designer.cs">
+      <DependentUpon>201907032246168_RemoveUnecessaryFieldsFromRejTable.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Models\AccountViewModels.cs" />
     <Compile Include="Models\AddNumberIfIdentificationSelected.cs" />
@@ -486,6 +495,7 @@
     <Compile Include="Models\Message.cs" />
     <Compile Include="Models\Notification.cs" />
     <Compile Include="Models\Profile.cs" />
+    <Compile Include="Models\RejectedRequest.cs" />
     <Compile Include="Models\Request.cs" />
     <Compile Include="Models\RequestStatus.cs" />
     <Compile Include="Models\RequestType.cs" />
@@ -1045,6 +1055,7 @@
   <ItemGroup>
     <Folder Include="App_Data\" />
     <Folder Include="Views\CompletedRequest\" />
+    <Folder Include="Views\RejectedRequest\" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
@@ -1243,6 +1254,12 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201907021722110_AddCompletedRequestTable.resx">
       <DependentUpon>201907021722110_AddCompletedRequestTable.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201907032217437_AddRejectedRequestTable.resx">
+      <DependentUpon>201907032217437_AddRejectedRequestTable.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201907032246168_RemoveUnecessaryFieldsFromRejTable.resx">
+      <DependentUpon>201907032246168_RemoveUnecessaryFieldsFromRejTable.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>

@@ -38,7 +38,7 @@ namespace FileTracking.Models
         public DbSet<RequestType> RequestTypes { get; set; }
         public DbSet<Notification> Notifications { get; set; }
         public DbSet<CompletedRequest> CompletedRequests { get; set; }
-
+        public DbSet<RejectedRequest> RejectedRequests { get; set; }
 
         public ApplicationDbContext()
             : base("DefaultConnection", throwIfV1Schema: false)

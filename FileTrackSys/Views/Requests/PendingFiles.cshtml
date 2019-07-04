@@ -82,20 +82,19 @@
                                     url: siteURL+'/Requests/AcceptRequest/' + id,
                                     success: function(response) {
                                         if (response.success == true) {
-                                            toastr.success("Accepted", "Request", { positionClass: "toast-bottom-right" });
+                                            toastr.success("Accepted", response.message, { positionClass: "toast-bottom-right" });
 
-                                            //removes row from client side perspective. Not on server side thus 
-                                            //if a refresh is made it will be reloaded since we have not done any server side processing
-                                            //console.log(table.data().count());
-                                            table.row(button.parents('tr')).remove().draw();
-                                            if (table.data().count() == 0) {
-                                                $("#notifIcon").css('color', 'white');
-                                            }
+                                            table.row(button.parents('tr')).remove().draw();                                       
                                         }
                                         else if (response.success == false) {
-                                            toastr.error(response.message, "Rejected", { positionClass: "toast-bottom-right" });
-                                            table.row(button.parents('tr')).remove().draw();
-                                            //window.location.href = "/Requests/PendingFiles";
+                                            bootbox.alert({
+                                                size: "medium",
+                                                title: "Success",
+                                                message: "Request accepted however, other requests were found for your file and now requires a reload",
+                                                callback: function () {
+                                                    window.location.href = siteURL + "/Requests/PendingFiles";
+                                                }
+                                            });
                                         }
 
 
@@ -145,7 +144,8 @@
 
             function getDateString(date) {
                 var dateObj = new Date(parseInt(date.substr(6)));
-                return dateObj.toDateString();
+                //dateObj.toLocaleDateString, dateObj.toDateString, toTimeString()
+                return dateObj.toLocaleString();
             }
 
         });

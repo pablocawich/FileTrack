@@ -7,12 +7,12 @@ using FileTracking.Models;
 
 namespace FileTracking.Controllers
 {
-    public class CompletedRequestController : Controller
+    public class RejectedRequestController : Controller
     {
         private ApplicationDbContext _context;
 
 
-        public CompletedRequestController()
+        public RejectedRequestController()
         {
             _context = new ApplicationDbContext();
         }
@@ -21,37 +21,31 @@ namespace FileTracking.Controllers
         {
             _context.Dispose();
         }
-        // GET: CompletedRequest
+        // GET: RejectedRequest
         public ActionResult Index()
         {
-            return Content("something");
-        }      
+            return Content("Something here");
+        }
 
-        public void SaveToCompletedRequestTable(Request request)
+        public void SaveToRejectedRequestTable(Request request)
         {
 
-            var completedRequest = new CompletedRequest()
+            var rejectedRequest = new RejectedRequest()
             {
                 FileVolumeId = request.FileVolumesId,
                 RequesterUserId = request.UserId,
                 RequesterBranchId = request.RequesterBranchId,
                 FileBranchId = request.CurrentFileBranchId,
                 RequestDate = request.RequestDate,
-                RegistryUserAcceptId = request.AcceptedById,
-                RegAcceptedDate = request.AcceptedDate,
-                ReturnAcceptById = request.ReturnAcceptById,
-                ReturnDate = request.ReturnedDate,
+                RegistryUserRejectId = request.AcceptedById,  
+                RegRejectedDate = request.AcceptedDate,
                 UserTransferFromId = request.UserRequestedFromId,
-                TransferType = "Local Transfer"
+                TransferType = "Local Reject"
 
             };
 
-            _context.CompletedRequests.Add(completedRequest);
+            _context.RejectedRequests.Add(rejectedRequest);
             _context.SaveChanges();
         }
-
-        //will delete the request record after relevant information has been retrieved and stored to Completed Requests table
-        //done in respective controller
-        //not here because it throws an unhandled exception
     }
 }

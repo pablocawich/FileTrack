@@ -238,30 +238,43 @@ namespace FileTracking.Controllers
         //check if a requested state has not been already checked out or in the transfer state
         public bool IsVolumeStateValid(int volId)
         {
-            /*var req = _context.Requests.Where(r => r.RequestTypeId == RequestType.ExternalRequest).
-                Where(r => r.IsRequestActive == true).Where(r => r.FileVolumesId == volId).Where(r => r.RequestStatusId == 2).ToList();*/
             var volumeInDb = _context.FileVolumes.Single(v=>v.Id == volId);
-            if (volumeInDb.StatesId != 1) {
-                return false;
+            //1 = Stored state
+            if (volumeInDb.StatesId == 1) {
+                return true;
             }
-            return true;
+            return false;
         }
 
-        //if in fact other multiple requests were made for the same volume and one gets accepted we cancel the others
-        public void CancelOtherRequestsForVolume(int volId, int excludeReq)
+        //if in fact other multiple requests were made for the same volume and one gets accepted we cancel the other
+        public bool CancelIfOtherRequests(int volumeId, int excludeRequest)
         {
-            var cancelReq = _context.Requests.Where(r => r.FileVolumesId == volId).Where(r => r.IsRequestActive == true)
-                .Where(r=>r.RequestStatusId == 1).ToList();
+            var requestsInDb = _context.Requests.Where(r=>r.Id != excludeRequest).Where(r => r.FileVolumesId == volumeId)
+                .Where(r => r.IsRequestActive == true).Where(r => r.RequestStatusId == 1).ToList();
 
-            foreach (var req in cancelReq)
+            if (requestsInDb.Any())
             {
-                req.IsRequestActive = false;//here we also need to update the notification system when its implemented (for a later time)
-                req.RequestStatusId = 3; //we set the request status to rejected
-                //here we need to notify other user, so we call the createNotification() function 
-                //......
+                foreach (var req in requestsInDb)
+                {
+                    req.IsRequestActive = false;//here we also need to update the notification system when its implemented (for a later time)
+                    req.RequestStatusId = 3; //we set the request status to rejected
+                    req.AcceptedDate = DateTime.Now;//get the date denial was made
+
+                    //here we need to notify other user, so we call the createNotification() function 
+                    CreateNotification(req, Message.InReject);
+
+                    var rejectedRequestOperation = new RejectedRequestController();//saving to new table
+                    rejectedRequestOperation.SaveToRejectedRequestTable(req);//deleting from this table
+
+                    _context.Requests.Remove(req);
+                    //......
+                }
+
+                _context.SaveChanges();
+                return true;
             }
 
-            _context.SaveChanges();
+           return false;
         }
 
         //function is invoked when local registry user accepts a file, changing it to check out
@@ -270,26 +283,28 @@ namespace FileTracking.Controllers
             var userObj = new AdUser(User.Identity.Name);
             var userInSessionInDb = _context.AdUsers.Single(u => u.Username == userObj.Username);
 
-            if (!userInSessionInDb.IsDisabled)//user not disabled. carries on
+            if (!userInSessionInDb.IsDisabled)//user not disabled. proceed
             {
-                const byte acceptedState = 2;
-                var request = _context.Requests.Single(r => r.Id == id);
-                if (!IsVolumeStateValid(request.FileVolumesId))
+                var request = _context.Requests.Include(r=>r.User).Single(r => r.Id == id);
+                if (IsVolumeStateValid(request.FileVolumesId))
                 {
-                    CancelOtherRequestsForVolume(request.FileVolumesId, id);
-                    return this.Json(new { success = false, message = "Unfortunately This file has been checked already or is being transferred as of this moment" }, JsonRequestBehavior.AllowGet);//we return a false ajax request
+                    request.RequestStatusId = 2;//2 ---> Accepted state
+                    request.AcceptedById = userInSessionInDb.Id;
+                    request.AcceptedDate = DateTime.Now;
+                    //request.UserId =                   
+                       
+                    _context.SaveChanges();
+                    UpdateVolumeState(request.FileVolumesId);
+
+                    CreateNotification(request, Message.InAccept);
+
+                    if (CancelIfOtherRequests(request.FileVolumesId, request.Id))//if true, we have other requests for the same file and will be canceled
+                        return this.Json(new { success = false, message = $"File Checked out to {request.User.Name}. Due to requests being made to this same file a reload is necessary." }, JsonRequestBehavior.AllowGet);
+                    //not other requests 
+                    return this.Json(new { success = true, message = $"Checked Out to {request.User.Username}. Kindly await confirmation from user." }, JsonRequestBehavior.AllowGet);
                 }
 
-                request.RequestStatusId = acceptedState;
-                request.AcceptedById = userInSessionInDb.Id;
-                request.AcceptedDate = DateTime.Now;
-                //request.UserId =
-
-                _context.SaveChanges();
-                UpdateVolumeState(request.FileVolumesId);
-
-                CreateNotification(request, Message.InAccept);
-                return this.Json(new { success = true, message = "Successfully Checked Out. Kindly await confirmation from user." }, JsonRequestBehavior.AllowGet);
+               
             }
            return this.Json(new { success = false, message = "You are not allowed to be in this system. Kindly Exit!" }, JsonRequestBehavior.AllowGet);
         }
@@ -300,18 +315,19 @@ namespace FileTracking.Controllers
             var userObj = new AdUser(User.Identity.Name);
             var userInSessionInDb = _context.AdUsers.Single(u => u.Username == userObj.Username);
             //recall that a person from registry accepts this request so get person name
-            const byte acceptedState = 2;
+
             var request = _context.Requests.Single(r => r.Id == id);
-            if (request.RequestStatusId != 4)
+            //-------------carry out proper validation below, temporarily commented out to not cause error until we start polishing of external transfer
+            /*if (request.RequestStatusId != 4)
             {
                 if (!IsVolumeStateValid(request.FileVolumesId))
                 {
                     CancelOtherRequestsForVolume(request.FileVolumesId, id);
                     return this.Json(new { success = false }, JsonRequestBehavior.AllowGet);
                 }
-            }
+            }*/
                 //we proceed with processing the request since no other request to the same volume was found
-                request.RequestStatusId = acceptedState;
+                request.RequestStatusId = 2;//accepted state
                 request.AcceptedById = userInSessionInDb.BranchesId;
                 request.AcceptedDate = DateTime.Now;
                 //request.UserId = 
@@ -341,12 +357,16 @@ namespace FileTracking.Controllers
         //here we get the request id and change its status to Deny/reject
         public void DeclineRequest(int id)
         {
+            var adUser = new AdUser(User.Identity.Name);
+            var userInSessionInDb = _context.AdUsers.Single(u => u.Username == adUser.Username);
+
             const byte rejectedState = 3;
             var request = _context.Requests.Single(r => r.Id == id);
 
             request.RequestStatusId = rejectedState;
             request.IsRequestActive = false;
-
+            request.AcceptedById = userInSessionInDb.Id;//Identifies the user who rejected the requests rather than who accept. Terminology mishap
+            request.AcceptedDate = DateTime.Now;//identifies date rejected
             _context.SaveChanges();
 
             //creates the notifications based on binder which distinguishes between internal and external requests
@@ -354,7 +374,13 @@ namespace FileTracking.Controllers
                 CreateNotification(request, Message.InReject);
             else if(request.RequestTypeId == RequestType.ExternalRequest)
                 CreateNotification(request, Message.ExReject);
-                
+            
+            //deleting this record and adding to our specially made RejectedRequest Table
+            var rejectedRequestOperation = new RejectedRequestController();
+            rejectedRequestOperation.SaveToRejectedRequestTable(request);
+
+            _context.Requests.Remove(request);
+            _context.SaveChanges();
         }
 
         [Authorize(Roles = Role.Registry)]
@@ -529,8 +555,8 @@ namespace FileTracking.Controllers
         
         //When a user makes attempts to have a file transferred to them this function is invoked to create a new record
         [Authorize(Roles = Role.RegularUser)]
-        [Route("Requests/OnUserTransferAccept/{volId}/{userId}/{currentLocation}")]
-        public ActionResult OnUserTransferAccept(int volId, int userId, byte currentLocation)
+        [Route("Requests/OnUserTransferRequest/{volId}/{userId}/{currentLocation}")]
+        public ActionResult OnUserTransferRequest(int volId, int userId, byte currentLocation)
         {           
             var userObj = new AdUser(User.Identity.Name); //user in session
 
@@ -610,13 +636,18 @@ namespace FileTracking.Controllers
             if (volumeInDb.AdUserId != null && volumeInDb.StatesId == 5)
             {
                 //we are getting the request for the holding user to transfer some content 
-                var holdingUserReq = _context.Requests.Single(r => r.UserId == requestInDb.UserRequestedFromId 
-                                     && r.IsRequestActive == true &&  r.FileVolumesId == requestInDb.FileVolumesId);
+                var currentHoldingUserReq = _context.Requests.Single(r => r.UserId == requestInDb.UserRequestedFromId 
+                                     && r.IsRequestActive == true &&  r.FileVolumesId == requestInDb.FileVolumesId && r.IsConfirmed == true);
 
-                holdingUserReq.IsRequestActive = false;
-                holdingUserReq.ReturnedDate = DateTime.Now;
-                holdingUserReq.ReturnAcceptById = requestInDb.User.Id; //the user requesting the transfer will now as the return stage entity, rather than the indicated actor which is a registry user
-                holdingUserReq.ReturnStateId = 3; //completing the request cycle and marking the record as returned
+                currentHoldingUserReq.IsRequestActive = false;
+                currentHoldingUserReq.ReturnedDate = DateTime.Now;
+                currentHoldingUserReq.ReturnAcceptById = requestInDb.User.Id; //the user requesting the transfer will now as the return stage entity, rather than the indicated actor which is a registry user
+                currentHoldingUserReq.ReturnStateId = 3; //completing the request cycle and marking the record as returned
+
+                //Copying request to COMPLETED-TABLE table and deleting from REQUEST table
+                var completedRequestOperation = new CompletedRequestController();
+                completedRequestOperation.SaveToCompletedRequestTable(currentHoldingUserReq);
+                _context.Requests.Remove(currentHoldingUserReq);
 
                 //Set new record Accept state criteria for the user the file is to be transferred to. 
                 requestInDb.RequestStatusId = 2;
@@ -624,17 +655,7 @@ namespace FileTracking.Controllers
                 requestInDb.AcceptedById = userInSessionInDb.Id;
 
                 //create ACCEPT NOTIFICATION
-                var acceptNotif = new Notification()
-                {
-                    RecipientUserId = requestInDb.UserId,
-                    MessageId = Message.InAccept,
-                    Read = false,
-                    RequestId = requestInDb.Id,
-                    DateTriggered = DateTime.Now,
-                    SenderUser = requestInDb.AcceptedBy
-                };
-
-                _context.Notifications.Add(acceptNotif);
+                CreateNotification(requestInDb,Message.InAccept);
 
                 //canceling other request to the same file. Except the req id just granted
                 CancelOtherTransferRequests(volumeInDb, requestInDb.Id);
@@ -657,12 +678,15 @@ namespace FileTracking.Controllers
             requestInDb.IsRequestActive = false;
             requestInDb.RequestStatusId = 3;
 
+            //--------copying req data to new table and deleting from this table--------
+            var rejectedRequestOperation = new RejectedRequestController();
+            rejectedRequestOperation.SaveToRejectedRequestTable(requestInDb);
+            _context.Requests.Remove(requestInDb);
+
             _context.SaveChanges();
 
-            if (requestInDb.RequestBinder == 0)
-                CreateNotification(requestInDb, Message.InReject);
-            else if (requestInDb.RequestTypeId == RequestType.ExternalRequest)
-                CreateNotification(requestInDb, Message.ExReject);
+            CreateNotification(requestInDb, Message.InReject);
+           
 
             return this.Json(new { success = true, message = "This transfer request has been declined." }, JsonRequestBehavior.AllowGet);
         }
@@ -719,8 +743,8 @@ namespace FileTracking.Controllers
             var adUserInDb = _context.AdUsers.Single(u => u.Username == userInSession.Username);
 
             var requestsInDb = _context.Requests.Include(r=>r.User).Include(r=>r.UserRequestedFrom).Include(r=>r.FileVolumes).Include(r=>r.RequesterBranch).
-                Where(r => r.UserId == adUserInDb.Id).Where(r => r.IsConfirmed == false).Where(r=>r.RequestStatusId == 2)
-                .Where(r => r.IsRequestActive == true).ToList();
+                Where(r => r.UserId == adUserInDb.Id).Where(r=>r.UserRequestedFromId != null).Where(r => r.IsConfirmed == false).
+                Where(r=>r.RequestStatusId == 2).Where(r => r.IsRequestActive == true).ToList();
 
             return Json(new { data = requestsInDb }, JsonRequestBehavior.AllowGet);
         }
