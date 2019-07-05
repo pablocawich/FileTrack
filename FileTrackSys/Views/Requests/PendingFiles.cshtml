@@ -29,6 +29,12 @@
 
         </table>
     </div>
+    <div class="modal fade" id="pendingFilesModal" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" data-backdrop="static" data-keyboard="true">
+        <div class="modal-dialog">
+            <div class="modal-content" id="pendingFilesModelContent">
+            </div>
+        </div>
+    </div>
 </div>
 @section scripts
 {
@@ -42,7 +48,16 @@
                     "datatype": "json"
                 },
                 "columns": [
-                    { "data": "FileVolumes.FileNumber" },
+                    {
+                        "data": "FileVolumes.FileNumber",
+                        render: function (data, type, req) {
+                            var button = `<a href="#" data-fileId=${req.FileVolumes.FileId} 
+                                        class="glyphicon glyphicon-file btn btn-default btn-block btn-xs pendingFilesModal">${
+                                data}</a>`;
+
+                            return button;
+                        }
+                    },
                     { "data": "FileVolumes.Volume" },
                     { "data": "User.Name" },
                     { "data": "User.Branches.Branch" },
@@ -82,7 +97,7 @@
                                     url: siteURL+'/Requests/AcceptRequest/' + id,
                                     success: function(response) {
                                         if (response.success == true) {
-                                            toastr.success("Accepted", response.message, { positionClass: "toast-bottom-right" });
+                                            toastr.success(response.message, "Accepted", { positionClass: "toast-bottom-right" });
 
                                             table.row(button.parents('tr')).remove().draw();                                       
                                         }
@@ -147,6 +162,18 @@
                 //dateObj.toLocaleDateString, dateObj.toDateString, toTimeString()
                 return dateObj.toLocaleString();
             }
+
+            //file info modal initiation
+            $("#pendingTable").on("click",
+                ".pendingFilesModal",
+                function () {
+                    var id = $(this).attr("data-fileId");
+                    var url = siteURL + "/Files/FileDetailsForConfirm/" + id;
+                    // alert(url);
+
+                    $('#pendingFilesModelContent').load(url);
+                    $('#pendingFilesModal').modal('show');
+                });
 
         });
     </script>

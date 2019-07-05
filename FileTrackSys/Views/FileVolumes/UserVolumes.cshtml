@@ -21,7 +21,7 @@
         </p>
     </div>
     
-    <table id="myFiles" class="table table-bordered table-hover">
+    <table id="myFiles" class="table table-hover">
         <thead>
             <tr>
                 <th>File Number</th>
@@ -62,36 +62,48 @@
                 function() {
                     var $btn = $(this);
                     var requestId = $btn.attr("data-return-id");
-                    bootbox.confirm(
-                        "Are you sure?. Might be you have transfer requests from other users. Kindly check if not already done so.",
+                    bootbox.confirm(`You are returning file to registry. Continue?`,
                         function(result) {
                             if (result) {
                                 $.ajax({
                                     url: siteURL + '/FileVolumes/ReturnVolume/' + requestId,
                                     success: function(response) {
                                         if (response.success == false) {
-                                            bootbox.confirm(
-                                                "you have transfer requests. Continue?.",
-                                                function(res) {
+                                            bootbox.confirm({
+                                                message: "you have user transfer requests for this file. Are you sure you want to return file to registry? ",
+                                                buttons: {
+                                                    confirm: {
+                                                        label: 'Yes, return to registry',
+                                                        className: 'btn-success'
+                                                    },
+                                                    cancel: {
+                                                        label: 'No, Take me to transfers',
+                                                        className: 'btn-warning'
+                                                    }
+                                                },
+                                                callback: function(res) {
                                                     if (res) {
                                                         $.ajax({
-                                                            url: siteURL + '/FileVolumes/VerifiedReturnOfVolume/' + requestId,
-                                                            success: function(response){
+                                                            url: siteURL +
+                                                                '/FileVolumes/VerifiedReturnOfVolume/' +
+                                                                requestId,
+                                                            success: function(response) {
                                                                 toastr.success("Return Request Sent to registry",
                                                                     "Return",
                                                                     { positionClass: "toast-bottom-right" });
 
                                                                 $($btn).closest("tr").remove();
                                                             },
-                                                            error: function( jqXhr, textStatus, errorThrown ){
+                                                            error: function(jqXhr, textStatus, errorThrown) {
                                                                 alert(errorThrown);
                                                             }
                                                         });
                                                     } else {
-                                                        window.location.href = siteURL +"/Requests/UserPendingTransfer";
+                                                        window.location.href = siteURL + "/Requests/UserPendingTransfer";
                                                     }
 
-                                                });
+                                                }
+                                            });
                                         } else {
                                             toastr.success("Return Request Sent to registry",
                                                 "Return",

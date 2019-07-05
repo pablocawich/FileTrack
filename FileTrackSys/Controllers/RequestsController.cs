@@ -650,21 +650,20 @@ namespace FileTracking.Controllers
                 _context.Requests.Remove(currentHoldingUserReq);
 
                 //Set new record Accept state criteria for the user the file is to be transferred to. 
-                requestInDb.RequestStatusId = 2;
+                requestInDb.RequestStatusId = 2;//2 => accepted state
                 requestInDb.AcceptedDate = DateTime.Now;
                 requestInDb.AcceptedById = userInSessionInDb.Id;
 
                 //create ACCEPT NOTIFICATION
                 CreateNotification(requestInDb,Message.InAccept);
 
-                //canceling other request to the same file. Except the req id just granted
-                CancelOtherTransferRequests(volumeInDb, requestInDb.Id);
-
                 //now we change the file volume to TRANSFER state (4) since transfer was granted
                 volumeInDb.StatesId = 4;
                 _context.SaveChanges();
-
-                return this.Json(new { success = true, message = "Transfer successfully accepted" }, JsonRequestBehavior.AllowGet);                      
+                //canceling other request to the same file. Except the req id just granted
+                if (CancelOtherTransferRequestsIfMoreThanOne(volumeInDb, requestInDb.Id))
+                    return this.Json(new { success = true, message = "Transfer Confirmed. A reload of page is required due to multiple request being sent to the same file.", option = 1 }, JsonRequestBehavior.AllowGet);
+                return this.Json(new { success = true, message = "Transfer successfully accepted", option = 2 }, JsonRequestBehavior.AllowGet);
             }
 
             return this.Json(new { success = false, message = "It appears the file has been sent back to registry and cannot commit to transfer." }, JsonRequestBehavior.AllowGet);
@@ -678,37 +677,45 @@ namespace FileTracking.Controllers
             requestInDb.IsRequestActive = false;
             requestInDb.RequestStatusId = 3;
 
-            //--------copying req data to new table and deleting from this table--------
+            _context.SaveChanges();
+            //--------copying req data to new table and deleting it from this table--------
             var rejectedRequestOperation = new RejectedRequestController();
             rejectedRequestOperation.SaveToRejectedRequestTable(requestInDb);
-            _context.Requests.Remove(requestInDb);
-
-            _context.SaveChanges();
 
             CreateNotification(requestInDb, Message.InReject);
-           
+
+            _context.Requests.Remove(requestInDb);
+            _context.SaveChanges();
 
             return this.Json(new { success = true, message = "This transfer request has been declined." }, JsonRequestBehavior.AllowGet);
         }
 
         //will cancel all other requests to the same file once a request is accepted
         [Authorize(Roles = Role.RegularUser)]
-        public void CancelOtherTransferRequests(FileVolumes fv, int reqId)
+        public bool CancelOtherTransferRequestsIfMoreThanOne(FileVolumes fv, int reqId)
         {
             //cancel every other request record except for the provided in the parameter
             var reqsInDb = _context.Requests.Where(r => r.UserRequestedFromId == fv.AdUserId).Where(r => r.Id != reqId)
                 .Where(r => r.FileVolumesId == fv.Id).ToList();
-
-            foreach (var req in reqsInDb)
+            if (reqsInDb.Any())
             {
-                req.IsRequestActive = false;
-                //request record will be set to rejected = 3
-                req.RequestStatusId = 3;
+                foreach (var req in reqsInDb)
+                {
+                    req.IsRequestActive = false;
+                    //request record will be set to rejected = 3
+                    req.RequestStatusId = 3;
+                    req.AcceptedDate = DateTime.Now;
+                    //we must also make a function that creates a new record in the notifications table, informing th user their file got canceled.
+                    NotifyUserOfTransferDenials(req, Message.InReject);
+                    var rejectedRequestsOperation = new RejectedRequestController();
+                    rejectedRequestsOperation.SaveToRejectedRequestTable(req);
 
-                //we must also make a function that creates a new record in the notifications table, informing th user their file got canceled.
-                NotifyUserOfTransferDenials(req,Message.InReject);
+                    _context.Requests.Remove(req);
+                    _context.SaveChanges();
+                }
+                return true;
             }
-           
+            return false;
         }
 
         //Notification of requests being discarded.

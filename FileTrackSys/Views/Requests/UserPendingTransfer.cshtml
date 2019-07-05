@@ -65,7 +65,7 @@
             //Implementing button actions
             $("#userTransferPending").on('click',
                 '.js-transferBtn',
-                function () {
+                function() {
                     var button = $(this);
                     var reqId = $(this).attr("data-reqId");
                     var requester = $(this).attr('data-acc-user');
@@ -77,16 +77,23 @@
                                 $.ajax({
                                     url: siteURL + '/Requests/AcceptTransfer/' + reqId,
                                     success: function(response) {
-                                        if (response.success)
+                                        if (response.success && response.option == 2)
                                             toastr.success(response.message,
                                                 "Transfer",
                                                 { positionClass: "toast-bottom-right" });
-                                        else
-                                            toastr.error(response.message,
-                                                "Transfer",
-                                                { positionClass: "toast-bottom-right" });
+                                        else if (response.success && response.option == 1)
+                                            bootbox.alert({
+                                                    message: `<p style='color: blue'><strong>Success!</strong><br>${response.message}</p>`,
+                                                    callback: function() {
+                                                        window.location.href = siteURL + "/Requests/UserPendingTransfer";
+                                                    }
+                                            });
+                                        else {
+                                            alert(response.message);
+                                            window.location.href = siteURL + "/Requests/UserPendingTransfer";
+                                        }
 
-                                        //console.log(tableTransfer);
+
                                         tableTransfer.api().row(button.parents('tr')).remove().draw();
                                     },
                                     statusCode: {
@@ -102,21 +109,21 @@
             //decline transfer button
             $("#userTransferPending").on('click',
                 '.js-declineTransfer',
-                function () {
+                function() {
                     var button = $(this);
                     var reqId = button.attr("data-dec-reqId");
                     var requester = button.attr('data-dec-user');
-                    
-                    bootbox.confirm(`You are denying a user:<strong> ${requester}</strong> this transfer. Continue?`,
+
+                    bootbox.confirm(`You are denying <strong> ${requester}'s</strong> transfer of your file. Continue?`,
                         function(result) {
                             if (result) {
                                 $.ajax({
                                     url: siteURL + '/Requests/DeclineTransfer/' + reqId,
                                     success: function(response) {
                                         if (response.success)
-                                            toastr.success(response.message,"Trasfer Declined",{ positionClass: "toast-bottom-right" });
-                                        else
-                                            toastr.error(response.message,"Deny Transfer",{ positionClass: "toast-bottom-right" });
+                                            toastr.info(response.message,
+                                                "Transfer Declined",
+                                                { positionClass: "toast-bottom-right" });
 
                                         tableTransfer.api().row(button.parents('tr')).remove().draw();
                                     },
@@ -133,7 +140,7 @@
             //Converts and returns a readable DateTime Objects as a javaScript string
             function getDateString(date) {
                 var dateObj = new Date(parseInt(date.substr(6)));
-                return dateObj.toDateString();
+                return dateObj.toLocaleString();
             }
 
         });
