@@ -103,16 +103,24 @@
                                         }
                                         else if (response.success == false) {
                                             bootbox.alert({
+                                                closeButton: false,
+                                                size: "small",
+                                                title: "Success",
+                                                message: "Request accepted however, other requests were found for this file and now requires a reload",
+                                                callback: function () {
+                                                    location.reload();
+                                                }
+                                            });
+                                        } else if (response.success == false && response.opt == 2) {
+                                            bootbox.alert({
                                                 size: "medium",
                                                 title: "Success",
-                                                message: "Request accepted however, other requests were found for your file and now requires a reload",
+                                                message: response.message + ". Reload required.",
                                                 callback: function () {
-                                                    window.location.href = siteURL + "/Requests/PendingFiles";
+                                                    location.reload();
                                                 }
                                             });
                                         }
-
-
                                     },
                                     statusCode: {
                                         404: function(content) {

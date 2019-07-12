@@ -37,20 +37,22 @@
                                 <p>
                                     @{
                                         var email = "";
-                                        if (Model.Email == null) {
+                                        if (Model.Email == null)
+                                        {
                                             email = "Not provided.";
                                         }
                                         else { email = Model.Email; }
 
-                                     }
+                                    }
                                     <i class="glyphicon glyphicon-envelope"></i> @email
                                     <br />
                                     <i class="glyphicon glyphicon-globe"></i> <a href="http://www.dfc.net">DFC</a>
                                     <br />
                                     <i class="glyphicon glyphicon-user"></i> @Model.Username
                                     <br />
-                                    <i class="glyphicon glyphicon-import"></i> @Model.Role 
-                                    <br/>
+                                    <i class="glyphicon glyphicon-import"></i> @Model.Role
+                                    <br />
+                                    <i class="glyphicon glyphicon-import"></i> Authentication: @User.Identity.AuthenticationType
                                 </p>
                                 <!-- Split button -->
                                 

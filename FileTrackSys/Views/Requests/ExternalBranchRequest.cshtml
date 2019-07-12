@@ -38,15 +38,16 @@
             //gets json objects from the request controller in order to populate the dataTable
             var table = $("#externalBranchPendingTable").DataTable({
                 "ajax": {
-                    "url": siteURL+"/Requests/GetExternalBranchPendingFiles",
+                    "url": siteURL + "/Requests/GetExternalBranchPendingFiles",
                     "data": "GET",
                     "datatype": "json"
                 },
                 "columns": [
                     {
                         "data": "FileVolumes.FileNumber",
-                        render: function (data, type, req) {
-                            return `<a href="#" data-ext-branch-id="${req.FileVolumes.FileId}" class="btn btn-default btn-sm extBranchModal-js">
+                        render: function(data, type, req) {
+                            return `<a href="#" data-ext-branch-id="${req.FileVolumes.FileId
+                                }" class="btn btn-default btn-sm extBranchModal-js">
                                 <i class="fa fa-wpforms">${data}</i></a>`;
                         }
                     },
@@ -63,10 +64,12 @@
                         data: "Id",
                         "render": function(data, type, req) {
                             var buttonAccept =
-                                `<button id-ext-attr="${data}" user-branch-acc="${req.Branches.Branch}" uname-attr="${req.User.Name
+                                `<button id-ext-attr="${data}" user-branch-acc="${req.User.Branches.Branch
+                                    }" uname-attr="${req.User.Name
                                     }" class="btn btn-success btn-sm js-ext-accept">Checkout</button>`;
                             var buttonReject =
-                                `<button id-ext-rej-attr="${data}" user-branch-rej="${req.Branches.Branch}" uname-rej-attr="${req.User.Name
+                                `<button id-ext-rej-attr="${data}" user-branch-rej="${req.User.Branches.Branch
+                                    }" uname-rej-attr="${req.User.Name
                                     }" class="btn btn-danger btn-sm js-ext-reject">Reject</button>`;
                             return buttonAccept + " | " + buttonReject;
                         }
@@ -81,64 +84,35 @@
                     var username = $(this).attr('uname-attr');
                     var userBranch = $(this).attr('user-branch-acc');
                     var id = $(this).attr('id-ext-attr');
-                    bootbox.confirm("You are about to accept an external request from the <strong>"+userBranch+" </strong> branch</br>Request made by <strong>" +username+
-                        "</strong>",
-                        function(result) {
+
+                    bootbox.confirm({
+                        message: `You are about to accept an external request from the <strong>${userBranch}</strong> branch
+                                   </br>Request made by <strong> ${username} </strong>`,
+                        title: "<strong style='color: green'>Checkout File (EXTERNAL)</strong>",
+                        callback: function(result) {
                             if (result) {
                                 $.ajax({
-                                    url: siteURL+'/Requests/AcceptExternalUserRequest/' + id,
-                                    success: function() {
-                                        toastr.success("Accepted",
-                                            "External Request",
-                                            { positionClass: "toast-bottom-right" });
-
-                                        //removes row from client side perspective. Not on server side thus 
-
-                                        //console.log(table.data().count());
-                                        table.row(button.parents('tr')).remove().draw();
-                                        if (table.data().count() == 0) {
-                                            $("#notifIcon").css('color', 'white');
-                                        }
-
-                                    },
-                                    statusCode: {
-                                        404: function(content) {
-                                            alert('cannot find resource');
-                                        },
-                                        500: function(content) {
-                                            window.location.href = "/Requests/VolumeStateNotValid/";
-                                            //alert('internal server error');
-                                        }
-                                    }
-                                });
-                            }
-                        });
-                });
-
-            $("#externalBranchPendingTable").on('click',
-                '.js-ext-reject',
-                function() {
-                    var button = $(this);
-                    var userBranch = $(this).attr('user-branch-rej');
-                    var username = $(this).attr('uname-rej-attr');
-                    var id = $(this).attr('id-ext-rej-attr');
-                    bootbox.confirm("You are about to reject an external request from branch: <strong>"+userBranch+"</strong></br> " +
-                        "Requester: " +"<strong>" + username + "</strong>",
-                        function(result) {
-                            if (result) {
-                                $.ajax({
-                                    url: siteURL+'/Requests/DeclineRequest/' + id,
-                                    success: function() {
-                                        toastr.success("This request has been declined",
-                                            "Request Declined",
-                                            { positionClass: "toast-bottom-right" });
-
-                                        //removes row from client side perspective. Not on server side thus 
-
-                                        //console.log(table.data().count());
-                                        table.row(button.parents('tr')).remove().draw();
-                                        if (table.data().count() == 0) {
-                                            $("#notifIcon").css('color', 'white');
+                                    url: siteURL + '/Requests/AcceptExternalUserRequest/' + id,
+                                    success: function(response) {
+                                        if (response.success && response.opt == 2) {
+                                            toastr.success(response.message,
+                                                "Accepted",
+                                                { positionClass: "toast-bottom-right" });
+                                            //removes table row in real time
+                                            table.row(button.parents('tr')).remove().draw();
+                                        } else if (response.success && response.opt == 1) {
+                                            bootbox.alert({
+                                                size: "medium",
+                                                title: "Success",
+                                                message: response.message + ". Reload required.",
+                                                callback: function() {
+                                                    location.reload();
+                                                }
+                                            });
+                                        } else if (!response.success) {
+                                            toastr.success(response.message,
+                                                "Oops!",
+                                                { positionClass: "toast-bottom-right" });
                                         }
 
                                     },
@@ -152,18 +126,57 @@
                                     }
                                 });
                             }
-                        });
+                        }
+                    });
+                });
+
+            $("#externalBranchPendingTable").on('click',
+                '.js-ext-reject',
+                function() {
+                    var button = $(this);
+                    var userBranch = $(this).attr('user-branch-rej');
+                    var username = $(this).attr('uname-rej-attr');
+                    var id = $(this).attr('id-ext-rej-attr');
+
+                    bootbox.confirm({
+                        message: `You are about to deny an external request from branch: <strong>${userBranch}</strong>
+                                </br> User: <strong> ${username}</strong>`,
+                        title: "<strong style='color: red'>Deny File Checkout (EXTERNAL)</strong>",
+                        callback: function(result) {
+                            if (result) {
+                                $.ajax({
+                                    url: siteURL + '/Requests/DeclineRequest/' + id,
+                                    success: function() {
+                                        toastr.success("This request has been declined",
+                                            "Request Declined",
+                                            { positionClass: "toast-bottom-right" });
+
+                                        table.row(button.parents('tr')).remove().draw();
+                                    },
+                                    statusCode: {
+                                        404: function(content) {
+                                            alert('cannot find resource');
+                                        },
+                                        500: function(content) {
+                                            alert('internal server error');
+                                        }
+                                    }
+                                });
+                            }
+                        }
+                    });
                 });
 
             function getDateString(date) {
                 var dateObj = new Date(parseInt(date.substr(6)));
                 return dateObj.toDateString();
             }
+
             $("#externalBranchPendingTable").on("click",
                 ".extBranchModal-js",
                 function() {
                     var id = $(this).attr("data-ext-branch-id");
-                    var url = siteURL+"/Files/FileDetailsForConfirm/" + id;
+                    var url = siteURL + "/Files/FileDetailsForConfirm/" + id;
                     // alert(url);
 
                     $('#extBranchModelContent').load(url);

@@ -77,24 +77,20 @@ namespace FileTracking.Controllers
                         return View("AlreadyRequested");
                 }
 
-                if (CheckBranchValidity(user, volume))//will check if user branch matches the file branch, makes internal requests
+                if (CheckBranchValidity(user, volume))//will check if user branch matches the current file branch, makes internal requests
                 {
                     if (PopulateRequest(volume, user))
                     {
                         UpdateVolumeState(volume);
                         return View();
                     }
-                    else
-                        return Content("Saving to request database failed");
                 }
                 else//if user branch and file branch does not match, external request made
                 {
                     if (PopulateExternalRequests(volume, user))
                         return View("ExternalRequestMade");
                     else
-                    {
                         return Content("Sorry something went wrong with the methods of inserting into your database. Check your query or logic");
-                    }
                 }
             }
 
@@ -136,9 +132,10 @@ namespace FileTracking.Controllers
             return false;
         }
 
+        [Authorize(Roles = Role.RegularUser)]
         public bool PopulateExternalRequests(FileVolumes v, AdUser u)
         {
-            //line below holds a value we will use to bind both requests and then increment thereafter assignment.
+            //line below holds a value we will use to bind both requests and then increment thereafter the assignment.
             var bindVal = _context.ExternalRequestsBinder.Single(b => b.Id == 1);
 
             var externalRequestRec = new Request()
@@ -151,7 +148,7 @@ namespace FileTracking.Controllers
                 ReturnStateId = 1,//1 signifies idle state, meaning the return process is not in order
                 IsRequestActive = true,//meaning this request has been initiated, switched to false when file is returned and back to stored state
                 RequestDate = DateTime.Now,
-                RequestBinder = bindVal.CurrentNumberBinder,//This identifier will bindd these two newly created requests
+                RequestBinder = bindVal.CurrentNumberBinder,//This identifier will bind these two newly created requests
                 RequestTypeId = RequestType.ExternalRequest
             };          
              
@@ -214,6 +211,11 @@ namespace FileTracking.Controllers
         [Authorize(Roles = Role.Registry)]
         public ActionResult ExternalBranchRequest()
         {
+            var userObj = new AdUser(User.Identity.Name);
+            var userInSession = _context.AdUsers.Single(u => u.Username == userObj.Username);
+
+            if (userInSession.IsDisabled)
+                return View("Locked");
             return View();
         }
 
@@ -226,9 +228,9 @@ namespace FileTracking.Controllers
             var user = _context.AdUsers.Single(u => u.Username == userObj.Username);
       
             byte Pending = 1;
-            var pendingRequests = _context.Requests.Include(r => r.FileVolumes).
-                Include(r => r.User.Branches).Where(r=>r.CurrentFileBranchId == user.BranchesId).Where(r => r.IsRequestActive == true).
-                Where(r => r.RequestStatusId == Pending || r.RequestStatusId == 4)
+            var pendingRequests = _context.Requests.Include(r => r.FileVolumes).Include(r => r.User.Branches).
+                Where(r=>r.CurrentFileBranchId == user.BranchesId).Where(r => r.IsRequestActive == true).
+                Where(r => r.RequestStatusId == Pending || r.RequestStatusId == 4)//4 => Never Received
                 .Where(r => r.RequestTypeId == RequestType.ExternalRequest).ToList();
 
             
@@ -246,10 +248,10 @@ namespace FileTracking.Controllers
             return false;
         }
 
-        //if in fact other multiple requests were made for the same volume and one gets accepted we cancel the other
+        //if in fact other requests were made for the same volume and one gets accepted we cancel the other
         public bool CancelIfOtherRequests(int volumeId, int excludeRequest)
         {
-            var requestsInDb = _context.Requests.Where(r=>r.Id != excludeRequest).Where(r => r.FileVolumesId == volumeId)
+            var requestsInDb = _context.Requests.Where(r => r.FileVolumesId == volumeId).Where(r => r.Id != excludeRequest)
                 .Where(r => r.IsRequestActive == true).Where(r => r.RequestStatusId == 1).ToList();
 
             if (requestsInDb.Any())
@@ -259,7 +261,7 @@ namespace FileTracking.Controllers
                     req.IsRequestActive = false;//here we also need to update the notification system when its implemented (for a later time)
                     req.RequestStatusId = 3; //we set the request status to rejected
                     req.AcceptedDate = DateTime.Now;//get the date denial was made
-
+                
                     //here we need to notify other user, so we call the createNotification() function 
                     CreateNotification(req, Message.InReject);
 
@@ -298,13 +300,13 @@ namespace FileTracking.Controllers
 
                     CreateNotification(request, Message.InAccept);
 
-                    if (CancelIfOtherRequests(request.FileVolumesId, request.Id))//if true, we have other requests for the same file and will be canceled
+                    if (CancelIfOtherRequests(request.FileVolumesId, request.Id))//if true, we have other requests for the same file thus canceling them
                         return this.Json(new { success = false, message = $"File Checked out to {request.User.Name}. Due to requests being made to this same file a reload is necessary." }, JsonRequestBehavior.AllowGet);
                     //not other requests 
                     return this.Json(new { success = true, message = $"Checked Out to {request.User.Username}. Kindly await confirmation from user." }, JsonRequestBehavior.AllowGet);
                 }
+                return this.Json(new { success = false,message = "File already checked out or is being transferred", opt=2 }, JsonRequestBehavior.AllowGet);
 
-               
             }
            return this.Json(new { success = false, message = "You are not allowed to be in this system. Kindly Exit!" }, JsonRequestBehavior.AllowGet);
         }
@@ -316,27 +318,28 @@ namespace FileTracking.Controllers
             var userInSessionInDb = _context.AdUsers.Single(u => u.Username == userObj.Username);
             //recall that a person from registry accepts this request so get person name
 
-            var request = _context.Requests.Single(r => r.Id == id);
-            //-------------carry out proper validation below, temporarily commented out to not cause error until we start polishing of external transfer
-            /*if (request.RequestStatusId != 4)
+            var request = _context.Requests.Include(r=>r.User).Single(r => r.Id == id);
+         
+            if (IsVolumeStateValid(request.FileVolumesId))
             {
-                if (!IsVolumeStateValid(request.FileVolumesId))
-                {
-                    CancelOtherRequestsForVolume(request.FileVolumesId, id);
-                    return this.Json(new { success = false }, JsonRequestBehavior.AllowGet);
-                }
-            }*/
                 //we proceed with processing the request since no other request to the same volume was found
                 request.RequestStatusId = 2;//accepted state
-                request.AcceptedById = userInSessionInDb.BranchesId;
+                request.AcceptedById = userInSessionInDb.Id;
                 request.AcceptedDate = DateTime.Now;
                 //request.UserId = 
 
                 _context.SaveChanges();
                 UpdateVolumeState(request.FileVolumesId);
-            //Since the 
-            CreateNotification(request, Message.ExAccept);
-            return this.Json(new { success = true }, JsonRequestBehavior.AllowGet);
+                //Since the 
+                CreateNotification(request, Message.ExAccept);
+
+                //note: this does not cancel this requests, only those who have requested the same file
+                if(CancelIfOtherRequests(request.FileVolumesId, request.Id))
+                    return this.Json(new { success = true, message = $"File Checked-Out to {request.User.Name}. Due to requests being made to this same file a reload is necessary.", opt = 1 }, JsonRequestBehavior.AllowGet);
+                return this.Json(new { success = true, message = $"Checked-Out to {request.User.Name}.", opt = 2 }, JsonRequestBehavior.AllowGet);
+            }
+
+            return this.Json(new { success = false, message = "Something went wrong. File already checked out or is being transferred" }, JsonRequestBehavior.AllowGet);
         }
 
         //note tha once a file vol is accepted by reg that vol should no longer be in a stored or requested state but
@@ -346,9 +349,7 @@ namespace FileTracking.Controllers
             //Request State 4 => transfer state
             var volume = _context.FileVolumes.Single(v => v.Id == volumeId);
             if (volume.StatesId == 4)
-            {
-                return;
-            }
+                return;           
             volume.StatesId = 4;
 
             _context.SaveChanges();
@@ -398,8 +399,8 @@ namespace FileTracking.Controllers
 
             var user = _context.AdUsers.Single(u => u.Username == userObj.Username);
 
-            var request = _context.Requests.Include(r => r.FileVolumes).Include(r => r.User.Branches).Include(r=>r.User).
-                Where(r=>r.RequesterBranchId == user.BranchesId).Where(r=>r.RequestTypeId == RequestType.ExternalRequest).
+            var request = _context.Requests.Include(r => r.FileVolumes).Include(r => r.User.Branches).Include(r=>r.AcceptedBy)
+                .Include(r=>r.CurrentFileBranch).Where(r=>r.RequesterBranchId == user.BranchesId).Where(r=>r.RequestTypeId == RequestType.ExternalRequest).
                 Where(r => r.RequestStatusId == 2).Where(r => r.IsConfirmed == false).ToList();
 
             return Json(new { data = request }, JsonRequestBehavior.AllowGet);
@@ -431,15 +432,13 @@ namespace FileTracking.Controllers
         [Authorize(Roles = Role.RegularUser)]
         public ActionResult GetConfirmCheckout()
         {
-            byte reqStatus = 2;
-
            var userObj = new AdUser(User.Identity.Name);
 
             var user = _context.AdUsers.Single(u => u.Username == userObj.Username);
 
             var request = _context.Requests.Include(r=>r.FileVolumes).Include(r=>r.RequesterBranch).Include(r=>r.AcceptedBy)
-                .Where(r => r.UserId == user.Id).Where(r=>r.IsRequestActive == true)
-                .Where(r=>r.RequestTypeId == RequestType.InternalRequest).Where(r=>r.RequestStatusId == reqStatus).Where(r=>r.IsConfirmed == false).
+                .Where(r => r.UserId == user.Id).Where(r=>r.IsRequestActive == true)//2 --> Accepted State
+                .Where(r=>r.RequestTypeId == RequestType.InternalRequest).Where(r=>r.RequestStatusId == 2).Where(r=>r.IsConfirmed == false).
                 Where(r=>r.UserRequestedFromId == null).ToList();
             //UserRequestedFromId = = NULL signifies we only get accepted files from REGISTRY.
             return Json(new { data = request }, JsonRequestBehavior.AllowGet);
@@ -449,16 +448,11 @@ namespace FileTracking.Controllers
         //CONFIRM checkout interface
         public void AcceptCheckout(int id)
         {
-            //search in request table based on the id parameter
-            //change IsConfirmed field to true, meaning file is now checked out by user
-            //call and implement a function that updates the file volumes table, specifically the state to the volume
-            //from TRANSFERRED --> CHECKED OUT
-
             var requestRecord = _context.Requests.Single(r => r.Id == id);
 
             requestRecord.IsConfirmed = true;
             _context.SaveChanges();
-
+            //Go to volumes table and update appropriate fields
             CheckoutVolume(requestRecord.FileVolumesId, requestRecord.UserId);
 
         }
@@ -467,23 +461,22 @@ namespace FileTracking.Controllers
         public void AcceptForeignRegistryTransfer(int id)
         {
             //request binded records that sees to registry to registry operations before initiating the local request it is bound by
-            var requestRecord = _context.Requests.Single(r => r.Id == id);
-          
-            requestRecord.IsConfirmed = true;
-            requestRecord.ReturnStateId = 1;
-            requestRecord.IsRequestActive = false;
+            var requestInDb = _context.Requests.Single(r => r.Id == id);
+
+            requestInDb.IsConfirmed = true;
+            requestInDb.IsRequestActive = false;//mark record temporarily inactive
             _context.SaveChanges();
 
             //after the above is performed we let its binded request become active in order for the initiating user to go through the local request process
             //also be reminded to change to volume's current location, as being accepted now signifies the file is at a foreign branch       
 
-           var volume = _context.FileVolumes.Single(v => v.Id == requestRecord.FileVolumesId);
+           var volume = _context.FileVolumes.Single(v => v.Id == requestInDb.FileVolumesId);
 
-           PopulateNewInternalRequest(requestRecord.UserId, requestRecord.RequesterBranchId, requestRecord.RequestDate,volume, requestRecord.RequestBinder);//both registry passed, now we create an internal request
+           PopulateNewInternalRequest(requestInDb.UserId, requestInDb.RequesterBranchId, requestInDb.RequestDate,volume, requestInDb.RequestBinder);//both registry passed, now we create an internal request
 
-           volume.CurrentLocation = requestRecord.RequesterBranchId; //we must change the volume's current location to the current user's branch
+           volume.CurrentLocation = requestInDb.RequesterBranchId; //we must change the volume's current location to the current user's branch
            _context.SaveChanges();
-           CreateNotification(requestRecord, Message.InAccept);//revise
+           CreateNotification(requestInDb, Message.InAccept);//revise
         }
 
         //now that user's local branch has accepted 
@@ -571,11 +564,11 @@ namespace FileTracking.Controllers
             var volInDb = _context.FileVolumes.Single(v => v.Id == volId);
           
             if (volInDb.StatesId != 5 || volInDb.AdUserId == null) //checks is file volumes is eligible for a transfer
-                return HttpNotFound("Cannot make this requests as the file as the file is not at the hands of the requestee. ");
+                return HttpNotFound("Cannot make this requests as the file is not at the hands of the user.");
 
             if (HasBeenRequested(volInDb, thisUser))//if request has not been already made
                 return View("AlreadyRequested");
-           
+            
             var newRequest = new Request() //creating that new request record
             {
                 UserId = thisUser.Id,//this is the new user making the request
@@ -676,6 +669,7 @@ namespace FileTracking.Controllers
             var requestInDb = _context.Requests.Single(r=>r.Id == id);
             requestInDb.IsRequestActive = false;
             requestInDb.RequestStatusId = 3;
+            requestInDb.AcceptedDate = DateTime.Now;
 
             _context.SaveChanges();
             //--------copying req data to new table and deleting it from this table--------
@@ -734,7 +728,7 @@ namespace FileTracking.Controllers
            _context.Notifications.Add(notif);
         }
 
-        //Creating view navigation Page ---------------------------------------------------------------
+        //Creating view navigation Page ---------------------------------------------------
         [Authorize(Roles = Role.RegularUser)]
         public ActionResult UserConfirmTransfer()
         {

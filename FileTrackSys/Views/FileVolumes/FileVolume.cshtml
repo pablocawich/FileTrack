@@ -90,7 +90,7 @@
                 ".js-req-vol",
                 function() {
                     var button = $(this);
-                    var loc = button.attr('location');
+                    var fileLocName = button.attr('location');
                     var state = button.attr("vol-state");
                     var originalLoc = button.attr("originLoc");
                     var currentLoc = button.attr("currLoc-attr");
@@ -106,18 +106,18 @@
                     } else {
                         if (!(userLoc == currentLoc)) {
                             bootbox.confirm({
+                                title: "<strong>External Request</strong>",
                                 message:
-                                    "<strong style='color: #ff7144'>This volume is outside your branch. Your request will be sent to <strong>" +
-                                        loc +
-                                        "</strong>. Continue?</strong>",
+                                    `<p style='color: #905abf'>This volume is outside your branch. Your request will be sent to <strong>${
+                                        fileLocName} Registry</strong> for approval.</p>`,
                                 buttons: {
                                     confirm: {
-                                        label: 'Yes',
+                                        label: 'Continue',
                                         className: 'btn-success'
                                     },
                                     cancel: {
-                                        label: 'Never mind',
-                                        className: 'btn-github'
+                                        label: 'Cancel',
+                                        className: 'btn-danger'
                                     }
                                 },
                                 callback: function(result) {
@@ -133,9 +133,9 @@
                             if (originalLoc == currentLoc)
                                 if (state === "Stored" || state === "Requested") {
                                     bootbox.confirm({
+                                        title: "<strong>Local Request</strong>",
                                         message:
-                                            "<p style='color: #21a6e8'>Volume is within branch vicinity thus if you proceed your request will be sent to " +
-                                                "<br><strong>local registry</strong> and you must await approval</p>",
+                                            `<p style='color: #21a6e8'>File is within branch vicinity thus if you proceed your request will be sent to your <strong>local registry</strong> and you must await approval</p>`,
                                         buttons: {
                                             confirm: {
                                                 label: 'Accept',
@@ -179,7 +179,7 @@
                         //ensures user cannot send request to his/herself
                         if (!(thisUser == holdingUser)) {
                             var holdingUsername = btn.parent().siblings().eq(5).text();
-                            
+
                             bootbox.confirm({
                                 message: "You are requesting a local user file transfer from <strong>" +
                                     holdingUsername.toUpperCase() +
@@ -198,7 +198,8 @@
                                     if (result) {
                                         //Requests/OnUserTransferAccept/{volId}/{userId}/{currentLocation}
                                         window.location.href =
-                                            siteURL + `/Requests/OnUserTransferRequest/${volId}/${holdingUser}/${currentLoc}`;
+                                            siteURL +
+                                            `/Requests/OnUserTransferRequest/${volId}/${holdingUser}/${currentLoc}`;
                                     }
                                 }
                             });
@@ -209,7 +210,9 @@
 
 
                     } else
-                        toastr.error("Not eligible for this at the moment","Oops!",{ positionClass: "toast-bottom-right" });
+                        toastr.error("Not eligible for this at the moment",
+                            "Oops!",
+                            { positionClass: "toast-bottom-right" });
                 });
 
             //inserting a string value for current location

@@ -44,7 +44,7 @@
         $(document).ready(function() {
             var table = $("#confirmTable").DataTable({
                 "ajax": {
-                    "url": siteURL+"/Requests/GetConfirmCheckout",
+                    "url": siteURL + "/Requests/GetConfirmCheckout",
                     "data": "GET",
                     "datatype": "json"
                 },
@@ -60,7 +60,7 @@
                         }
                     },
                     { "data": "FileVolumes.Volume" },
-                    { "data": "AcceptedBy.Name"},
+                    { "data": "AcceptedBy.Name" },
                     {
                         data: "AcceptedDate",
                         "render": function(data) {
@@ -72,7 +72,8 @@
                         data: "Id",
                         "render": function(data, type, req) {
                             var button =
-                                `<button approve-data-id=${data} vol-attr="${req.FileVolumes.Volume}" file-attr="${req.FileVolumes.FileNumber
+                                `<button approve-data-id=${data} vol-attr="${req.FileVolumes.Volume}" file-attr="${req
+                                    .FileVolumes.FileNumber
                                     }" class="btn btn-success js-approve"><i class='fa fa-check-circle'></i> Accept</button>`;
                             return button;
                         }
@@ -87,11 +88,14 @@
                     var requestId = $btn.attr("approve-data-id");
                     var fileNum = $btn.attr("file-attr");
                     var volNum = $btn.attr("vol-attr");
-                    bootbox.confirm("You are approving volume <strong>"+volNum+"</strong> for file:<strong> " + fileNum + "</strong>. Do you wish to continue?",
-                        function(result) {
+                    bootbox.confirm({
+                        message:"You are approving volume <strong>"+volNum+"</strong> for file:<strong> " + fileNum +
+                            "</strong>. Do you wish to continue?",
+                        closeButton: false,
+                        callback: function(result) {
                             if (result) {
                                 $.ajax({
-                                    url: siteURL+'/Requests/AcceptCheckout/' + requestId,
+                                    url: siteURL + '/Requests/AcceptCheckout/' + requestId,
                                     success: function() {
                                         toastr.success("File volume checked out",
                                             "Approval",
@@ -105,14 +109,15 @@
                                     }
                                 });
                             }
-                        });
+                        }
+                    });
                 });
 
             $("#confirmTable").on("click",
                 ".confirmCheckoutModal",
                 function() {
                     var id = $(this).attr("data-fileId-attr");
-                    var url = siteURL+"/Files/FileDetailsForConfirm/" + id;
+                    var url = siteURL + "/Files/FileDetailsForConfirm/" + id;
                     // alert(url);
 
                     $('#confirmModelContent').load(url);

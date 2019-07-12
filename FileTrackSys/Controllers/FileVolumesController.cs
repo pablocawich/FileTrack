@@ -119,8 +119,7 @@ namespace FileTracking.Controllers
             }
             else
             {
-                request.ReturnStateId = 2;//2 means return is initiated, return sent
-
+                request.ReturnStateId = 2;//2 means return stage is initiated, return sent
                 _context.SaveChanges();
 
                 CreateNotification(request, Message.Return);
@@ -128,8 +127,7 @@ namespace FileTracking.Controllers
                 ChangeStateToTransfer(request.FileVolumesId, request.UserId);
 
                 return Json(new { success = true }, JsonRequestBehavior.AllowGet);
-            }
-          
+            }          
         }
 
         //return file function after prompt was accepted
@@ -233,7 +231,7 @@ namespace FileTracking.Controllers
             req.ReturnStateId = 3;
             req.IsRequestActive = false;
             
-            //if a binder exists then that signifies our records is still not complete   
+            //if a binder exists then we activate the associated record 
             if (req.RequestBinder != 0)
             {
                 //if it has external binder we switch the req type to external   
@@ -244,15 +242,14 @@ namespace FileTracking.Controllers
             else
             {
                 _context.SaveChanges();
-                ChangeStateToStored(req.FileVolumesId);
-
-                var completedRequestOperation = new CompletedRequestController();
-                completedRequestOperation.SaveToCompletedRequestTable(req);
-                //we want to remove the record from Requests as we kinda duplicated the fields and stored in CompletedRequest
-                _context.Requests.Remove(req);
-                _context.SaveChanges();
+                ChangeStateToStored(req.FileVolumesId);               
             }
-                       
+            //this request is finish no matter if associated with EXREQ, so we move to completed table
+            var completedRequestOperation = new CompletedRequestController();
+            completedRequestOperation.SaveToCompletedRequestTable(req);
+            //we want to remove the record from Requests as we kinda duplicated the fields and stored in CompletedRequest
+            _context.Requests.Remove(req);
+            _context.SaveChanges();
         }
 
         //accepting external return
@@ -271,6 +268,12 @@ namespace FileTracking.Controllers
 
             ChangeStateToStored(req.FileVolumesId);
             CreateNotification(req,Message.ExReturnApproval);
+
+            var completedRequestOperation = new CompletedRequestController();
+            completedRequestOperation.SaveToCompletedRequestTable(req);
+
+            _context.Requests.Remove(req);
+            _context.SaveChanges();
         }
 
         public void ChangeStateToStored(int volId)
@@ -335,8 +338,8 @@ namespace FileTracking.Controllers
 
             var user = _context.AdUsers.Single(u => u.Username == userObj.Username);
 
-            var request = _context.Requests.Include(r => r.FileVolumes).Include(r => r.User.Branches).
-                Where(r => r.RequesterBranchId == user.BranchesId).Where(r => r.RequestTypeId == RequestType.ExternalRequest).
+            var request = _context.Requests.Include(r => r.FileVolumes).Include(r => r.User.Branches).Include(r=>r.CurrentFileBranch)
+                .Where(r => r.RequesterBranchId == user.BranchesId).Where(r => r.RequestTypeId == RequestType.ExternalRequest).
                 Where(r => r.IsConfirmed == true).Where(r=>r.ReturnStateId == 1).Where(r=>r.IsRequestActive == true).ToList();
 
             return Json(new { data = request }, JsonRequestBehavior.AllowGet);
@@ -370,7 +373,7 @@ namespace FileTracking.Controllers
 
             var user = _context.AdUsers.Single(u => u.Username == userObj.Username);
 
-            var request = _context.Requests.Include(r => r.FileVolumes).Include(r => r.User.Branches).
+            var request = _context.Requests.Include(r => r.FileVolumes).Include(r => r.User.Branches).Include(r=>r.CurrentFileBranch).
                 Where(r => r.CurrentFileBranchId == user.BranchesId).Where(r => r.RequestTypeId == RequestType.ExternalRequest).
                 Where(r => r.IsConfirmed == true).Where(r => r.ReturnStateId == 2).Where(r => r.IsRequestActive == true).ToList();
 

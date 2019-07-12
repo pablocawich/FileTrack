@@ -36,7 +36,7 @@
         @foreach (var req in Model)
         {
             <tr>
-                <td><span data-return-id="@req.FileVolumes.FileId" class="glyphicon glyphicon-file btn btn-success btn-block btn-xs returnModal"> @req.FileVolumes.FileNumber</span></td>
+                <td><span data-return-id="@req.FileVolumes.FileId" class="glyphicon glyphicon-file btn btn-default btn-xs returnModal"> @req.FileVolumes.FileNumber</span></td>
                 <td>@req.FileVolumes.Volume</td>
                 <td>@req.AcceptedBy.Name</td>
                 <td>@req.AcceptedDate</td>
@@ -84,9 +84,7 @@
                                                 callback: function(res) {
                                                     if (res) {
                                                         $.ajax({
-                                                            url: siteURL +
-                                                                '/FileVolumes/VerifiedReturnOfVolume/' +
-                                                                requestId,
+                                                            url: siteURL +'/FileVolumes/VerifiedReturnOfVolume/' +requestId,
                                                             success: function(response) {
                                                                 toastr.success("Return Request Sent to registry",
                                                                     "Return",
