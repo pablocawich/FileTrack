@@ -210,7 +210,8 @@
                                     });
                                 } else {
                                     bootbox.alert({
-                                        message: "<label style='color: red'>Cannot save to database if no data exist!<label>",
+                                        message:
+                                            "<label style='color: red'>Cannot save to database if no data exist!<label>",
                                         size: 'small',
                                         className: 'rubberBand animated'
                                     });
@@ -368,6 +369,7 @@
                 function() {
                     var currUser = $("#uname").attr('data-username');
                     var uname = $(this).attr("btn-uname-attr");
+                    var userId = $(this).attr("data-userId");
 
                     if (currUser.includes(uname)) {
                         toastr.error(
@@ -375,14 +377,27 @@
                             "Error",
                             { positionClass: "toast-bottom-right" });
                     } else {
-                        var id = $(this).attr("data-userId");
-                        var url = siteURL + "/AdUsers/ChangeBranch/" + id;
+                        $.ajax({
+                            url: siteURL + '/AdUsers/CheckRequestActivity/' + userId,
+                            success: function(response) {
+                                //user has no request activity currently being processed
+                                if (response.success) {
+                                   var url = siteURL + "/AdUsers/ChangeBranch/" + userId;
 
-                        $('#changeBranchModelContent').load(url);
-                        $('#changeBranchModal').modal('show');
+                                    $('#changeBranchModelContent').load(url);
+                                    $('#changeBranchModal').modal('show');
+
+                                } else {
+                                    toastr.error(response.message,"Cannot Change Branch!",{ positionClass: "toast-bottom-right" });
+                                }                 
+                            },
+                            statusCode: {
+                                404: function(content) { alert('cannot find resource'); },
+                                500: function(content) { alert('internal server error'); }
+                            }
+                        });
+
                     }
-
-
                 });
         });
     </script>

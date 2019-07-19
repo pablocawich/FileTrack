@@ -6,7 +6,7 @@
 
 <div class="row">
     <div class="col-lg-12">
-        <h2 class="page-header"><strong>Pending External Request</strong></h2>
+        <h2 class="page-header"><strong>External Requests</strong></h2>
     </div>
     <!-- /.col-lg-12 -->
 </div>
@@ -16,7 +16,7 @@
         <thead>
             <tr>
                 <th>File Number</th>
-                <th>Volume</th>
+                <th>Volume No.</th>
                 <th>Requester</th>
                 <th>Requester Branch</th>
                 <th>Requested Date</th>
@@ -46,14 +46,24 @@
                     {
                         "data": "FileVolumes.FileNumber",
                         render: function(data, type, req) {
-                            return `<a href="#" data-ext-branch-id="${req.FileVolumes.FileId
-                                }" class="btn btn-default btn-sm extBranchModal-js">
-                                <i class="fa fa-wpforms">${data}</i></a>`;
+                            return `<a href="#" data-ext-branch-id="${req.FileVolumes.FileId}" 
+                                    class="btn btn-default btn-sm extBranchModal-js"><i class="fa fa-wpforms">${data
+                                }</i></a>`;
                         }
                     },
                     { "data": "FileVolumes.Volume" },
-                    { "data": "User.Name" },
-                    { "data": "User.Branches.Branch" },
+                    {
+                        "data": "User.Name",
+                        render: function(data) {
+                            return `<i class="fa fa-user"> ${data} </i>`;
+                        }
+                    },
+                    {
+                        "data": "User.Branches.Branch",
+                        render: function(data) {
+                            return `<i class="fa fa-map-marker"> ${data} </i>`;
+                        }
+                    },
                     {
                         data: "RequestDate",
                         "render": function(data) {
@@ -86,7 +96,8 @@
                     var id = $(this).attr('id-ext-attr');
 
                     bootbox.confirm({
-                        message: `You are about to accept an external request from the <strong>${userBranch}</strong> branch
+                        message: `You are about to accept an external request from the <strong>${userBranch
+                            }</strong> branch
                                    </br>Request made by <strong> ${username} </strong>`,
                         title: "<strong style='color: green'>Checkout File (EXTERNAL)</strong>",
                         callback: function(result) {
@@ -146,11 +157,11 @@
                             if (result) {
                                 $.ajax({
                                     url: siteURL + '/Requests/DeclineRequest/' + id,
-                                    success: function() {
-                                        toastr.success("This request has been declined",
-                                            "Request Declined",
-                                            { positionClass: "toast-bottom-right" });
-
+                                    success: function(response) {
+                                        if (response.success) 
+                                            toastr.success("This request has been declined","Request Declined",{ positionClass: "toast-bottom-right" });
+                                        else
+                                            toastr.error("It appears this request has already been processed", "Something went wrong", { positionClass: "toast-bottom-right" });
                                         table.row(button.parents('tr')).remove().draw();
                                     },
                                     statusCode: {
@@ -169,7 +180,7 @@
 
             function getDateString(date) {
                 var dateObj = new Date(parseInt(date.substr(6)));
-                return dateObj.toDateString();
+                return dateObj.toLocaleString();
             }
 
             $("#externalBranchPendingTable").on("click",

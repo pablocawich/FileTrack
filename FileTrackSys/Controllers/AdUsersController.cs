@@ -232,13 +232,16 @@ namespace FileTracking.Controllers
         public ActionResult SaveNewBranch(AdUser user)
         {
             var userParsed = new AdUser(User.Identity.Name);
-
+            
             if (!ModelState.IsValid)
             {
                 return Content("Option selected not valid. Please return and try again.");
             }
-
-            
+            //checks that user is not changing his/her own branch
+            if (userParsed.Username == user.Username)
+            {
+                return Content("Cannot Change your own branch");
+            }
 
             if (user.Id != 0)
             {
@@ -263,6 +266,18 @@ namespace FileTracking.Controllers
             }
 
             return RedirectToAction("AdminManagement", "AdUsers");
+        }
+
+        public JsonResult CheckRequestActivity(int id)
+        {
+            var requestsInDb = _context.Requests.Where(r => r.UserId == id).ToList();
+
+            if (requestsInDb.Any())
+            {
+                return this.Json(new { success = false, message = "User seems to have active file request/transfer activities. User needs clear all activities before a change can be made." }, JsonRequestBehavior.AllowGet);
+            }
+
+            return this.Json(new { success = true}, JsonRequestBehavior.AllowGet);
         }
 
         [HttpPost]

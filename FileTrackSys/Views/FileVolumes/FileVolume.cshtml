@@ -175,13 +175,14 @@
                     var volId = btn.attr("data-vol-id");
 
                     //the val 5 represents the CHECKED OUT state in our db
-                    if (state == 5 && holdingUser != "" && currentLoc == myLoc && currentLoc == originLoc) {
+                    //(&& currentLoc == originLoc) we removed this line from the if to enable foreign transfers
+                    if (state == 5 && holdingUser != "" && currentLoc == myLoc) {
                         //ensures user cannot send request to his/herself
                         if (!(thisUser == holdingUser)) {
                             var holdingUsername = btn.parent().siblings().eq(5).text();
 
                             bootbox.confirm({
-                                message: "You are requesting a local user file transfer from <strong>" +
+                                message: "You are requesting a user file transfer from <strong>" +
                                     holdingUsername.toUpperCase() +
                                     "</strong>. Are you sure?",
                                 buttons: {

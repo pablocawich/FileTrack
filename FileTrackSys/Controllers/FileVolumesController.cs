@@ -172,12 +172,17 @@ namespace FileTracking.Controllers
 
         public void CancelOtherTransferRequests(List<Request> requests)
         {
+            var rejectedTransferOperations = new RejectedRequestController();
             foreach (var req in requests)
             {
                 req.IsRequestActive = false;
                 req.RequestStatusId = 3;//rejected state
                 //ensure that on each request, a notification is dispatched to the respective user about file being rejected
                 CreateNotificationForTransfers(req, Message.InReject);
+
+                rejectedTransferOperations.SaveToRejectedRequestTable(req);
+                _context.Requests.Remove(req);
+                _context.SaveChanges();
             }
         }
 

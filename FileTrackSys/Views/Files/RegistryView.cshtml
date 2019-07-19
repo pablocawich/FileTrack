@@ -30,18 +30,18 @@
         <table id="fileTable" class="table table-striped table-bordered table-hover" style="width: 100%">
             <thead>
             <tr class="firstRow">
-                <th class="searchable" width="60"> File Number</th>
+                <th class="searchable" width="60"> File No.</th>
                 <th class="searchable" width="90">Name</th>
                 <th width="100">Address</th>
                 <th class="searchable" width="100">District</th>
-                <th class="searchable" width="100">Loan Number/s</th>
-                <th width="40">Volumes</th>
+                <th class="searchable" width="100">Loan No.</th>
+                <th width="40">Vol</th>
                 <th width="105">Actions</th>
             </tr>
             </thead>
             <tbody></tbody>
         </table>
-        <div class="modal fade" id="myModal" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" data-backdrop="static" data-keyboard="true">
+        <div class="modal fade" id="myModal" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" data-keyboard="true">
             <div class="modal-dialog">
                 <div class="modal-content" id="modelContent">
                 </div>
@@ -69,7 +69,7 @@
                             return "<span data-url='" +
                                 file.Id +
                                 " 'class='glyphicon glyphicon-file btn btn-block btn-sm btn-primary spanModal'>" +
-                                file.FileNumber +
+                                data+
                                 "</span>";
 
                         }
@@ -161,10 +161,6 @@
             //-------------------------End dataTables implementation ---------------------------------------
             // refer to Scripts/ScriptsIvor if you wish to view the code that follows the above. Consists of button implementation
             // i moved it because i honestly hate seeing too much code on one page   
-            function getDateString(date) {
-                var dateObj = new Date(parseInt(date.substr(6)));
-                return dateObj.toDateString();
-            }
 
             //opens modal that displays file information for a specif file
             $("#fileTable").on("click",".spanModal", function() {
@@ -174,7 +170,8 @@
 
                     $('#modelContent').load(url);
                     $('#myModal').modal('show');
-                });
+            });
+
             $("#searchClearBtn").on('click', function () {
                     
                     fileTable.column(0).search('').draw();

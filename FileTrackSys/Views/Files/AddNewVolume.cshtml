@@ -4,17 +4,16 @@
     <button type="button" class="close" data-dismiss="modal" aria-label="Close">
         <span aria-hidden="true"><i class="fa fa-times-circle"></i></span>
     </button>
-    <h3 class="modal-title" style="color: #358e59">Create volume for @Model.File.FileNumber which belongs to @Model.File.FirstName</h3>
+    <h3 class="modal-title" style="color: #358e59"><strong>File No: @Model.File.FileNumber</strong></h3>
 </div>
 @using (Html.BeginForm("SaveVolume", "Files", FormMethod.Post, new {@id = "VolFormId"}))
 {
  <div class="modal-body ">
-         <h5 style="color: orangered">You are about to create volume
-             @{ int vol = Model.File.Volume + 1;}
-             <strong>@vol</strong> for this file</h5>
+     <h5 style="color: #51a543">
+         You are about to create volume @{ int vol = Model.File.Volume + 1;}
+         <strong>@vol</strong> for this file. Location will be set based on your current branch
+     </h5>
 
-
-         <h5 style="color: orangered">Location will be set on your current location</h5>
          @Html.ValidationSummary()
 
          <div class="form-group">
