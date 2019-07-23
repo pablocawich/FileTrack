@@ -1,9 +1,6 @@
-﻿
-@{
-                /**/
-
-                ViewBag.Title = "ApproveExternalReturns";
-                Layout = "~/Views/Shared/_Layout.cshtml";
+﻿@{
+    ViewBag.Title = "ApproveExternalReturns";
+    Layout = "~/Views/Shared/_Layout.cshtml";
 }
 <link rel="stylesheet" href="https://cdn.datatables.net/1.10.19/css/dataTables.bootstrap.min.css">
 <div class="row">
@@ -18,7 +15,7 @@
         <thead>
             <tr>
                 <th>File Number</th>
-                <th>Volume</th>
+                <th>Volume No.</th>
                 <th>Requester</th>
                 <th>Requester Branch</th>
                 <th>Requested Date</th>
@@ -42,36 +39,55 @@
             //gets json objects from the request controller in order to populate the dataTable
             var table = $("#extReturnsApprovalTable").DataTable({
                 "ajax": {
-                    "url": siteURL+"/FileVolumes/GetExternalApproveReturns",
+                    "url": siteURL + "/FileVolumes/GetExternalApproveReturns",
                     "data": "GET",
                     "datatype": "json"
                 },
                 "columns": [
                     {
                         "data": "FileVolumes.FileNumber",
-                        render: function (data, type, req) {
+                        render: function(data, type, req) {
                             return `<a href="#" data-ext-returns-id="${req.FileVolumes.FileId
                                 }" class="btn btn-default btn-sm btn-block extReturnsModal-js">
-                                <i class="fa fa-wpforms"> <strong>${data}</strong></i></a>`;
+                                <i class="fa fa-address-book"> <strong>${data}</strong></i></a>`;
                         }
                     },
-                    { "data": "FileVolumes.Volume" },
-                    { "data": "User.Name" },
-                    { "data": "User.Branches.Branch" },
+                    {
+                        "data": "FileVolumes.Volume",
+                        render: function(data) { return `<strong>${data}</strong>`; }
+                    },
+                    {
+                        "data": "User.Name",
+                        render: function(data) {
+                            return `<strong><i class="fa fa-user-circle-o"></i> ${data}</strong>`;
+                        }
+                    },
+                    {
+                        "data": "User.Branches.Branch",
+                        render: function (data) {
+                            return `<strong><i class="fa fa-location-arrow"></i> ${data}</strong>`;
+                        }
+                    },
                     {
                         data: "RequestDate",
                         "render": function(data) {
                             return getDateString(data);
                         }
                     },
-                    {"data": "CurrentFileBranch.Branch"},
+                    {
+                        "data": "CurrentFileBranch.Branch",//this is supposed to be File Branch origins - naming convention fault
+                        render: function (data) {
+                            return `<strong><i class="fa fa-map-marker"></i> ${data}</strong>`;
+                        }
+                    },
                     {
                         data: "Id",
                         "render": function(data, type, req) {
 
                             var extReturnButton =
-                                `<button class='btn btn-success js-ext-branch-return' request-user='${req.User.Name}' data-ext-return-id=${
-                                data} data-fileNO='${req.FileVolumes.FileNumber}'>Check In</button>`;
+                                `<a class='btn btn-xs js-ext-branch-return' request-user='${req.User.Name}' 
+                                data-ext-return-id=${data} data-fileNO='${req.FileVolumes.FileNumber}'>
+                                <i class="fa fa-check-square-o"></i> Check In</a>`;
                             return extReturnButton;
                         }
                     }
@@ -81,30 +97,33 @@
             //--------------returning file volume to external branch (origin) implementation----------------------------------
             $("#extReturnsApprovalTable").on("click",
                 '.js-ext-branch-return',
-                function () {
+                function() {
                     var button = $(this);
                     var requestingUser = button.attr('request-user');
                     var id = button.attr("data-ext-return-id");
                     var fileNumber = button.attr("data-fileNO");
 
                     bootbox.confirm({
-                        message: `You are accepting a check in of file:<strong> ${fileNumber}<br></strong> from holder: <strong> ${requestingUser}</strong>`,
-                        title: "<strong>CHECK-IN (External)</strong>",
-                        callback: function (result) {
+                        message: `You are accepting a check in of file:<strong> ${fileNumber
+                            }<br></strong> from holder: <strong> ${requestingUser}</strong>`,
+                        title: "<strong>CHECK IN</strong>",
+                        callback: function(result) {
                             if (result) {
                                 $.ajax({
                                     url: siteURL + '/FileVolumes/AcceptExternalReturn/' + id,
-                                    success: function () {
+                                    success: function() {
 
-                                        toastr.success("Accepted return for client", "Return", { positionClass: "toast-bottom-right" });
+                                        toastr.success("Accepted return for client",
+                                            "Return",
+                                            { positionClass: "toast-bottom-right" });
 
                                         //removes row from client side perspective. Not on server side thus 
                                         //if a refresh is made it will be reloaded since we have not done any server side processing
                                         table.row(button.parents('tr')).remove().draw();
                                     },
                                     statusCode: {
-                                        404: function (content) { alert('cannot find resource'); },
-                                        500: function (content) { alert('internal server error'); }
+                                        404: function(content) { alert('cannot find resource'); },
+                                        500: function(content) { alert('internal server error'); }
                                     }
                                 });
                             }
@@ -120,7 +139,7 @@
             //Modal event listener
             $("#extReturnsApprovalTable").on("click",
                 ".extReturnsModal-js",
-                function () {
+                function() {
                     var id = $(this).attr("data-ext-returns-id");
                     var url = siteURL + "/Files/FileDetailsForConfirm/" + id;
 

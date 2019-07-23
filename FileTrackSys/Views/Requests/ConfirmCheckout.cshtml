@@ -5,7 +5,7 @@
 
 <div class="row">
 <div class="col-lg-12">
-    <h2 class="page-header"><strong>Confirm Check-out</strong></h2>
+    <h2 class="page-header"><strong>Confirm Checkout</strong></h2>
 </div>
 <!-- /.col-lg-12 -->
 </div>
@@ -19,10 +19,11 @@
             <thead>
             <tr>
                 <th>File Number</th>
-                <th>Volume</th>
+                <th>Volume No.</th>
                 <th>Checked Out By</th>
                 <th>Checked Out Date</th>
                 <th>Branch</th>
+                <th>File origin</th>
                 <th>Action</th>
             </tr>
             </thead>
@@ -35,9 +36,7 @@
                 <div class="modal-content" id="confirmModelContent">
                 </div>
             </div>
-        </div>
-    
-    
+        </div>    
 </div>
 @section scripts{
     <script>
@@ -59,8 +58,14 @@
                             return link;
                         }
                     },
-                    { "data": "FileVolumes.Volume" },
-                    { "data": "AcceptedBy.Name" },
+                    {
+                        "data": "FileVolumes.Volume",
+                        render: function(data) { return `<strong>${data}</strong>` }
+                    },
+                    {
+                        "data": "AcceptedBy.Name",
+                        render: function(data) { return `<strong><i class="fa fa-user"></i> ${data}</strong>`; }
+                    },
                     {
                         data: "AcceptedDate",
                         "render": function(data) {
@@ -68,13 +73,15 @@
                         }
                     },
                     { data: "RequesterBranch.Branch" },
+                    { data: "FileVolumes.Branches.Branch" },
                     {
                         data: "Id",
                         "render": function(data, type, req) {
                             var button =
-                                `<button approve-data-id=${data} vol-attr="${req.FileVolumes.Volume}" file-attr="${req
+                                `<a href="#" approve-data-id=${data} vol-attr="${req.FileVolumes.Volume}" file-attr="${
+                                    req
                                     .FileVolumes.FileNumber
-                                    }" class="btn btn-success js-approve"><i class='fa fa-check-circle'></i> Accept</button>`;
+                                    }" class="btn js-approve"><i class='fa fa-check-circle'></i> Accept</a>`;
                             return button;
                         }
                     }
@@ -89,8 +96,8 @@
                     var fileNum = $btn.attr("file-attr");
                     var volNum = $btn.attr("vol-attr");
                     bootbox.confirm({
-                        message:"You are approving volume <strong>"+volNum+"</strong> for file:<strong> " + fileNum +
-                            "</strong>. Do you wish to continue?",
+                        message: `You are approving volume <strong> ${volNum}</strong> for file:<strong> ${fileNum}</strong>.
+                                  Do you wish to continue?`,
                         closeButton: false,
                         callback: function(result) {
                             if (result) {

@@ -1051,6 +1051,7 @@
     <Content Include="Views\ErrNotifs\RequestMade.cshtml" />
     <Content Include="Views\Requests\RequestSuccessful.cshtml" />
     <Content Include="Views\Requests\UserConfirmTransfer.cshtml" />
+    <Content Include="Views\AdUsers\SignInPrompt.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

@@ -258,6 +258,7 @@ namespace FileTracking.Controllers
         }
 
         //accepting external return
+        [Authorize(Roles = Role.Registry)]
         public void AcceptExternalReturn(int id)
         {
            var user = new AdUser(User.Identity.Name);//we get the current registry user and initialize its username

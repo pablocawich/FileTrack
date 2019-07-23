@@ -72,10 +72,10 @@
                              
                 <li class="sidebar-search">
 
-                    <!-- /input-group -->
+                    <!-- /input-group target="_blank"-->
                 </li>
                 <li>
-                    <a href="@Url.Action("ConfirmCheckout", "Requests")" target="_blank"><i class="fa fa-users fa-fw"></i>Sign in as other user</a>
+                    <a href="@Url.Action("SignInPrompt", "AdUsers")" ><i class="fa fa-users fa-fw"></i>Sign in as other user</a>
                 </li>
                 @if (User.IsInRole(Role.AdminUser))
                 {

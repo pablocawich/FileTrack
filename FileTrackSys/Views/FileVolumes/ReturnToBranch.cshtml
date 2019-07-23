@@ -1,5 +1,4 @@
-﻿
-@{
+﻿@{
     ViewBag.Title = "ReturnToBranch";
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
@@ -12,7 +11,7 @@
 </div>
 
 <div class="row">
-    <table id="extBranchReturnsTable" class="table  table-bordered table-hover">
+    <table id="extBranchReturnsTable" class="table table-bordered table-striped table-hover">
         <thead>
             <tr>
                 <th>File Number</th>
@@ -25,8 +24,13 @@
             </tr>
         </thead>
         <tbody></tbody>
-
     </table>
+    <div class="modal fade" id="returnToBranchModal" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" data-backdrop="static" data-keyboard="true">
+        <div class="modal-dialog">
+            <div class="modal-content" id="returnToBranchModelContent">
+            </div>
+        </div>
+    </div>
 </div>
 @section scripts
 {
@@ -40,24 +44,50 @@
                     "datatype": "json"
                 },
                 "columns": [
-                    { "data": "FileVolumes.FileNumber" },
-                    { "data": "FileVolumes.Volume" },
-                    { "data": "User.Name" },
-                    { "data": "User.Branches.Branch" },
+                    {
+                        "data": "FileVolumes.FileNumber",
+                        render: function (data,type,req) {
+                            return `<a href="#" data-acct-ret-id="${req.FileVolumes.FileId}" 
+                            class="btn btn-primary btn-sm branchReturnModal"><i class="fa fa fa-address-card"> ${data}</i></a>`;
+                        }
+                    },
+                    {
+                        "data": "FileVolumes.Volume",
+                        render: function (data) {
+                            return `<strong>${data}</strong>`;
+                        }
+                    },
+                    {
+                        "data": "User.Name",
+                        render: function (data) {
+                            return `<strong><i class="fa fa-user-circle-o"><i> ${data}</strong>`;
+                        }
+                    },
+                    {
+                        "data": "User.Branches.Branch",
+                        render: function (data) {
+                            return `<strong><i class="fa fa-map-pin"></i> ${data}</strong>`;
+                        }
+                    },
                     {
                         data: "RequestDate",
                         "render": function(data) {
                             return getDateString(data);
                         }
                     },
-                    {"data": "CurrentFileBranch.Branch"},
+                    {
+                        "data": "CurrentFileBranch.Branch",
+                        render: function (data) {
+                            return `<strong><i class="fa fa-map-marker"></i> ${data}</strong>`;
+                        }
+                    },
                     {
                         data: "Id",
                         "render": function(data, type, req) {
                        
                             var extReturnButton =
-                                `<button class='btn btn-success js-ext-branch-return' accepted-by='${req.AcceptedBy}' data-ext-return-id=${
-                                    data}>Return File</button>`;
+                                `<a class='btn btn-xs js-ext-branch-return' accepted-by='${req.AcceptedBy}' data-ext-return-id=${
+                                data}><i class="fa fa-retweet"></i> Return File</a>`;
                             return extReturnButton;
                         }
                     }
@@ -74,35 +104,42 @@
 
                     var branchStr = button.parents("tr").find("td").eq(5).html();//we get the string returned from the external branch field
                     
-                    bootbox.confirm("You are returning this file back to its original branch: <strong>"+branchStr+"</strong>",
-                        function(result) {
+                    bootbox.confirm({
+                        title: "<strong> RETURNING TO BRANCH</strong>",
+                        message: "You are returning this file back to its original branch: <strong>" + branchStr + "</strong>",
+                        callback: function(result) {
                             if (result) {
                                 $.ajax({
-                                    url: siteURL+'/FileVolumes/ReturnToBranchAction/' + id,
-                                    success: function() {
-
-                                        toastr.success("Accepted return for client",
-                                            "Return",
-                                            { positionClass: "toast-bottom-right" });
-
-                                        //removes row from client side perspective. Not on server side thus 
-                                        //if a refresh is made it will be reloaded since we have not done any server side processing
+                                    url: siteURL + '/FileVolumes/ReturnToBranchAction/' + id,
+                                    success: function () {
+                                        toastr.success("Accepted return for client","Return",{ positionClass: "toast-bottom-right" });
                                         table.row(button.parents('tr')).remove().draw();
                                     },
                                     statusCode: {
-                                        404: function(content) { alert('cannot find resource'); },
-                                        500: function(content) { alert('internal server error'); }
+                                        404: function (content) { alert('cannot find resource'); },
+                                        500: function (content) { alert('internal server error'); }
                                     }
                                 });
                             }
-
-                        });
+                        }
+                    });
                 });
 
             function getDateString(date) {
                 var dateObj = new Date(parseInt(date.substr(6)));
                 return dateObj.toDateString();
             }
+            //file details modal code block
+            $("#extBranchReturnsTable").on("click",
+                ".branchReturnModal",
+                function () {
+                    var id = $(this).attr("data-acct-ret-id");
+                    var url = siteURL + "/Files/FileDetailsForConfirm/" + id;
+                    // alert(url);
+
+                    $('#returnToBranchModelContent').load(url);
+                    $('#returnToBranchModal').modal('show');
+                });
         });
     </script>
 }

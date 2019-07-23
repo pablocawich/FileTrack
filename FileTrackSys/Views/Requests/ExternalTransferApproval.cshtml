@@ -12,7 +12,8 @@
 </div>
 <link rel="stylesheet" href="https://cdn.datatables.net/1.10.19/css/dataTables.bootstrap.min.css">
 <div class="row">
-    <table id="externalBranchTransferTable" class="table  table-bordered table-hover">
+    <p style="color: #57a6de"><i>Files here have already been accepted and require only a second approval which will further enable a retrieval by the requesting user.</i></p>
+    <table id="externalBranchTransferTable" class="table table-hover">
         <thead>
             <tr>
                 <th>File Number</th>
@@ -69,15 +70,8 @@
                     {
                         data: "Id",
                         "render": function (data, type, req) {
-                            var externalTransferOption = `<div class="btn-group"><button type="button" class="btn btn-circle" disabled><i class="fa fa-th-list"></i></button>
-                                    <button type="button" class="btn btn-circle dropdown-toggle" data-toggle="dropdown">
-                                        <span class="caret"></span><span class="sr-only">Social</span>
-                                    </button>
-                                    <ul class="dropdown-menu" role="menu">
-                                        <li><a href="#" class='btn js-ext-approve' trans-accept-ext-id=${data} reg-req-branch="${req.RequesteeBranch}" reg-user-attr="${req.User.Name}">Accept <i class="fa fa-check-circle"></i></a></li>
-                                        <li class="divider"></li>
-                                        <li><a href="#" class='btn js-neverRecieved' reg-user-nr='${req.AcceptedBy}' trans-neverRecieved-ext-id=${data}>Never Received <i class="fa fa-thumbs-o-down"></i></a></li>
-                                    </ul></div>`;
+                            var externalTransferOption = `<a href="#" class='btn js-ext-approve' trans-accept-ext-id=${data} reg-req-branch="${req.RequesteeBranch}" reg-user-attr="${req.User.Name}">Accept
+                                                          <i class="fa fa-check-circle"></i></a>`;
 
                             return externalTransferOption;
                         }
@@ -89,11 +83,13 @@
                 var button = $(this);
                 var regUser = $(this).attr('reg-user-attr');
                 var id = $(this).attr('trans-accept-ext-id');
-                bootbox.confirm("You are about to accept an external request from user: <strong>" + regUser + "</strong>",
-                    function (result) {
+                bootbox.confirm({
+                    title: "<strong style='color: green'>CONFIRMATION</strong>",
+                    message: `By accepting you are comfirming handling of the file which should then be retrieved by:<br> <strong>${regUser} </strong>`,
+                    callback: function (result) {
                         if (result) {
                             $.ajax({
-                                url: siteURL+'/Requests/AcceptForeignRegistryTransfer/' + id,
+                                url: siteURL + '/Requests/AcceptForeignRegistryTransfer/' + id,
                                 success: function () {
                                     toastr.success("Accepted", "Transfer Approval", { positionClass: "toast-bottom-right" });
                                     //removes row from client side perspective. Not on server side thus 
@@ -109,38 +105,14 @@
                                     500: function (content) { alert('internal server error'); }
                                 }
                             });
+
                         }
-                    });
+                    }
+                });
             });
 
             //never received external transfer
-            $("#externalBranchTransferTable").on('click', '.js-neverRecieved', function () {
-                    var button = $(this);
-                    var regUser = $(this).attr('reg-user-nr');
-                    var id = $(this).attr('trans-neverRecieved-ext-id');
-                    bootbox.confirm("Confirm that the file sent by: <strong>" + regUser + "</strong> was never received?",
-                        function (result) {
-                            if (result) {
-                                $.ajax({
-                                    url: siteURL+'/Requests/NeverReceived/' + id,
-                                    success: function () {
-                                        toastr.success("Not received", "Confirmation", { positionClass: "toast-bottom-right" });
-                                        //removes row from client side perspective. Not on server side thus 
-                                        //console.log(table.data().count());
-                                        table.row(button.parents('tr')).remove().draw();
-                                        if (table.data().count() == 0) {
-                                            $("#notifIcon").css('color', 'white');
-                                        }
-
-                                    },
-                                    statusCode: {
-                                        404: function (content) { alert('cannot find resource'); },
-                                        500: function (content) { alert('internal server error'); }
-                                    }
-                                });
-                            }
-                        });
-                });
+            //function removed as, it wasn't necessary. Decided in meeting with manager
 
             function getDateString(date) {
                 var dateObj = new Date(parseInt(date.substr(6)));

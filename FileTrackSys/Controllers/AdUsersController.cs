@@ -29,7 +29,13 @@ namespace FileTracking.Controllers
         {
             _context.Dispose();
         }
-        
+
+        [Authorize(Roles = Role.Registry)]
+        public ActionResult SignInPrompt()
+        {
+            return View();
+        }
+
         // GET: AdUsers
         [Authorize(Roles = "WEB_IT")]
         [Route("adUsers/TestUsers/{role}")]

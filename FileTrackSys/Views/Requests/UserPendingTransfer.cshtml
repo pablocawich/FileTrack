@@ -11,19 +11,25 @@
 </div>
 <link rel="stylesheet" href="https://cdn.datatables.net/1.10.19/css/dataTables.bootstrap.min.css">
 <div class="row">
-    <table id="userTransferPending" class="table table-striped table-bordered table-hover" style="width: 100%">
+    <table id="userTransferPending" class="table table-striped table-hover" style="width: 100%">
         <thead>
-        <tr>
-            <th>File Number</th>
-            <th>Volume</th>
-            <th>Requester</th>
-            <th>Branch</th>
-            <th>Request date</th>
-            <th>Actions</th>
-        </tr>
+            <tr>
+                <th>File Number</th>
+                <th>Volume No.</th>
+                <th>Requester</th>
+                <th>Branch</th>
+                <th>Request date</th>
+                <th>Actions</th>
+            </tr>
         </thead>
         <tbody></tbody>
     </table>
+    <div class="modal fade" id="pendingTransferModal" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" data-backdrop="static" data-keyboard="true">
+        <div class="modal-dialog">
+            <div class="modal-content" id="pendingTransferModelContent">
+            </div>
+        </div>
+    </div>
 </div>
 @section scripts
 {
@@ -37,10 +43,27 @@
                     "datatype": "json"
                 },
                 "columns": [
-                    { "data": "FileVolumes.FileNumber" },
-                    { "data": "FileVolumes.Volume" },
-                    { "data": "User.Name" },
-                    { "data": "RequesterBranch.Branch" },
+                    {
+                        "data": "FileVolumes.FileNumber",
+                        render: function(data, type, req) {
+                            return `<a href="#" data-fileId=${req.FileVolumes.FileId} 
+                            class="glyphicon glyphicon-file btn btn-primary btn-sm pendingTransferModal">${data}</a>`;
+                        }
+                    },
+                    {
+                        "data": "FileVolumes.Volume",
+                        render: function(data) { return `<strong>${data}</strong>`; }
+                    },
+                    {
+                        "data": "User.Name",
+                        render: function(data) {
+                            return `<strong><i class="fa fa-user-o"></i> ${data}</strong>`;
+                        }
+                    },
+                    {
+                        "data": "RequesterBranch.Branch",
+                        render: function(data) { return `<strong><i class="fa fa-map-pin"></i> ${data}</strong>`; }
+                    },
                     {
                         data: "RequestDate",
                         "render": function(data) {
@@ -51,11 +74,13 @@
                         data: "Id",
                         "render": function(data, type, req) {
                             var buttonAccept =
-                                `<button class='btn btn-success btn-xs js-transferBtn' data-reqId='${
-                                    data}' data-acc-user='${req.User.Name}'>Transfer</button>`;
+                                `<a class='btn btn-xs js-transferBtn' data-reqId='${
+                                    data}' data-acc-user='${req.User.Name
+                                    }'><i class="fa fa-send-o"></i> Transfer</a>`;
                             var buttonDeny =
-                                `<button class='btn btn-danger btn-xs js-declineTransfer' data-dec-reqId='${
-                                    data}' data-dec-user='${req.User.Name}'>Decline</button>`;
+                                `<a style="color:#c70b0b" class='btn btn-xs js-declineTransfer' data-dec-reqId='${
+                                    data}' data-dec-user='${req.User.Name
+                                    }'><i class="fa fa-thumbs-o-down"></i> Decline</a>`;
 
                             return buttonAccept + " | " + buttonDeny;
                         }
@@ -83,10 +108,11 @@
                                                 { positionClass: "toast-bottom-right" });
                                         else if (response.success && response.option == 1)
                                             bootbox.alert({
-                                                    message: `<p style='color: blue'><strong>Success!</strong><br>${response.message}</p>`,
-                                                    callback: function() {
-                                                        window.location.href = siteURL + "/Requests/UserPendingTransfer";
-                                                    }
+                                                message: `<p style='color: blue'><strong>Success!</strong><br>${response
+                                                    .message}</p>`,
+                                                callback: function() {
+                                                    window.location.href = siteURL + "/Requests/UserPendingTransfer";
+                                                }
                                             });
                                         else {
                                             alert(response.message);
@@ -142,6 +168,18 @@
                 var dateObj = new Date(parseInt(date.substr(6)));
                 return dateObj.toLocaleString();
             }
+
+            //file details modal
+            $("#userTransferPending").on("click",
+                ".pendingTransferModal",
+                function() {
+                    var id = $(this).attr("data-fileId");
+                    var url = siteURL + "/Files/FileDetailsForConfirm/" + id;
+                    // alert(url);
+
+                    $('#pendingTransferModelContent').load(url);
+                    $('#pendingTransferModal').modal('show');
+                });
 
         });
     </script>

@@ -51,11 +51,16 @@
                                 }</i></a>`;
                         }
                     },
-                    { "data": "FileVolumes.Volume" },
+                    {
+                        "data": "FileVolumes.Volume",
+                        render: function(data) {
+                            return `<strong>${data}</strong>`
+                        }
+                    },
                     {
                         "data": "User.Name",
                         render: function(data) {
-                            return `<i class="fa fa-user"> ${data} </i>`;
+                            return `<i class="fa fa-user"> <strong>${data}</strong> </i>`;
                         }
                     },
                     {
@@ -74,14 +79,14 @@
                         data: "Id",
                         "render": function(data, type, req) {
                             var buttonAccept =
-                                `<button id-ext-attr="${data}" user-branch-acc="${req.User.Branches.Branch
-                                    }" uname-attr="${req.User.Name
-                                    }" class="btn btn-success btn-sm js-ext-accept">Checkout</button>`;
+                                `<a id-ext-attr="${data}" user-branch-acc="${req.User.Branches.Branch
+                                }" uname-attr="${req.User.Name}" class="btn btn-sm js-ext-accept">
+                                <i class='fa fa-check-circle'></i> Checkout</a>`;
                             var buttonReject =
-                                `<button id-ext-rej-attr="${data}" user-branch-rej="${req.User.Branches.Branch
+                                `<a id-ext-rej-attr="${data}" style="color: red" user-branch-rej="${req.User.Branches.Branch
                                     }" uname-rej-attr="${req.User.Name
-                                    }" class="btn btn-danger btn-sm js-ext-reject">Reject</button>`;
-                            return buttonAccept + " | " + buttonReject;
+                                    }" class="btn btn-sm js-ext-reject"><i class="fa fa-times-circle"></i> Reject</a>`;
+                            return buttonAccept + buttonReject;
                         }
                     }
                 ]
@@ -99,7 +104,7 @@
                         message: `You are about to accept an external request from the <strong>${userBranch
                             }</strong> branch
                                    </br>Request made by <strong> ${username} </strong>`,
-                        title: "<strong style='color: green'>Checkout File (EXTERNAL)</strong>",
+                        title: "<strong style='color: green'>CHECKOUT (EXTERNAL)</strong>",
                         callback: function(result) {
                             if (result) {
                                 $.ajax({
@@ -152,16 +157,20 @@
                     bootbox.confirm({
                         message: `You are about to deny an external request from branch: <strong>${userBranch}</strong>
                                 </br> User: <strong> ${username}</strong>`,
-                        title: "<strong style='color: red'>Deny File Checkout (EXTERNAL)</strong>",
+                        title: "<strong style='color: red'>DENY (EXTERNAL)</strong>",
                         callback: function(result) {
                             if (result) {
                                 $.ajax({
                                     url: siteURL + '/Requests/DeclineRequest/' + id,
                                     success: function(response) {
-                                        if (response.success) 
-                                            toastr.success("This request has been declined","Request Declined",{ positionClass: "toast-bottom-right" });
+                                        if (response.success)
+                                            toastr.success("This request has been declined",
+                                                "Request Declined",
+                                                { positionClass: "toast-bottom-right" });
                                         else
-                                            toastr.error("It appears this request has already been processed", "Something went wrong", { positionClass: "toast-bottom-right" });
+                                            toastr.error("It appears this request has already been processed",
+                                                "Something went wrong",
+                                                { positionClass: "toast-bottom-right" });
                                         table.row(button.parents('tr')).remove().draw();
                                     },
                                     statusCode: {

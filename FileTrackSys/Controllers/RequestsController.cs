@@ -442,7 +442,7 @@ namespace FileTracking.Controllers
 
             var user = _context.AdUsers.Single(u => u.Username == userObj.Username);
 
-            var request = _context.Requests.Include(r=>r.FileVolumes).Include(r=>r.RequesterBranch).Include(r=>r.AcceptedBy)
+            var request = _context.Requests.Include(r=>r.FileVolumes.Branches).Include(r=>r.RequesterBranch).Include(r=>r.AcceptedBy)
                 .Where(r => r.UserId == user.Id).Where(r=>r.IsRequestActive == true)//2 --> Accepted State
                 .Where(r=>r.RequestTypeId == RequestType.InternalRequest).Where(r=>r.RequestStatusId == 2).Where(r=>r.IsConfirmed == false).
                 Where(r=>r.UserRequestedFromId == null).ToList();
@@ -464,6 +464,7 @@ namespace FileTracking.Controllers
         }
 
         //the external registry interaction confirmation for file transfer
+        [Authorize(Roles = Role.Registry)]
         public void AcceptForeignRegistryTransfer(int id)
         {
             //request binded records that sees to registry to registry operations before initiating the local request it is bound by
@@ -508,33 +509,12 @@ namespace FileTracking.Controllers
             };
             _context.Requests.Add(internalRequest);
             _context.SaveChanges();
-        }
-
-        public void NeverReceived(int id)
-        {
-            var requestRecord = _context.Requests.Single(r => r.Id == id);
-            requestRecord.RequestStatusId = 4;//we will change to never received change, furthermore we create a duplicate record of this one
-            //with exception of the request status being changed to pending so another request be sent to external registry once more
-            requestRecord.IsRequestActive = false;
-            _context.SaveChanges();
-
-            var newRequestRecord = requestRecord;//creating a new request so the prior registry may receive the request again. Duplicate
-        
-            newRequestRecord.RequestStatusId = 4;
-            newRequestRecord.AcceptedById = null;
-            newRequestRecord.AcceptedDate = null;
-            newRequestRecord.IsRequestActive = true;
-            _context.Requests.Add(newRequestRecord);
-            _context.SaveChanges();
-
-            //UpdateVolumeStateStored(requestRecord.FileVolumesId);
-        }
+        }        
 
         public void CheckoutVolume(int volId, int requester)
         {          
-            const byte checkoutState = 5;
             var volume = _context.FileVolumes.Single(v => v.Id == volId);
-            volume.StatesId = checkoutState;
+            volume.StatesId = 5;//5 => Checked out state
             volume.AdUserId = requester; 
             _context.SaveChanges();
         }

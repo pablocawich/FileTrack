@@ -1,0 +1,31 @@
+﻿
+@{
+    ViewBag.Title = "SignInPrompt";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="row">
+    <div class="col-lg-12">
+        <h2 class="page-header"><strong>Sign in Prompt</strong></h2>
+    </div>
+    <!-- /.col-lg-12 -->
+</div>
+
+<div class="row">
+    <p><i>Sign in as another user by clicking on the following button:</i></p>
+    <div class="col-lg-6">
+        <a id="signInPromptBtn" href="#" class="btn btn-block btn-social btn-instagram"><i class="fa fa-instagram"></i> Sign In</a>
+    </div>
+</div>
+@section scripts
+{
+    <script>
+        $(document).ready(function() {
+            $("#signInPromptBtn").on('click', function() {
+                var url = siteURL+'/Requests/ConfirmCheckout/';
+                var myWindow = window.open(url, "popUpWindow", "left=100,top=100,resizable=yes,scrollbars=yes,toolbar=yes,menubar=no,location=no,directories=no, status=yes");
+                location.href = siteURL +"/Files/New";
+            });
+        });
+    </script>
+}

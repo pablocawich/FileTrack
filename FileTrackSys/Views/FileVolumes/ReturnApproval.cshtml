@@ -12,14 +12,13 @@
 </div>
 
 <div class="row">
-    <table id="returnedTable" class="table  table-bordered table-hover">
+    <table id="returnedTable" class="table table-bordered table-hover">
         <thead>
         <tr>
             <th>File Number</th>
-            <th>Volume</th>
+            <th>Volume No.</th>
             <th>Requester</th>
-            <th>Request Type</th>
-            <th>Requester Branch</th>
+            <th>Requester's Branch</th>
             <th>Requested Date</th>
             <th>Action</th>
         </tr>
@@ -53,22 +52,26 @@
                         render: function(data, type, req) {
                             return `<a href="#" data-acct-ret-id="${req.FileVolumes.FileId
                                 }" class="btn btn-default btn-sm acceptRetModal">
-                                <i class="fa fa-wpforms"> ${data}</i></a>`;
-                        }
-                    },
-                    { "data": "FileVolumes.Volume" },
-                    { "data": "User.Name" },
-                    {
-                        "data": "RequestTypeId",
-                        "render": function(data) {
-                            if (data == "INREQ")
-                                return "Internal/Local Request";
-                            return "External Request";
-
+                                <i class="fa fa-address-book"></i> <strong>${data}</strong></a>`;
                         }
                     },
                     {
-                        "data": "User.Branches.Branch"
+                        "data": "FileVolumes.Volume",
+                        render: function (data) {
+                            return `<strong>${data}</strong>`;
+                        }
+                    },
+                    {
+                        "data": "User.Name",
+                        render: function (data) {
+                            return `<strong><i class="fa fa-user-circle"></i> ${data}</strong>`;
+                        }
+                    },
+                    {
+                        "data": "User.Branches.Branch",
+                        render: function (data) {
+                            return `<strong><i class="fa fa-map-marker"></i> ${data}</strong>`;
+                        }
                     },
                     {
                         data: "RequestDate",
@@ -80,9 +83,8 @@
                         data: "Id",
                         "render": function(data, type, req) {
                             var buttonAccept =
-                                `<button class='btn btn-success js-return' data-user='${req.User.Name
-                                    }' data-return-id='${
-                                    data}'>Check In</button>`;
+                                `<a class='btn js-return' data-user='${req.User.Name}' data-return-id='${
+                                data}'><i class="fa fa-check-circle"></i> Check In</a>`;
 
                             return buttonAccept;
                         }
@@ -97,12 +99,14 @@
                     var button = $(this);
                     var id = button.attr("data-return-id");
                     var user = button.attr("data-user");
-                    bootbox.confirm(`You are about to confirm a file return from user: <strong>${user}</strong>`,
-                        function(result) {
+                    bootbox.confirm({
+                        title: "<strong style='color: green'>CHECK IN</strong>",
+                        message: `You are about to confirm a file return from <strong><i class='fa fa-user-circle-o'></i> ${user}</strong>`,
+                        callback: function (result) {
                             if (result) {
                                 $.ajax({
                                     url: siteURL + '/FileVolumes/AcceptReturn/' + id,
-                                    success: function() {
+                                    success: function () {
 
                                         toastr.success("Accepted return for client",
                                             "Return",
@@ -113,13 +117,13 @@
                                         table.row(button.parents('tr')).remove().draw();
                                     },
                                     statusCode: {
-                                        404: function(content) { alert('cannot find resource'); },
-                                        500: function(content) { alert('internal server error'); }
+                                        404: function (content) { alert('cannot find resource'); },
+                                        500: function (content) { alert('internal server error'); }
                                     }
                                 });
                             }
-
-                        });
+                        }
+                    });
                 });
 
             function getDateString(date) {
