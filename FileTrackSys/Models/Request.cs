@@ -26,9 +26,9 @@ namespace FileTracking.Models
         [Required]
         public byte RequesterBranchId { get; set; }
 
-        public Branches CurrentFileBranch { get; set; }//change
+        public Branches RecipientBranch { get; set; }//change
         [Required]
-        public byte CurrentFileBranchId { get; set; }
+        public byte RecipientBranchId { get; set; }
 
         public RequestStatus RequestStatus { get; set; }
         [Required]

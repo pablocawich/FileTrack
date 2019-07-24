@@ -228,7 +228,7 @@ namespace FileTracking.Controllers
                Volume = 1,
                Comment = volumeOneDescription,
                BranchesId = thisUserBranchId,
-               CurrentLocation = thisUserBranchId,
+               CurrentLocationId = thisUserBranchId,
                StatesId = 1,
                AdUserId = null
            };
@@ -236,20 +236,12 @@ namespace FileTracking.Controllers
            _context.SaveChanges();
         }
 
-        //we need this function
-        public string ParseUsername(string adName)
-        {
-            string newName = "";
-            if (adName.Contains("DEVFINCO"))
-                newName = adName.Remove(0, 9);
-            return newName;
-        }
-
         //
         public byte GetAdUserBranch()
         {
-            string user = ParseUsername(User.Identity.Name);
-            var userRecord = _context.AdUsers.Single(a => a.Username == user);
+            var user = new AdUser(User.Identity.Name);
+
+            var userRecord = _context.AdUsers.Single(a => a.Username == user.Username);
             return userRecord.BranchesId;
         }
 
@@ -295,7 +287,7 @@ namespace FileTracking.Controllers
                 fileVolumes.FileId = file.Id;
                 fileVolumes.Volume = fileInDb.Volume;
                 fileVolumes.BranchesId = thisUserBranchId;//based on where the user is situated we add the location of origin
-                fileVolumes.CurrentLocation = thisUserBranchId;//Similarly, given the file is being created, the current location will have to match the above
+                fileVolumes.CurrentLocationId = thisUserBranchId;//Similarly, given the file is being created, the current location will have to match the above
                 fileVolumes.StatesId = 1; //default for every new file vol's state is 1 which indicates a stored state
                 fileVolumes.FileNumber = file.FileNumber;//not necessary but relevant, i think. 
 
@@ -309,6 +301,7 @@ namespace FileTracking.Controllers
         }
 
         //view volumes as it pertains to the chosen file
+        [Authorize(Roles = Role.Registry)]
         public ActionResult FileVolumes(int id)
         {
             var uname  = new AdUser(User.Identity.Name);
@@ -317,7 +310,8 @@ namespace FileTracking.Controllers
             if (user.IsDisabled == false)
             {
                 var volFileId = _context.FileVolumes.Include(fv => fv.File).Include(fv => fv.States).
-                    Include(fv => fv.Branches).Include(fv => fv.AdUser).Where(fv => fv.FileId == id).ToList();
+                    Include(fv => fv.Branches).Include(fv=>fv.CurrentLocation).Include(fv => fv.AdUser)
+                    .Where(fv => fv.FileId == id).ToList();
 
                 var file = _context.Files.Include(f => f.FileVolumes).SingleOrDefault(f => f.Id == id);
 

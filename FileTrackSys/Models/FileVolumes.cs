@@ -33,8 +33,11 @@ namespace FileTracking.Models
         [Display(Name = "Location Origin")]
         public byte BranchesId { get; set; }
 
+        public Branches CurrentLocation { get; set; }
         [Required]
-        public byte CurrentLocation { get; set; }
+        [Display(Name = "Current Branch")]
+        public byte CurrentLocationId { get; set; }
+
         //public string LocationOfOrigin { get; set; }
         public AdUser AdUser { get; set; }
         [Display(Name = "Volume Holder")]

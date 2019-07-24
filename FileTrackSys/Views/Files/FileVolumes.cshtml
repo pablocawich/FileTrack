@@ -58,7 +58,7 @@
                     }
                     <td class="tdState">@fileVol.States.State</td>
                     <td>@fileVol.Branches.Branch</td>
-                    <td class="currentLoc" currLoc-data="@fileVol.CurrentLocation"></td>
+                    <td >@fileVol.CurrentLocation.Branch</td>
                     @if (@fileVol.AdUserId == null)
                     {
                         <td>At registry</td>
@@ -121,33 +121,7 @@
                        });
                  
                });
-
-            //inserting a string value for current location
-
-            $(".currentLoc").each(function() {
-                var locNum = $(this).attr("currLoc-data");
-                var num = parseInt(locNum);
-                switch (num) {
-                case 1:
-                    $(this).text("Corozal");
-                    break;
-                case 2:
-                    $(this).text("Orange Walk");
-                    break;
-                case 3:
-                    $(this).text("Belize City");
-                    break;
-                case 4:
-                    $(this).text("San Pedro");
-                    break;
-                case 5:
-                    $(this).text("Belmopan");
-                    break;
-                case 6:
-                    $(this).text("Dangriga");
-                    break;
-                }
-            });
+            
         });
     </script>
 }

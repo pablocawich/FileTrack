@@ -52,7 +52,7 @@ namespace FileTracking.Controllers
         //will check if user's branch matches the files current location
         public bool CheckBranchValidity(AdUser u, FileVolumes v)
         {
-            if (u.BranchesId == v.CurrentLocation)
+            if (u.BranchesId == v.CurrentLocationId && v.CurrentLocationId == v.BranchesId)
                 return true;
             return false;
         }
@@ -116,7 +116,7 @@ namespace FileTracking.Controllers
                 //FileId = f.Id,
                 UserId = u.Id,
                 FileVolumesId = v.Id,
-                CurrentFileBranchId = v.CurrentLocation,//the requesteeBranch is the brnacch where the request will be sent to, based in the volume's current location
+                RecipientBranchId = v.CurrentLocationId,//the recipient Branch is the branch where the request will be sent to, based in the volume's current location
                 RequesterBranchId = u.BranchesId,//we get the branch based on the signed on user, since user must match volume branch atm
                 RequestStatusId = 1, //1 signifies pending
                 ReturnStateId = 1,//1 signifies idle state, meaning the return process is not in order
@@ -142,8 +142,8 @@ namespace FileTracking.Controllers
             {
                 UserId = u.Id,//0 doesn't work so we try must use another determining value
                 FileVolumesId = v.Id,
-                CurrentFileBranchId = v.CurrentLocation,//In this case requestee branch is assigned to the external location that corresponds to the vol loc
-                RequesterBranchId = u.BranchesId,//requesting user's location which will ofc differ from requestee branch
+                RecipientBranchId = v.BranchesId,//we have a bad naming convention here, current file branch should actually be the origins
+                RequesterBranchId = u.BranchesId,//requesting user's location which will ofc differ from file branch
                 RequestStatusId = 1, //1 signifies pending
                 ReturnStateId = 1,//1 signifies idle state, meaning the return process is not in order
                 IsRequestActive = true,//meaning this request has been initiated, switched to false when file is returned and back to stored state
@@ -201,7 +201,7 @@ namespace FileTracking.Controllers
             //PENDING = 1 (RequestStatusID)
             //where a User RequesteeFrom field is NULL, Registry users in general are represented
             var pendingRequests = _context.Requests.Include(r => r.FileVolumes).
-                Include(r => r.User.Branches).Where(r=>r.CurrentFileBranchId == user.BranchesId).Where(r => r.RequestStatusId == 1).
+                Include(r => r.User.Branches).Where(r=>r.RecipientBranchId == user.BranchesId).Where(r => r.RequestStatusId == 1).
                 Where(r=>r.IsRequestActive == true).Where(r=>r.RequestTypeId == RequestType.InternalRequest)
                 .Where(r => r.UserRequestedFromId == null).ToList();
 
@@ -229,10 +229,9 @@ namespace FileTracking.Controllers
       
             byte Pending = 1;
             var pendingRequests = _context.Requests.Include(r => r.FileVolumes).Include(r => r.User.Branches).
-                Where(r=>r.CurrentFileBranchId == user.BranchesId).Where(r => r.IsRequestActive == true).
-                Where(r => r.RequestStatusId == Pending || r.RequestStatusId == 4)//4 => Never Received
-                .Where(r => r.RequestTypeId == RequestType.ExternalRequest).ToList();
-
+                Where(r=>r.RecipientBranchId == user.BranchesId).Where(r => r.IsRequestActive == true).
+                Where(r => r.RequestStatusId == Pending).Where(r => r.RequestTypeId == RequestType.ExternalRequest).ToList();
+            //4 => never received, was deprecated
             
             return Json(new { data = pendingRequests }, JsonRequestBehavior.AllowGet);
         }
@@ -269,7 +268,7 @@ namespace FileTracking.Controllers
                     rejectedRequestOperation.SaveToRejectedRequestTable(req);//deleting from this table
 
                     _context.Requests.Remove(req);
-                    //......
+                    //.....
                 }
 
                 _context.SaveChanges();
@@ -406,7 +405,7 @@ namespace FileTracking.Controllers
             var user = _context.AdUsers.Single(u => u.Username == userObj.Username);
 
             var request = _context.Requests.Include(r => r.FileVolumes).Include(r => r.User.Branches).Include(r=>r.AcceptedBy)
-                .Include(r=>r.CurrentFileBranch).Where(r=>r.RequesterBranchId == user.BranchesId).Where(r=>r.RequestTypeId == RequestType.ExternalRequest).
+                .Include(r=>r.RecipientBranch).Where(r=>r.RequesterBranchId == user.BranchesId).Where(r=>r.RequestTypeId == RequestType.ExternalRequest).
                 Where(r => r.RequestStatusId == 2).Where(r => r.IsConfirmed == false).ToList();
 
             return Json(new { data = request }, JsonRequestBehavior.AllowGet);
@@ -481,7 +480,7 @@ namespace FileTracking.Controllers
 
            PopulateNewInternalRequest(requestInDb.UserId, requestInDb.RequesterBranchId, requestInDb.RequestDate,volume, requestInDb.RequestBinder);//both registry passed, now we create an internal request
 
-           volume.CurrentLocation = requestInDb.RequesterBranchId; //we must change the volume's current location to the current user's branch
+           volume.CurrentLocationId = requestInDb.RequesterBranchId; //we must change the volume's current location to the current user's branch
            _context.SaveChanges();
            CreateNotification(requestInDb, Message.InAccept);//revise
         }
@@ -496,8 +495,8 @@ namespace FileTracking.Controllers
             {
                 UserId = userId,//the user's, making the request, id
                 FileVolumesId = v.Id,
-                CurrentFileBranchId = userBranchId,//In this case requestee branch is assigned to user making the request's branch, as he must request from his respective branch eventually
-                RequesterBranchId = userBranchId,//requesting user's location which will ofc differ from requestee branch
+                RecipientBranchId = v.CurrentLocationId,//
+                RequesterBranchId = userBranchId,//requesting user's location
                 RequestStatusId = 2, //2 signifies accepted
                 ReturnStateId = 1,//1 signifies idle state, meaning the return process is not in order
                 IsRequestActive = true,//Since this vol is depending on the above request to be confrimed, it's default val is false, until the above get confirmed
@@ -559,7 +558,7 @@ namespace FileTracking.Controllers
             {
                 UserId = thisUser.Id,//this is the new user making the request
                 FileVolumesId = volId,
-                CurrentFileBranchId = currentLocation,//the requesteeBranch is the brnacch where the request will be sent to, based in the volume's current location
+                RecipientBranchId = currentLocation,//the requesteeBranch is the brnacch where the request will be sent to, based in the volume's current location
                 RequesterBranchId = thisUser.BranchesId,//we get the branch based on the signed on user, since user must match volume branch atm
                 RequestStatusId = 1, //1 signifies pending
                 ReturnStateId = 1,//1 signifies idle state, meaning the return process is not in order

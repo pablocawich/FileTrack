@@ -57,7 +57,7 @@ namespace FileTracking.Controllers
             var userInDb = _context.AdUsers.Single(u => u.Username == AdUsername.Username);
 
             var notifications = _context.Notifications.Include(n => n.RecipientUser).Include(n => n.Message).Include(n => n.Request)
-                .Where(n=>n.Request.CurrentFileBranchId == userInDb.BranchesId).
+                .Where(n=>n.Request.RecipientBranchId == userInDb.BranchesId).
                 Where(n=>n.MessageId == Message.Return || n.MessageId == Message.ExReturn)
                 .Where(n => n.Read == false).ToList();
 

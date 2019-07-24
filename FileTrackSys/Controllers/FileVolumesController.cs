@@ -67,7 +67,7 @@ namespace FileTracking.Controllers
             }
 
             var volFileId = _context.FileVolumes.Include(fv=>fv.States).
-                Include(fv=>fv.Branches).Include(fv=>fv.AdUser).Where(fv => fv.FileId == id).ToList();
+                Include(fv=>fv.Branches).Include(fv=>fv.CurrentLocation).Include(fv=>fv.AdUser).Where(fv => fv.FileId == id).ToList();
 
             var file = _context.Files.Include(f => f.FileVolumes).SingleOrDefault(f => f.Id == id );
             
@@ -216,7 +216,7 @@ namespace FileTracking.Controllers
             var username = new AdUser(User.Identity.Name);
             var adUser = _context.AdUsers.Single(a => a.Username == username.Username);
             var returnedReq = _context.Requests.Include(r => r.FileVolumes).
-                Include(r => r.User.Branches).Where(r=>r.CurrentFileBranchId == adUser.BranchesId).Where(r=>r.RequestTypeId == RequestType.InternalRequest)
+                Include(r => r.User.Branches).Where(r=>r.RecipientBranchId == adUser.BranchesId).Where(r=>r.RequestTypeId == RequestType.InternalRequest)
                 .Where(r=>r.IsRequestActive == true).Where(r=>r.ReturnStateId == 2).ToList();
 
 
@@ -241,7 +241,7 @@ namespace FileTracking.Controllers
             {
                 //if it has external binder we switch the req type to external   
                 _context.SaveChanges();
-                InitiateExternalReturn(req.RequestBinder);//we set the external (based on the bind value) request to active
+                InitiateExternalReturn(req.RequestBinder, req.FileVolumesId);//we set the external (based on the bind value) request to active
                 UpdateVolumeForExternalTransfer(req.FileVolumesId);
             }
             else
@@ -290,8 +290,8 @@ namespace FileTracking.Controllers
             vol.StatesId = 1;
             vol.AdUserId = null;
 
-            if(vol.CurrentLocation != vol.BranchesId)//we both locations are different, it means it was an external request and we should reset since the return process is complete
-                vol.CurrentLocation = vol.BranchesId;
+            if(vol.CurrentLocationId != vol.BranchesId)//we both locations are different, it means it was an external request and we should reset since the return process is complete
+                vol.CurrentLocationId = vol.BranchesId;
             _context.SaveChanges();
         }
 
@@ -319,10 +319,10 @@ namespace FileTracking.Controllers
         }
 
         //after the binded internal request is returned to local registry, we must initiate registry to registry request to return the file to its initial location
-        public void InitiateExternalReturn(int binderId)
+        public void InitiateExternalReturn(int binderId, int volumeId)
         {
             var extReturnReq = _context.Requests.Single(r=>r.RequestBinder == binderId && r.RequestTypeId == RequestType.ExternalRequest &&
-                               r.RequestStatusId == 2 && r.IsConfirmed == true);
+                               r.RequestStatusId == 2 && r.FileVolumesId == volumeId && r.IsConfirmed == true);
             //if(extReturnReq == null)
                 
             extReturnReq.IsRequestActive = true;
@@ -344,7 +344,7 @@ namespace FileTracking.Controllers
 
             var user = _context.AdUsers.Single(u => u.Username == userObj.Username);
 
-            var request = _context.Requests.Include(r => r.FileVolumes).Include(r => r.User.Branches).Include(r=>r.CurrentFileBranch)
+            var request = _context.Requests.Include(r => r.FileVolumes).Include(r => r.User.Branches).Include(r=>r.RecipientBranch)
                 .Where(r => r.RequesterBranchId == user.BranchesId).Where(r => r.RequestTypeId == RequestType.ExternalRequest).
                 Where(r => r.IsConfirmed == true).Where(r=>r.ReturnStateId == 1).Where(r=>r.IsRequestActive == true).ToList();
 
@@ -379,8 +379,8 @@ namespace FileTracking.Controllers
 
             var user = _context.AdUsers.Single(u => u.Username == userObj.Username);
 
-            var request = _context.Requests.Include(r => r.FileVolumes).Include(r => r.User.Branches).Include(r=>r.CurrentFileBranch).
-                Where(r => r.CurrentFileBranchId == user.BranchesId).Where(r => r.RequestTypeId == RequestType.ExternalRequest).
+            var request = _context.Requests.Include(r => r.FileVolumes).Include(r => r.User.Branches).Include(r=>r.RecipientBranch).
+                Where(r => r.RecipientBranchId == user.BranchesId).Where(r => r.RequestTypeId == RequestType.ExternalRequest).
                 Where(r => r.IsConfirmed == true).Where(r => r.ReturnStateId == 2).Where(r => r.IsRequestActive == true).ToList();
 
             return Json(new { data = request }, JsonRequestBehavior.AllowGet);
@@ -414,8 +414,8 @@ namespace FileTracking.Controllers
                 volumeInDb.Volume = fileVolumes.Volume;
                 volumeInDb.StatesId = fileVolumes.StatesId;
                 volumeInDb.FileNumber = fileVolumes.FileNumber;
-                volumeInDb.BranchesId = fileVolumes.BranchesId;
-                volumeInDb.CurrentLocation = fileVolumes.CurrentLocation;
+                volumeInDb.BranchesId = fileVolumes.BranchesId;//volumes origin
+                volumeInDb.CurrentLocationId = fileVolumes.CurrentLocationId;//self explanatory 
                 volumeInDb.AdUserId = fileVolumes.AdUserId;
 
                 _context.SaveChanges();

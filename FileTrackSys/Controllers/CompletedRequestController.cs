@@ -35,7 +35,7 @@ namespace FileTracking.Controllers
                 FileVolumeId = request.FileVolumesId,
                 RequesterUserId = request.UserId,
                 RequesterBranchId = request.RequesterBranchId,
-                FileBranchId = request.CurrentFileBranchId,
+                FileBranchId = request.RecipientBranchId,
                 RequestDate = request.RequestDate,
                 RegistryUserAcceptId = request.AcceptedById,
                 RegAcceptedDate = request.AcceptedDate,
