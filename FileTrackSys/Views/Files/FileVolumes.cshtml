@@ -58,7 +58,7 @@
                     }
                     <td class="tdState">@fileVol.States.State</td>
                     <td>@fileVol.Branches.Branch</td>
-                    <td >@fileVol.CurrentLocation.Branch</td>
+                    <td>@fileVol.CurrentLocation.Branch</td>
                     @if (@fileVol.AdUserId == null)
                     {
                         <td>At registry</td>
@@ -71,8 +71,8 @@
                         <button vol-data-id="@fileVol.Id" file-name="@Model.File.FirstName" vol-num-attr="@fileVol.Volume" class="btn btn-circle js-edit-vol">
                             <i class="glyphicon glyphicon-pencil"></i>
                         </button> |
-                        <button class="btn btn-circle history-js" vol-id-attr="@fileVol.Id" ><i class="fa fa-history"></i></button>
-
+                        <button class="btn btn-circle history-js" vol-id-attr="@fileVol.Id"><i class="fa fa-history"></i></button> |
+                        <button class="btn btn-circle changeBranch-js" vol-changeBranchId="@fileVol.Id" vol-num-editBranch="@fileVol.Volume"><i class="fa fa-location-arrow"></i></button>
                     </td>
                 </tr>
             }
@@ -84,44 +84,89 @@
             </div>
         </div>
     </div>
+    <!--Change file volume modal trigger-->
+    <div class="modal fade" id="changeBranchModal" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" data-backdrop="static" data-keyboard="true">
+        <div class="modal-dialog">
+            <div class="modal-content" id="changeBranchModelContent">
+            </div>
+        </div>
+    </div>
 </div>
 @section scripts
 {
     <script>
         $(document).ready(function() {
-           // var userLocId = $("#registryVolumeTable").attr("user-loc");
+            // var userLocId = $("#registryVolumeTable").attr("user-loc");
             // alert(userLocation);
             $("#registryVolumeTable").on("click",
                 ".js-edit-vol",
-                function () {
+                function() {
                     var volNum = $(this).attr("vol-num-attr");
                     var volId = $(this).attr("vol-data-id");
-                    bootbox.confirm("Are you sure you want to edit this volume's <strong>"+volNum+"</strong> ?",
+                    bootbox.confirm("Are you sure you want to edit this volume's <strong>" + volNum + "</strong> ?",
                         function(result) {
                             if (result) {
-                                var url = siteURL+"/FileVolumes/UpdateVolumeDescription/" + volId;
+                                var url = siteURL + "/FileVolumes/UpdateVolumeDescription/" + volId;
                                 // alert(url);
                                 $('#volEditModelContent').load(url);
                                 $('#volumeEditModal').modal('show');
                             }
                         });
-                 
+
                 });
             //button that will display recent activities for volume
-           $("#registryVolumeTable").on("click",
-               ".history-js",
-               function () {
-                   var volId = $(this).attr("vol-id-attr");
-                   bootbox.confirm("View recent activity for volume?",
-                       function(result) {
-                           if (result) {
-                               var url = siteURL+"/FileVolumes/VolumeHistory/" + volId+"/"+1+"/"+5;
-                               window.location.href = url;
-                           }
-                       });
-                 
-               });
-            
+            $("#registryVolumeTable").on("click",
+                ".history-js",
+                function() {
+                    var volId = $(this).attr("vol-id-attr");
+                    bootbox.confirm("View recent activity for volume?",
+                        function(result) {
+                            if (result) {
+                                /* var url = siteURL + "/FileVolumes/VolumeHistory/" + volId + "/" + 1 + "/" + 5;
+                                 window.location.href = url;*/
+
+                            }
+                            alert("Currently remodeling. check back later");
+                        });
+
+                });
+            //change branch clicked
+            $("#registryVolumeTable").on("click",
+                ".changeBranch-js",
+                function() {
+                    var btn = $(this);
+                    var volId = btn.attr("vol-changeBranchId");
+                    var volNum = btn.attr("vol-num-editBranch");
+
+                    bootbox.confirm({
+                        title: `<strong>CHANGE BRANCH</strong>`,
+                        message:`You are about change the branch origins for <strong>volume ${volNum}</strong> of this file. Continue?`,
+                        callback: function(result) {
+                            if (result) {
+                                $.ajax({
+                                    url: siteURL + '/Files/CheckForVolumeRequestActivity/' + volId,
+                                    success: function(response) {
+                                        if (response.success) {
+                                            var url = siteURL + "/Files/ChangeVolumeBranch/" + volId;
+                                            //alert(url);
+                                            $('#changeBranchModelContent').load(url);
+                                            $('#changeBranchModal').modal('show');
+                                        } else {
+                                            toastr.error(response.message,
+                                                "Can't proceed",
+                                                { positionClass: "toast-bottom-right" });
+                                        }
+
+                                    },
+                                    statusCode: {
+                                        404: function(content) { alert('cannot find resource'); },
+                                        500: function(content) { alert('internal server error'); }
+                                    }
+                                });
+                            }
+                        }
+                    });
+                });
         });
     </script>
 }

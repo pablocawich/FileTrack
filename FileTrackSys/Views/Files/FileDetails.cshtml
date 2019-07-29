@@ -9,11 +9,7 @@
     <div class="col-md-6">
         <div class="form-group">
             <label>Full Name:</label>
-            <input class="form-control" type="text" placeholder="@Model.FirstName @Model.MiddleName @Model.LastName" readonly>
-        </div>
-        <div class="form-group">
-            <label>File Number:</label>
-            <input class="form-control" type="text" placeholder="@Model.FileNumber" readonly>
+            <input class="form-control" type="text" placeholder="@Model.FullName" readonly>
         </div>
         <div class="form-group">
             <label>Street:</label>
@@ -21,28 +17,28 @@
         </div>
 
         <div class="form-group">
-            <label >File Address:</label>
+            <label>File Address:</label>
             <input class="form-control" type="text" placeholder="@Model.Location.Name" readonly>
         </div>
         <div class="form-group">
             <label>Loan Number/s</label>
             <input class="form-control" type="text" placeholder=" @Model.LoanNumber" readonly>
         </div>
-    </div>
-    <div class="col-md-6">
         <div class="form-group">
             @if (Model.IdentificationOptionId == null)
             {
-                <label>Not provided</label>
-                <input class="form-control" type="text" placeholder="null" readonly>
+                <label>Other ID</label>
+                <input class="form-control" type="text" placeholder="Not Provided" readonly>
             }
             else
             {
                 <label>@Model.IdentificationOption.Identification:</label>
                 <input class="form-control" type="text" placeholder=" @Model.IdentificationNumber" readonly>
             }
-            
+
         </div>
+    </div>
+    <div class="col-md-6">
         <div class="form-group">
             <label>Comment:</label>
             <input class="form-control" type="text" placeholder="@Model.Comments" readonly>

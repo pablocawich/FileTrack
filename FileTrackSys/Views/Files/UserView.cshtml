@@ -21,7 +21,7 @@
         </thead>
         <tbody>
         <tr style="background-color: white">
-            <td><button id="userSearchClearBtn" class="btn btn-reddit" style="background-color: #FF7D7D">Clear</button></td>
+            <td><button id="userSearchClearBtn" class="btn btn-danger"><i class="fa fa-search-minus"></i></button></td>
         </tr>
         </tbody>
     </table>
@@ -33,9 +33,9 @@
                 <th class="searchable2">Name</th>
                 <th class="searchable2">Address</th>
                 <th class="">District</th>
-                <th class="searchable2">Loan Number</th>
-                <th>Volumes</th>
-                <th>Date Added</th>
+                <th class="searchable2">Loan No.</th>
+                <th class="searchable2">Prev. File No.</th>              
+                <th>Volume's Total</th>
                 <th>Actions</th>
 
             </tr>
@@ -68,27 +68,14 @@
                         }
                     },
                     {
-                        "data": "FirstName", "name": "FirstName",
-                        render: function (data, type, file) {
-                            var mName = file.MiddleName;
-                            if (file.MiddleName == null)
-                                mName = "";
-
-                            return file.FirstName + " " + mName + " " + file.LastName;
-                        }
+                        "data": "FullName",
                     },
                    
                     { "data": "Location.Name", "name": "Location.Name" },
                     { "data": "Districts.District", "name": "Districts.District" },
                     { "data": "LoanNumber", "name": "LoanNumber" },
+                    { data: "PreviousFileNumber" },
                     { "data": "Volume", "name": "Volume" },
-                    {
-                        "data": "DateCreated",
-                        "name": "DateCreated",
-                        "render": function (value) {
-                            return getDateString(value);
-                        }
-                    },
                     {
                         data: "Id",
 
@@ -180,6 +167,8 @@
                       userFileTable.column(1).search('').draw();
                       userFileTable.column(2).search('').draw();
                       userFileTable.column(3).search('').draw();
+                      userFileTable.column(4).search('').draw();
+
                       $(".inputSearch2").val('');
 
                       $("#distList2").val(null);

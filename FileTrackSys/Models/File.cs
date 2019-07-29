@@ -35,6 +35,10 @@ namespace FileTracking.Models
         [Display(Name = "Middle Name")]
         public string MiddleName { get; set; }
 
+        [MaxLength(100)]
+        [Display(Name = "Full Name")]
+        public string FullName { get; set; }
+
         [Required]
         [MaxLength(64)]
         public string Street { get; set; }
@@ -90,6 +94,11 @@ namespace FileTracking.Models
         [StringLength(164)]
         public string LoanNumber { get; set; }
 
+        //recently added to cater for the data migration and act as a field for storing the previous file number
+        [StringLength(94)]
+        [Display(Name = "Previous File Number")]
+        public string PreviousFileNumber { get; set; }
+
         //Establish association with volumes, possibly ----------------------------------
         //public static readonly byte DefaultVolume = 1;
         public ICollection<FileVolumes> FileVolumes { get; set; }
@@ -98,5 +107,7 @@ namespace FileTracking.Models
         [StringLength(200)]
         [Display(Name = "Volume 1 Description")]
         public string VolumeOneDescription { get; set; }
+
+        
     }
 }

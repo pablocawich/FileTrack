@@ -1,0 +1,40 @@
+﻿@model  FileTracking.ViewModels.VolumeBranchesViewModel
+<div class="modal-header" style="background-color: #88b746">
+    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+        <span aria-hidden="true"><i class="fa fa-times-circle"></i></span>
+    </button>
+    <h4 class="modal-title" style="color: #fff"><strong>New Branch</strong></h4>
+</div>
+@using (Html.BeginForm("SaveNewVolumeBranch", "Files", FormMethod.Post))
+{
+<div class="modal-body container-fluid">
+    <h6>Changing the branch origin will also trigger a change in the current branch field.</h6>
+    @Html.ValidationSummary(false)
+    <div class="form-group">
+        @Html.LabelFor(f => f.Volume.BranchesId, new { @class = "control-label" })
+        <div class="input-group">
+            <span class="input-group-addon" style="max-width: 100%;"><i class="fa fa-map-marker"></i></span>
+            @Html.DropDownListFor(f => f.Volume.BranchesId, new SelectList(Model.Branches, "Id", "Branch"), new { @class = "form-control" })
+        </div>
+        @Html.ValidationMessageFor(f => f.Volume.BranchesId)
+
+    </div>
+    @Html.HiddenFor(f => f.Volume.Volume)
+    @Html.HiddenFor(f => f.Volume.FileId)
+    @Html.HiddenFor(f => f.Volume.Id)
+    @Html.HiddenFor(f => f.Volume.AdUserId)
+    @Html.HiddenFor(f => f.Volume.CurrentLocationId)
+    @Html.HiddenFor(f => f.Volume.Comment)
+    @Html.HiddenFor(f => f.Volume.StatesId)
+    @Html.HiddenFor(f => f.Volume.FileNumber)
+
+    @Html.AntiForgeryToken()
+</div>
+    <div class="modal-footer">
+        <button class="btn btn-primary" type="submit">Save File</button>
+        <button type="button" class="btn btn-google-plus" data-dismiss="modal">
+            Close
+        </button>
+    </div>
+
+}

@@ -42,7 +42,7 @@ namespace FileTracking.Controllers
             _context.SaveChanges();
         }
 
-        [Route("FileVolumes/VolumeHistory/{volId}/{page}/{pageSize}")]
+        /*[Route("FileVolumes/VolumeHistory/{volId}/{page}/{pageSize}")]
         public ActionResult VolumeHistory(int volId, int page, int pageSize)
         {
             var requestsInDb = _context.Requests.Include(r=>r.User).Include(r=>r.FileVolumes).Include(r=>r.RequesterBranch)
@@ -52,7 +52,7 @@ namespace FileTracking.Controllers
             PagedList<Request> model = new PagedList<Request>(requestsInDb, page, pageSize);
 
             return View(model);
-        }
+        }*/
 
         // GET: FileVolumes for a specific file identified by the id parameter
         [Authorize(Roles = Role.RegularUser)]

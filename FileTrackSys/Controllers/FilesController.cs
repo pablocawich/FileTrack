@@ -8,6 +8,8 @@ using System.Web.Mvc;
 using FileTracking.Models;
 using FileTracking.ViewModels;
 using System.Linq.Dynamic;
+using System.Text.RegularExpressions;
+using System.Web.WebPages;
 
 namespace FileTracking.Controllers
 {
@@ -25,6 +27,15 @@ namespace FileTracking.Controllers
         protected override void Dispose(bool disposing)
         {
             _context.Dispose();
+        }
+
+        public string CreateFullName(string fName, string mName, string lName)
+        {
+            //in the event a middle is not provided. Avoids possible null exception
+            if (mName.IsEmpty())
+                return $"{fName} {lName}";
+
+            return $"{fName} {mName} {lName}";
         }
 
         //allow users to view file tables and its linked tables
@@ -123,8 +134,14 @@ namespace FileTracking.Controllers
                 file.DateCreated = DateTime.Now;
                 file.Volume = 1;
                 file.FileNumber = GetFileNumber();
-                if(file.LoanNumber == null)
-                    file.LoanNumber = "";
+                //we remove once string contains whitespace
+                file.FirstName = Regex.Replace(file.FirstName, @"\s", "");
+                file.MiddleName = Regex.Replace(file.MiddleName, @"\s", "");
+                file.LastName = Regex.Replace(file.LastName, @"\s", "");
+
+                /*if(file.LoanNumber == null)
+                    file.LoanNumber = "";*/
+                file.FullName = CreateFullName(file.FirstName, file.MiddleName, file.LastName);
 
                 _context.Files.Add(file);
                 _context.SaveChanges();
@@ -138,9 +155,13 @@ namespace FileTracking.Controllers
                 //else block is run whenever we are editing an existing file record
                 var fileInDb = _context.Files.Single(f => f.Id == file.Id);
                   
-                fileInDb.FirstName = file.FirstName;
-                fileInDb.MiddleName = file.MiddleName;
-                fileInDb.LastName = file.LastName;
+                fileInDb.FirstName = Regex.Replace(file.FirstName, @"\s", "");
+                if (file.MiddleName.IsEmpty())
+                    fileInDb.MiddleName = file.MiddleName;
+                else
+                    fileInDb.MiddleName = file.MiddleName.Replace(" ", String.Empty);
+
+                fileInDb.LastName = Regex.Replace(file.LastName, @"\s", "");
                 fileInDb.Street = file.Street;
                 fileInDb.DistrictsId = file.DistrictsId;
                 fileInDb.LocationId = file.LocationId;
@@ -150,6 +171,8 @@ namespace FileTracking.Controllers
                 fileInDb.IdentificationOptionId = file.IdentificationOptionId;
                 fileInDb.IdentificationNumber = file.IdentificationNumber;
                 fileInDb.LoanNumber = file.LoanNumber;
+                fileInDb.PreviousFileNumber = file.PreviousFileNumber;
+                fileInDb.FullName = CreateFullName(file.FirstName, file.MiddleName, file.LastName);
                 _context.SaveChanges();
             }           
 
@@ -235,8 +258,7 @@ namespace FileTracking.Controllers
            _context.FileVolumes.Add(fileVolumeRecord);
            _context.SaveChanges();
         }
-
-        //
+        
         public byte GetAdUserBranch()
         {
             var user = new AdUser(User.Identity.Name);
@@ -260,6 +282,7 @@ namespace FileTracking.Controllers
 
         //saves a volume with its associated file infomation 
         [HttpPost]
+        [ValidateAntiForgeryToken]
         public ActionResult SaveVolume(FileVolumes fileVolumes,  File file)
         {
             //we get an existing record form file table, which in we only need the id
@@ -330,7 +353,7 @@ namespace FileTracking.Controllers
             return View("Locked");
         }
 
-        //[HttpPost]. Sends our file objects as a set of JSON objects. Enables the possibility of server side processing on our datatable.
+        //[HttpPost]. Sends our file objects as a set of JSON objects. Enables the possibility of server side processing on our dataTable.
         public ActionResult GetFiles()
         {
             //Server side parameters
@@ -356,17 +379,19 @@ namespace FileTracking.Controllers
             }*/
             // we no longer need the above since we will implement our custom filter
             if (!string.IsNullOrEmpty(Request["columns[0][search][value]"]))
-                FileList = FileList.Where(x => x.FileNumber.ToString().Contains(Request["columns[0][search][value]"])).ToList<File>();
+                FileList = FileList.Where(x => (x.FileNumber != 0 && x.FileNumber.ToString().Contains(Request["columns[0][search][value]"]))).ToList<File>();
 
             if (!string.IsNullOrEmpty(Request["columns[1][search][value]"]))
-                FileList = FileList.Where(x => x.FirstName.ToLower().Contains(Request["columns[1][search][value]"].ToLower()) ||
-                                               x.LastName.ToLower().Contains(Request["columns[1][search][value]"].ToLower())).ToList<File>();
+                FileList = FileList.Where(x => (x.FullName != null && x.FullName.ToLower().Contains(Request["columns[1][search][value]"].ToLower()))).ToList<File>();
 
             if (!string.IsNullOrEmpty(Request["columns[2][search][value]"]))
                 FileList = FileList.Where(x => x.Districts.District.ToLower().Contains(Request["columns[2][search][value]"].ToLower())).ToList<File>();
 
             if (!string.IsNullOrEmpty(Request["columns[3][search][value]"]))
-                FileList = FileList.Where(x => x.LoanNumber.ToString().Contains(Request["columns[3][search][value]"])).ToList<File>();
+                FileList = FileList.Where(x => (x.LoanNumber != null && x.LoanNumber.ToString().Contains(Request["columns[3][search][value]"]))).ToList<File>();
+
+            if (!string.IsNullOrEmpty(Request["columns[4][search][value]"]))
+                FileList = FileList.Where(x => (x.PreviousFileNumber != null && x.PreviousFileNumber.ToString().ToLower().Contains(Request["columns[4][search][value]"]))).ToList<File>();
 
             int totalFileAfterFilter = FileList.Count;
             //sort Operation
@@ -379,7 +404,68 @@ namespace FileTracking.Controllers
                 data = FileList, draw = Request["draw"], recordsTotal = totalFiles, recordsFiltered = totalFileAfterFilter
 
             }, JsonRequestBehavior.AllowGet);
-        }               
-        
+        }
+
+        //change file volume branch origins
+        [Authorize(Roles = Role.Registry)]
+        public ActionResult ChangeVolumeBranch(int id)
+        {
+            var volumeInDb = _context.FileVolumes.Include(v=>v.Branches).Single(v => v.Id == id);
+            var branchesInDb = _context.Branches.ToList();
+
+            var viewModel = new VolumeBranchesViewModel()
+            {
+                Volume = volumeInDb,
+                Branches = branchesInDb
+            };
+
+            return PartialView("_ChangeVolumeBranch",viewModel);
+        }
+             
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        [Authorize(Roles = Role.Registry)]
+        public ActionResult SaveNewVolumeBranch(VolumeBranchesViewModel model)
+        {
+            
+            if (!ModelState.IsValid)
+            {
+                return PartialView("_ChangeVolumeBranch", model);
+            }
+
+            if (model.Volume.Id != 0)
+            {
+                var volumeInDb = _context.FileVolumes.Single(v => v.Id == model.Volume.Id);
+                //we ensure file volume is store to carry out procedure
+                if (volumeInDb.StatesId == 1)
+                {
+                    volumeInDb.BranchesId = model.Volume.BranchesId;
+                    volumeInDb.CurrentLocationId = model.Volume.BranchesId;
+
+                    _context.SaveChanges();
+                }
+                return RedirectToRoute(new
+                {
+                    controller = "Files",
+                    action = "FileVolumes",
+                    id = model.Volume.FileId
+                });
+            }
+
+            return HttpNotFound("Volume not found!. Try again or contact IT Department");
+        }
+
+        [Authorize(Roles = Role.Registry)]
+        public JsonResult CheckForVolumeRequestActivity(int id)
+        {
+            var requestsInDb = _context.Requests.Where(r => r.FileVolumesId == id).ToList();
+
+            if (requestsInDb.Any())
+            {
+                return this.Json(new { success = false, message = "There currently exists ongoing activities that feature this volume. Ensure clearances of these activities are made before proceeding." }, JsonRequestBehavior.AllowGet);
+            }
+
+            return this.Json(new { success = true }, JsonRequestBehavior.AllowGet);
+        }
     }
 }

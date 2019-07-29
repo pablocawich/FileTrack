@@ -29,15 +29,16 @@
 
         <table id="fileTable" class="table table-striped table-bordered table-hover" style="width: 100%">
             <thead>
-            <tr class="firstRow">
-                <th class="searchable" width="60"> File No.</th>
-                <th class="searchable" width="90">Name</th>
-                <th width="100">Address</th>
-                <th class="searchable" width="100">District</th>
-                <th class="searchable" width="100">Loan No.</th>
-                <th width="40">Vol</th>
-                <th width="105">Actions</th>
-            </tr>
+                <tr class="firstRow">
+                    <th class="searchable" width="60">File No.</th>
+                    <th class="searchable" width="90">Name</th>
+                    <th width="80">Address</th>
+                    <th class="searchable" width="50">District</th>
+                    <th class="searchable" width="100">Loan No.</th>
+                    <th class="searchable" width="80">Prev File No.</th>
+                    <th width="80">Total Volumes</th>
+                    <th width="105">Actions</th>
+                </tr>
             </thead>
             <tbody></tbody>
         </table>
@@ -74,20 +75,13 @@
 
                         }
                     },
-                    {
-                        "data": "FirstName",
-                        "name": "FirstName",
-                        render: function(data, type, file) {
-                            var mName = file.MiddleName;
-                            if (file.MiddleName == null)
-                                mName = "";
-
-                            return file.FirstName + " " + mName + " " + file.LastName;
-                        }
-                    },
+                    {"data": "FullName"},
                     { "data": "Location.Name", "name": "Location.Name" },
                     { "data": "Districts.District", "name": "Districts.District" },
                     { "data": "LoanNumber", "name": "LoanNumber" },
+                    {
+                        data: "PreviousFileNumber"
+                    },
                     { "data": "Volume", "name": "Volume" },
                     {
                         data: "Id",
@@ -178,10 +172,11 @@
                     fileTable.column(1).search('').draw();
                     fileTable.column(2).search('').draw();
                     fileTable.column(3).search('').draw();
+                    fileTable.column(4).search('').draw();
+
                     $(".inputSearch").val('');
 
                     $("#distList").val(null);
-
 
                 });
         });

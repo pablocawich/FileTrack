@@ -478,6 +478,14 @@
     <Compile Include="Migrations\201907241649431_ChangesToNamingConventionInRequestANDAddingNavigationToCurrentBranchInVolumes.Designer.cs">
       <DependentUpon>201907241649431_ChangesToNamingConventionInRequestANDAddingNavigationToCurrentBranchInVolumes.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201907261712009_AddPreviousFileNumberToFileTable.cs" />
+    <Compile Include="Migrations\201907261712009_AddPreviousFileNumberToFileTable.Designer.cs">
+      <DependentUpon>201907261712009_AddPreviousFileNumberToFileTable.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201907291713463_AddFullNameToFilesTable.cs" />
+    <Compile Include="Migrations\201907291713463_AddFullNameToFilesTable.Designer.cs">
+      <DependentUpon>201907291713463_AddFullNameToFilesTable.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Models\AccountViewModels.cs" />
     <Compile Include="Models\AddNumberIfIdentificationSelected.cs" />
@@ -515,6 +523,7 @@
     <Compile Include="ViewModels\RegistryNotificationViewModel.cs" />
     <Compile Include="ViewModels\UserAdModel.cs" />
     <Compile Include="ViewModels\UserBranchViewModel.cs" />
+    <Compile Include="ViewModels\VolumeBranchesViewModel.cs" />
     <Compile Include="ViewModels\VolumesViewModel.cs" />
   </ItemGroup>
   <ItemGroup>
@@ -1056,6 +1065,7 @@
     <Content Include="Views\Requests\RequestSuccessful.cshtml" />
     <Content Include="Views\Requests\UserConfirmTransfer.cshtml" />
     <Content Include="Views\AdUsers\SignInPrompt.cshtml" />
+    <Content Include="Views\Files\_ChangeVolumeBranch.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
@@ -1268,6 +1278,12 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201907241649431_ChangesToNamingConventionInRequestANDAddingNavigationToCurrentBranchInVolumes.resx">
       <DependentUpon>201907241649431_ChangesToNamingConventionInRequestANDAddingNavigationToCurrentBranchInVolumes.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201907261712009_AddPreviousFileNumberToFileTable.resx">
+      <DependentUpon>201907261712009_AddPreviousFileNumberToFileTable.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201907291713463_AddFullNameToFilesTable.resx">
+      <DependentUpon>201907291713463_AddFullNameToFilesTable.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>

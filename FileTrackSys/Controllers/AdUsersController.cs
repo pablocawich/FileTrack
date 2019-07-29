@@ -235,6 +235,7 @@ namespace FileTracking.Controllers
 
         [HttpPost]
         [Authorize(Roles = Role.AdminUser)]
+        [ValidateAntiForgeryToken]
         public ActionResult SaveNewBranch(AdUser user)
         {
             var userParsed = new AdUser(User.Identity.Name);
@@ -243,25 +244,16 @@ namespace FileTracking.Controllers
             {
                 return Content("Option selected not valid. Please return and try again.");
             }
-            //checks that user is not changing his/her own branch
-            if (userParsed.Username == user.Username)
-            {
-                return Content("Cannot Change your own branch");
-            }
+            
 
             if (user.Id != 0)
             {
                 var userInDb = _context.AdUsers.Single(u => u.Id == user.Id);
+                //checks that user is not changing his/her own branch
                 if (userInDb.Username != userParsed.Username)
                 {
+                    //we only change the user's branch
                     userInDb.BranchesId = user.BranchesId;
-                    userInDb.Id = user.Id;
-                    userInDb.Username = user.Username;
-                    userInDb.Email = user.Email;
-                    userInDb.Name = user.Name;
-                    userInDb.IsDisabled = user.IsDisabled;
-                    userInDb.Role = user.Role;
-
                     _context.SaveChanges();
                 }
                 else

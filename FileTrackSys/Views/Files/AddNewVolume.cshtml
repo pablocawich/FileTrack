@@ -8,42 +8,44 @@
 </div>
 @using (Html.BeginForm("SaveVolume", "Files", FormMethod.Post, new {@id = "VolFormId"}))
 {
- <div class="modal-body ">
-     <h5 style="color: #51a543">
-         You are about to create volume @{ int vol = Model.File.Volume + 1;}
-         <strong>@vol</strong> for this file. Location will be set based on your current branch
-     </h5>
+<div class="modal-body ">
+    <h5 style="color: #51a543">
+        You are about to create volume @{ int vol = Model.File.Volume + 1;}
+        <strong>@vol</strong> for this file. Location will be set based on your current branch
+    </h5>
 
-         @Html.ValidationSummary()
+    @Html.ValidationSummary()
 
-         <div class="form-group">
-             @Html.LabelFor(v => v.FileVolumes.Comment, new {@class = "control-label"})
-             <div class="input-group">
-                 <span class="input-group-addon">
-                     <i class="glyphicon glyphicon-user"></i>
-                 </span>@Html.TextAreaFor(f => f.FileVolumes.Comment, new {@class = "form-control", @placeholder = "Something about volume"})
+    <div class="form-group">
+        @Html.LabelFor(v => v.FileVolumes.Comment, new { @class = "control-label" })
+        <div class="input-group">
+            <span class="input-group-addon">
+                <i class="glyphicon glyphicon-user"></i>
+            </span>@Html.TextAreaFor(f => f.FileVolumes.Comment, new { @class = "form-control", @placeholder = "Something about volume" })
 
-             </div>
-             @Html.ValidationMessageFor(f => f.FileVolumes.Comment)
-         </div>
+        </div>
+        @Html.ValidationMessageFor(f => f.FileVolumes.Comment)
+    </div>
 
 
-         @Html.HiddenFor(v => v.FileVolumes.Id)
-         @Html.HiddenFor(v => v.FileVolumes.FileId)
-         @Html.HiddenFor(v => v.FileVolumes.Volume)
-         @Html.HiddenFor(v => v.FileVolumes.FileNumber)
-         @Html.HiddenFor(v => v.FileVolumes.StatesId)
-         @Html.HiddenFor(v => v.FileVolumes.BranchesId)
-         @Html.HiddenFor(v => v.FileVolumes.CurrentLocation)
+    @Html.HiddenFor(v => v.FileVolumes.Id)
+    @Html.HiddenFor(v => v.FileVolumes.FileId)
+    @Html.HiddenFor(v => v.FileVolumes.Volume)
+    @Html.HiddenFor(v => v.FileVolumes.FileNumber)
+    @Html.HiddenFor(v => v.FileVolumes.StatesId)
+    @Html.HiddenFor(v => v.FileVolumes.BranchesId)
+    @Html.HiddenFor(v => v.FileVolumes.CurrentLocation)
 
-         @Html.HiddenFor(v => v.File.Id)
-         @Html.HiddenFor(v => v.File.FileNumber)
-         @Html.HiddenFor(v => v.File.FirstName)
-         @Html.HiddenFor(v => v.File.LastName)
-         @Html.HiddenFor(v => v.File.MiddleName)
-         @Html.HiddenFor(v => v.File.Street)
-         @Html.HiddenFor(f => f.File.LocationId)
-        
+    @Html.HiddenFor(v => v.File.Id)
+    @Html.HiddenFor(v => v.File.FileNumber)
+    @Html.HiddenFor(v => v.File.FirstName)
+    @Html.HiddenFor(v => v.File.LastName)
+    @Html.HiddenFor(v => v.File.MiddleName)
+    @Html.HiddenFor(v => v.File.Street)
+    @Html.HiddenFor(f => f.File.LocationId)
+
+    @Html.AntiForgeryToken()
+
 </div>
 
 <div class="modal-footer">
