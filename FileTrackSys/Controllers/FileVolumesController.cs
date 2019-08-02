@@ -85,28 +85,27 @@ namespace FileTracking.Controllers
         [Authorize(Roles = Role.RegularUser)]
         public ActionResult UserVolumes()//this interface gets files currently check out to user
         {
+            return View();
+        }
+
+        [Authorize(Roles = Role.RegularUser)]
+        public ActionResult GetUserFileVolumes()
+        {
             var currentUser = new AdUser(User.Identity.Name);
             var userInDb = _context.AdUsers.Single(u => u.Username == currentUser.Username);
 
-            if (userInDb.IsDisabled == false)
+            if (!userInDb.IsDisabled)
             {
-                var UserInSession = new AdUser(User.Identity.Name);
-                var user = _context.AdUsers.Single(u => u.Username == UserInSession.Username);
-
-                var request = _context.Requests.Include(r => r.FileVolumes).Include(r => r.RequesterBranch).Include(r=>r.AcceptedBy).
-                    Where(r => r.UserId == user.Id).Where(r => r.IsRequestActive == true)
+                var request = _context.Requests.Include(r => r.FileVolumes).Include(r => r.RequesterBranch).Include(r => r.AcceptedBy).
+                    Where(r => r.UserId == userInDb.Id).Where(r => r.IsRequestActive == true)
                     .Where(r => r.IsConfirmed == true).
                     Where(r => r.ReturnStateId == 1).Where(r => r.RequestTypeId == RequestType.InternalRequest).ToList();
 
-                // var reqList = new List<Request>();
+                return Json(new { data = request }, JsonRequestBehavior.AllowGet);
 
-                //reqList = request;
-                //run query that shows volume currently assigned to the signed in user
-
-                return View("UserVolumes", request);
             }
 
-            return HttpNotFound("Your account is Disabled");
+            return HttpNotFound("User Does not have permission to continue");
         }
 
         public JsonResult ReturnVolume(int id)
@@ -318,7 +317,7 @@ namespace FileTracking.Controllers
             _context.SaveChanges();
         }
 
-        //after the binded internal request is returned to local registry, we must initiate registry to registry request to return the file to its initial location
+        //after the bounded internal request is returned to local registry, we must initiate registry to registry request to return the file to its initial location
         public void InitiateExternalReturn(int binderId, int volumeId)
         {
             var extReturnReq = _context.Requests.Single(r=>r.RequestBinder == binderId && r.RequestTypeId == RequestType.ExternalRequest &&
@@ -408,15 +407,9 @@ namespace FileTracking.Controllers
             if (fileVolumes.Id != 0)
             {
                 var volumeInDb = _context.FileVolumes.Single(v=>v.Id == fileVolumes.Id);
+
+                //we only want to update comments (description) field
                 volumeInDb.Comment = fileVolumes.Comment;
-                volumeInDb.Id = fileVolumes.Id;
-                volumeInDb.FileId = fileVolumes.FileId;
-                volumeInDb.Volume = fileVolumes.Volume;
-                volumeInDb.StatesId = fileVolumes.StatesId;
-                volumeInDb.FileNumber = fileVolumes.FileNumber;
-                volumeInDb.BranchesId = fileVolumes.BranchesId;//volumes origin
-                volumeInDb.CurrentLocationId = fileVolumes.CurrentLocationId;//self explanatory 
-                volumeInDb.AdUserId = fileVolumes.AdUserId;
 
                 _context.SaveChanges();
 
@@ -429,6 +422,48 @@ namespace FileTracking.Controllers
                 id = fileVolumes.FileId
             });
 
+        }
+
+        //---------------------------Reclaim function -------------------------------------
+        [Authorize(Roles = Role.Registry)]
+        [Route("FileVolumes/ReclaimFileVolume/{volId}")]
+        public JsonResult ReclaimFileVolume(int volId)
+        {
+            var userInAd = new AdUser(User.Identity.Name);
+            var userInDb = _context.AdUsers.Single(u => u.Username == userInAd.Username);
+
+            var volInDb = _context.FileVolumes.Single(v => v.Id == volId);
+
+            //validate
+            if(userInDb.BranchesId != volInDb.BranchesId)
+                return Json(new { success = false, message = "Your branch does not correspond with the volume's branch and thus cannot continue" }, JsonRequestBehavior.AllowGet);
+            if (volInDb.StatesId == 5 && volInDb.AdUserId != null) //5 => checked out
+            {
+                
+
+                var reqInDb = _context.Requests.Single(r =>
+                    r.FileVolumesId == volInDb.Id && r.UserId == volInDb.AdUserId && r.RequestStatusId == 2);
+                //update the info to suite a check in
+                reqInDb.ReturnedDate = DateTime.Now;
+                reqInDb.ReturnAcceptById = userInDb.Id;
+                reqInDb.ReturnStateId = 3;
+                reqInDb.IsRequestActive = false;
+                _context.SaveChanges();
+
+                //end save mechanism
+
+                ChangeStateToStored(reqInDb.FileVolumesId);
+                //maybe a notification message should be here
+                var completedRequestOperation = new CompletedRequestController();
+                completedRequestOperation.SaveToCompletedRequestTable(reqInDb);
+
+                _context.Requests.Remove(reqInDb);
+                _context.SaveChanges();
+
+                return Json(new { success = true, message = "Successfully reclaimed file!" }, JsonRequestBehavior.AllowGet);
+            }
+
+            return Json(new { success = false, message = "File volume is not in a valid state for this action to be processed." }, JsonRequestBehavior.AllowGet);
         }
     }
 }

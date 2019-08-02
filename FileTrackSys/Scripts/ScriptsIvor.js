@@ -104,4 +104,6 @@
         else
             $("#extTransferUl").addClass("in");
     });
+    //tooltip implmentation
+    $('[data-toggle="tooltip"]').tooltip();
 });

@@ -698,6 +698,7 @@
     <Content Include="fonts\fontawesome-webfont.woff" />
     <Content Include="fonts\fontawesome-webfont.woff2" />
     <Content Include="fonts\FontAwesome.otf" />
+    <Content Include="Images\request-sent.jpg" />
     <Content Include="Scripts\bootbox.js" />
     <Content Include="Scripts\bootbox.min.js" />
     <Content Include="Scripts\bootstrap.js" />
@@ -1061,7 +1062,6 @@
     <Content Include="Views\AdUsers\ChangeBranch.cshtml" />
     <Content Include="Views\Shared\Locked.cshtml" />
     <Content Include="Views\Requests\UserPendingTransfer.cshtml" />
-    <Content Include="Views\ErrNotifs\RequestMade.cshtml" />
     <Content Include="Views\Requests\RequestSuccessful.cshtml" />
     <Content Include="Views\Requests\UserConfirmTransfer.cshtml" />
     <Content Include="Views\AdUsers\SignInPrompt.cshtml" />

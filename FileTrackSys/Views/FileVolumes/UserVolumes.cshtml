@@ -1,5 +1,4 @@
-﻿@model IEnumerable<FileTracking.Models.Request>
-@{
+﻿@{
     ViewBag.Title = "UserVolumes";
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
@@ -10,17 +9,16 @@
     </div>
     <!-- /.col-lg-12 -->
 </div>
-
+<link rel="stylesheet" href="https://cdn.datatables.net/1.10.19/css/dataTables.bootstrap.min.css">
 <div class="row">   
     <div>
         <p>
             <i>
-                File registered here are, as of this moment, in your possession and must be returned to registry when you're
-                finished with it.
+                File registered here are, as of this moment, in your possession and must be returned to registry when use is 
+                no longer required.
             </i>
         </p>
-    </div>
-    
+    </div> 
     <table id="myFiles" class="table table-hover">
         <thead>
             <tr>
@@ -32,19 +30,7 @@
                 <th>Return</th>
             </tr>
         </thead>
-        <tbody>
-        @foreach (var req in Model)
-        {
-            <tr>
-                <td><span data-return-id="@req.FileVolumes.FileId" class="glyphicon glyphicon-file btn btn-default btn-xs returnModal"> @req.FileVolumes.FileNumber</span></td>
-                <td>@req.FileVolumes.Volume</td>
-                <td>@req.AcceptedBy.Name</td>
-                <td>@req.AcceptedDate</td>
-                <td>@req.RequesterBranch.Branch</td>
-                <td><button class="btn btn-circle btn-block js-return" data-return-id="@req.Id"><i class="fa fa-share-square-o"></i></button></td>
-            </tr>
-        }      
-        </tbody>
+        
     </table>
     <div class="modal fade" id="userReturnModal" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" data-backdrop="static" data-keyboard="true">
         <div class="modal-dialog">
@@ -56,7 +42,51 @@
 @section scripts{
     <script>
         $(document).ready(function() {
-
+            var myFilesTable = $("#myFiles").DataTable({
+                "ajax": {
+                    "url": siteURL + "/FileVolumes/GetUserFileVolumes",
+                    "data": "GET",
+                    "datatype": "json"
+                },
+                "columns": [
+                    {
+                        "data": "FileVolumes.FileNumber",
+                        render: function(data, type, req) {
+                            return `<a href="#" data-return-id="${req.FileVolumes.FileId}" 
+                            class="btn btn-primary btn-sm returnModal"><i class="fa fa fa-address-card"> ${data
+                                }</i></a>`;
+                        }
+                    },
+                    {
+                        "data": "FileVolumes.Volume",
+                        render: function(data) { return `<strong>${data}</strong>`; }
+                    },
+                    {
+                        "data": "AcceptedBy.Name",
+                        render: function (data) { return `<strong><i class="fa fa-user-circle-o"></i> ${data}</strong>`; }
+                    },
+                    {
+                        "data": "AcceptedDate",
+                        render: function(data) {
+                            return `<strong>${getDateString(data)}</strong>`;
+                        }
+                    },
+                    {
+                        data: "RequesterBranch.Branch",
+                        render: function (data) { return `<strong><i class="fa fa-location-arrow"></i> ${data}</strong>`; }
+                    },
+                    {
+                        data: "Id",
+                        "render": function(data) {
+                            var buttonReturn =
+                                `<a class="btn js-return" data-return-id="${data
+                                    }"><i class="fa fa-share-square-o"></i> Return</a>`;
+                            return buttonReturn;
+                        }
+                    }
+                ]
+            });
+            //----------------------------post ajax -------------------------
             $("#myFiles").on('click',
                 '.js-return',
                 function() {
@@ -68,9 +98,10 @@
                                 $.ajax({
                                     url: siteURL + '/FileVolumes/ReturnVolume/' + requestId,
                                     success: function(response) {
-                                        if (response.success == false) {
+                                        if (!response.success) {
                                             bootbox.confirm({
-                                                message: "you have user transfer requests for this file. Are you sure you want to return file to registry? ",
+                                                message:
+                                                    "you have user transfer requests for this file. Are you sure you want to return file to registry? ",
                                                 buttons: {
                                                     confirm: {
                                                         label: 'Yes, return to registry',
@@ -84,7 +115,9 @@
                                                 callback: function(res) {
                                                     if (res) {
                                                         $.ajax({
-                                                            url: siteURL +'/FileVolumes/VerifiedReturnOfVolume/' +requestId,
+                                                            url: siteURL +
+                                                                '/FileVolumes/VerifiedReturnOfVolume/' +
+                                                                requestId,
                                                             success: function(response) {
                                                                 toastr.success("Return Request Sent to registry",
                                                                     "Return",
@@ -97,7 +130,8 @@
                                                             }
                                                         });
                                                     } else {
-                                                        window.location.href = siteURL + "/Requests/UserPendingTransfer";
+                                                        window.location.href =
+                                                            siteURL + "/Requests/UserPendingTransfer";
                                                     }
 
                                                 }
@@ -107,7 +141,7 @@
                                                 "Return",
                                                 { positionClass: "toast-bottom-right" });
 
-                                            $($btn).closest("tr").remove();
+                                            myFilesTable.row($btn.parents('tr')).remove().draw();
                                         }
 
                                     },
@@ -123,6 +157,7 @@
             $("#myFiles").on("click",
                 ".returnModal",
                 function() {
+
                     var id = $(this).attr("data-return-id");
                     var url = siteURL + "/Files/FileDetailsForConfirm/" + id;
                     // alert(url);
@@ -130,6 +165,11 @@
                     $('#returnModelContent').load(url);
                     $('#userReturnModal').modal('show');
                 });
+
+            function getDateString(date) {
+                var dateObj = new Date(parseInt(date.substr(6)));
+                return dateObj.toDateString();
+            }
         });
     </script>
 }

@@ -49,16 +49,9 @@ namespace FileTracking.Controllers
             return View();
         }
 
-        //will check if user's branch matches the files current location
-        public bool CheckBranchValidity(AdUser u, FileVolumes v)
-        {
-            if (u.BranchesId == v.CurrentLocationId && v.CurrentLocationId == v.BranchesId)
-                return true;
-            return false;
-        }
-
         //this is invoked whenever a user makes a request from the 'FileVolume' page where the parameters with the exact volume is provided.
         [Route("Requests/Index/{volId}")]
+        [Authorize(Roles = Role.RegularUser)]
         public ActionResult Index(int volId)
         {
             //pulls records associated with a request such as volume and user
@@ -71,21 +64,21 @@ namespace FileTracking.Controllers
                 var volume = _context.FileVolumes.Single(v => v.Id == volId);
 
                 //check if this volume number has not already been requested by this user
-                if (volume.StatesId == 1)
+                if (volume.StatesId == 1 && HasBeenRequested(volume, user))
                 {
-                    if (HasBeenRequested(volume, user))
-                        return View("AlreadyRequested");
+                   return View("AlreadyRequested");
                 }
 
-                if (CheckBranchValidity(user, volume))//will check if user branch matches the current file branch, makes internal requests
+                if (user.BranchesId == volume.CurrentLocationId && volume.CurrentLocationId == volume.BranchesId)//will check if user branch matches the current file branch, makes internal requests
                 {
+                    //local request 
                     if (PopulateRequest(volume, user))
                     {
                         UpdateVolumeState(volume);
                         return View();
                     }
                 }
-                else//if user branch and file branch does not match, external request made
+                else if(user.BranchesId != volume.BranchesId && volume.BranchesId == volume.CurrentLocationId)
                 {
                     if (PopulateExternalRequests(volume, user))
                         return View("ExternalRequestMade");
@@ -495,7 +488,7 @@ namespace FileTracking.Controllers
             {
                 UserId = userId,//the user's, making the request, id
                 FileVolumesId = v.Id,
-                RecipientBranchId = v.CurrentLocationId,//
+                RecipientBranchId = userBranchId,//the branch that should be receiving this is the user's branch registry, so we just assign the user's branch
                 RequesterBranchId = userBranchId,//requesting user's location
                 RequestStatusId = 2, //2 signifies accepted
                 ReturnStateId = 1,//1 signifies idle state, meaning the return process is not in order

@@ -42,43 +42,47 @@
             //gets json objects from the request controller in order to populate the dataTable
             var table = $("#pendingTable").DataTable({
                 "ajax": {
-                    "url": siteURL+"/Requests/GetPendingFiles",
+                    "url": siteURL + "/Requests/GetPendingFiles",
                     "data": "GET",
                     "datatype": "json"
                 },
                 "columns": [
                     {
                         "data": "FileVolumes.FileNumber",
-                        render: function (data, type, req) {
-                            var button = `<a data-fileId=${req.FileVolumes.FileId} class="btn btn-link pendingFilesModal">
+                        render: function(data, type, req) {
+                            var button =
+                                `<a data-fileId=${req.FileVolumes.FileId} class="btn btn-link pendingFilesModal">
                                         <i class="glyphicon glyphicon-file"></i> ${data}</a>`;
                             return button;
                         }
                     },
                     {
                         "data": "FileVolumes.Volume",
-                        render: function (data) { return `<strong>${data}</strong>`;}
+                        render: function(data) { return `<strong>${data}</strong>`; }
                     },
                     {
                         "data": "User.Name",
-                        render: function (data) { return `<strong><i>${data}</i></strong>`; }
+                        render: function(data) { return `<strong>${data}</strong>`; }
                     },
                     {
                         "data": "User.Branches.Branch",
-                        render: function (data) { return `<strong><i>${data}</i></strong>`; }
+                        render: function(data) { return `<strong>${data}</strong>`; }
                     },
                     {
                         data: "RequestDate",
                         "render": function(data) {
-                            return `<strong><i>${getDateString(data)}</i></strong>`;
+                            return `<strong>${getDateString(data)}</strong>`;
                         }
                     },
                     {
                         data: "Id",
                         "render": function(data, type, req) {
-                            var buttonAccept = `<button class='btn btn-success btn-xs js-accept' data-accept-pending-id='${data}'
-                                                user-attr='${req.User.Name}'><i class="fa fa-check"></i> Check out</button>`;
-                            var buttonDeny = `<button class='btn btn-danger btn-xs js-reject' data-deny-pending-id='${data}'
+                            var buttonAccept =
+                                `<button class='btn btn-success btn-xs js-accept' data-accept-pending-id='${data}'
+                                                user-attr='${req.User.Name
+                                    }'><i class="fa fa-check"></i> Check out</button>`;
+                            var buttonDeny =
+                                `<button class='btn btn-danger btn-xs js-reject' data-deny-pending-id='${data}'
                                                ><i class="fa fa-close"></i> Reject</button>`;
 
                             return buttonAccept + " | " + buttonDeny;
@@ -93,24 +97,26 @@
                     var button = $(this);
                     var id = button.attr("data-accept-pending-id");
                     var requester = button.attr("user-attr");
-                    bootbox.confirm("You are about to accept request for: <strong>"+requester+"</strong>",
+                    bootbox.confirm("You are about to accept request for: <strong>" + requester + "</strong>",
                         function(result) {
                             if (result) {
                                 $.ajax({
-                                    url: siteURL+'/Requests/AcceptRequest/' + id,
+                                    url: siteURL + '/Requests/AcceptRequest/' + id,
                                     success: function(response) {
                                         if (response.success == true) {
-                                            toastr.success(response.message, "Accepted", { positionClass: "toast-bottom-right" });
+                                            toastr.success(response.message,
+                                                "Accepted",
+                                                { positionClass: "toast-bottom-right" });
 
-                                            table.row(button.parents('tr')).remove().draw();                                       
-                                        }
-                                        else if (response.success == false) {
+                                            table.row(button.parents('tr')).remove().draw();
+                                        } else if (response.success == false) {
                                             bootbox.alert({
                                                 closeButton: false,
                                                 size: "small",
                                                 title: "<strong style='color: green'>SUCCESS</strong>",
-                                                message: "Request accepted however, other requests were found for this file and now requires a reload",
-                                                callback: function () {
+                                                message:
+                                                    "Request accepted however, other requests were found for this file and now requires a reload",
+                                                callback: function() {
                                                     location.reload();
                                                 }
                                             });
@@ -120,7 +126,7 @@
                                                 size: "medium",
                                                 title: "<strong style='color: green'>SUCCESS</strong>",
                                                 message: response.message + ". Reload required.",
-                                                callback: function () {
+                                                callback: function() {
                                                     location.reload();
                                                 }
                                             });
@@ -130,7 +136,7 @@
                                         404: function(content) {
                                             alert("404, page not found");
                                         },
-                                        500: function(content) {                                           
+                                        500: function(content) {
                                             alert('internal server error');
                                         }
                                     }
@@ -149,7 +155,7 @@
                         function(result) {
                             if (result) {
                                 $.ajax({
-                                    url: siteURL+'/Requests/DeclineRequest/' + id,
+                                    url: siteURL + '/Requests/DeclineRequest/' + id,
                                     success: function(data) {
                                         toastr.success("Successfully Declined",
                                             "Request",
@@ -178,7 +184,7 @@
             //file info modal initiation
             $("#pendingTable").on("click",
                 ".pendingFilesModal",
-                function () {
+                function() {
                     var id = $(this).attr("data-fileId");
                     var url = siteURL + "/Files/FileDetailsForConfirm/" + id;
                     // alert(url);

@@ -69,11 +69,19 @@
                     {
                         data: "AcceptedDate",
                         "render": function(data) {
-                            return getDateString(data);
+                            return `<strong><i class="fa fa-calendar"></i> ${getDateString(data)}</strong>`;
                         }
                     },
-                    { data: "RequesterBranch.Branch" },
-                    { data: "FileVolumes.Branches.Branch" },
+                    {
+                        data: "RequesterBranch.Branch",
+                        render: function(data) {
+                            return `<strong><i class="fa fa-location-arrow"></i> ${data}</strong>`;
+                        }
+                    },
+                    {
+                        data: "FileVolumes.Branches.Branch",
+                        render: function(data) { return `<strong><i class="fa fa-map-marker"></i> ${data}</strong>`; }
+                    },
                     {
                         data: "Id",
                         "render": function(data, type, req) {
@@ -96,7 +104,8 @@
                     var fileNum = $btn.attr("file-attr");
                     var volNum = $btn.attr("vol-attr");
                     bootbox.confirm({
-                        message: `You are approving volume <strong> ${volNum}</strong> for file:<strong> ${fileNum}</strong>.
+                        message: `You are approving volume <strong> ${volNum}</strong> for file:<strong> ${fileNum
+                            }</strong>.
                                   Do you wish to continue?`,
                         closeButton: false,
                         callback: function(result) {
