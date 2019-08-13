@@ -41,18 +41,18 @@ namespace FileTracking.Controllers
             _context.Notifications.Add(notif);
             _context.SaveChanges();
         }
-
-        /*[Route("FileVolumes/VolumeHistory/{volId}/{page}/{pageSize}")]
-        public ActionResult VolumeHistory(int volId, int page, int pageSize)
+       
+        public ActionResult VolHistory(int id, int? page)
         {
-            var requestsInDb = _context.Requests.Include(r=>r.User).Include(r=>r.FileVolumes).Include(r=>r.RequesterBranch)
-                .Where(r => r.FileVolumesId == volId).Where(r => r.IsRequestActive == false).Where(r=>r.RequestStatusId == 2)
-                .Where(r => r.ReturnStateId == 3).ToList();
+            int pageNum = page ?? 1;
+            int pageSize = 10;//pagination set to 10
+            var requestsInDb = _context.CompletedRequests.Include(r=>r.FileVolume).Include(r=>r.RequesterBranch)
+                .Include(r=>r.RequesterUser).Include(r=>r.RegistryUserAccept).Include(r=>r.ReturnAcceptBy).Where(r => r.FileVolumeId == id).OrderByDescending(r=>r.RequestDate).ToList();
 
-            PagedList<Request> model = new PagedList<Request>(requestsInDb, page, pageSize);
-
-            return View(model);
-        }*/
+            PagedList<CompletedRequest> model = new PagedList<CompletedRequest>(requestsInDb, pageNum, pageSize);
+            
+            return PartialView("VolumeHistory", model);
+        }
 
         // GET: FileVolumes for a specific file identified by the id parameter
         [Authorize(Roles = Role.RegularUser)]
@@ -329,8 +329,8 @@ namespace FileTracking.Controllers
             return;
         }
 
-        //load the return to branch view, reigstry users will be able to see external files currently at their disposal to further send a request back to the external registry
-        [Authorize(Roles = Role.Registry)]
+        //load the return to branch view, registry users will be able to see external files currently at their disposal to further send a request back to the external registry
+        [Authorize(Roles = Role.Registry)] 
         public ActionResult ReturnToBranch()
         {
             return View();

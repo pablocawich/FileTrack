@@ -67,24 +67,24 @@
                     {
                         <td>@fileVol.AdUser.Name</td>
                     }
-                        <td class="tdBtn">
-                            <button vol-data-id="@fileVol.Id" file-name="@Model.File.FirstName" vol-num-attr="@fileVol.Volume" class="btn btn-circle js-edit-vol" data-toggle="tooltip" data-placement="top" title="Update Description">
-                                <i class="glyphicon glyphicon-pencil"></i>
-                            </button> |
-                            <button class="btn btn-circle history-js" vol-id-attr="@fileVol.Id" data-toggle="tooltip" data-placement="top" title="Volume's History"><i class="fa fa-history"></i></button> |
-                            <button class="btn btn-circle changeBranch-js" vol-changeBranchId="@fileVol.Id" vol-num-editBranch="@fileVol.Volume" state-editBranch="@fileVol.StatesId" data-toggle="tooltip" data-placement="top" title="Change Branch"><i class="fa fa-location-arrow"></i></button> |
-                            @if (fileVol.AdUserId != null)
-                            {
-                                var userWithFile = fileVol.AdUser.Name;
-                                <button class="btn btn-circle reclaimFile-js" vol-reclaimFileId="@fileVol.Id" vol-num-reclaimFile="@fileVol.Volume" volBranch="@fileVol.BranchesId" state-reclaim="@fileVol.StatesId" user-reclaim="@userWithFile" data-toggle="tooltip" data-placement="top" title="Reclaim File"><i class="fa fa-refresh"></i></button>
-                            }
-                            else
-                            {
-                                <button class="btn btn-circle reclaimFile-js" vol-reclaimFileId="@fileVol.Id" vol-num-reclaimFile="@fileVol.Volume" volBranch="@fileVol.BranchesId" state-reclaim="@fileVol.StatesId" data-toggle="tooltip" data-placement="top" title="Reclaim File"><i class="fa fa-refresh"></i></button>
-                            }
+                    <td class="tdBtn">
+                        <button vol-data-id="@fileVol.Id" file-name="@Model.File.FirstName" vol-num-attr="@fileVol.Volume" class="btn btn-circle js-edit-vol" data-toggle="tooltip" data-placement="top" title="Update Description">
+                            <i class="glyphicon glyphicon-pencil"></i>
+                        </button> |
+                        <button class="btn btn-circle history-js" vol-id-attr="@fileVol.Id" data-toggle="tooltip" data-placement="top" title="Volume's History"><i class="fa fa-history"></i></button> |
+                        <button class="btn btn-circle changeBranch-js" vol-changeBranchId="@fileVol.Id" vol-num-editBranch="@fileVol.Volume" state-editBranch="@fileVol.StatesId" data-toggle="tooltip" data-placement="top" title="Change Branch"><i class="fa fa-location-arrow"></i></button> |
+                        @if (fileVol.AdUserId != null)
+                        {
+                            var userWithFile = fileVol.AdUser.Name;
+                            <button class="btn btn-circle reclaimFile-js" vol-reclaimFileId="@fileVol.Id" vol-num-reclaimFile="@fileVol.Volume" volBranch="@fileVol.BranchesId" state-reclaim="@fileVol.StatesId" user-reclaim="@userWithFile" data-toggle="tooltip" data-placement="top" title="Reclaim File"><i class="fa fa-refresh"></i></button>
+                        }
+                        else
+                        {
+                            <button class="btn btn-circle reclaimFile-js" vol-reclaimFileId="@fileVol.Id" vol-num-reclaimFile="@fileVol.Volume" volBranch="@fileVol.BranchesId" state-reclaim="@fileVol.StatesId" data-toggle="tooltip" data-placement="top" title="Reclaim File" ><i class="fa fa-refresh"></i></button>
+                        }
 
 
-                        </td>
+                    </td>
                 </tr>
             }
         </tbody>
@@ -102,6 +102,7 @@
             </div>
         </div>
     </div>
+    
 </div>
 @section scripts
 {
@@ -130,13 +131,12 @@
                 ".history-js",
                 function() {
                     var volId = $(this).attr("vol-id-attr");
-                    bootbox.alert({
-                        message: "Currently Remodeling",
+                    bootbox.confirm({
+                        message: "View Recent Activities for this file?",
                         callback: function(result) {
                             if (result) {
-                                /* var url = siteURL + "/FileVolumes/VolumeHistory/" + volId + "/" + 1 + "/" + 5;
-                                 window.location.href = url;*/
-
+                                //window.location.href = siteURL + "/FileVolumes/VolHistory/" + volId;
+                                window.open(siteURL + "/FileVolumes/VolHistory/" + volId,"_blank");
                             }
 
                         }
@@ -202,7 +202,7 @@
                     let volBranchId = btn.attr("volBranch");
 
                     if (userInSessionBranch != volBranchId)
-                        toastr.error("Your branch does not match the volume's branch.","Cannot perform action!",{ positionClass: "toast-bottom-right" });
+                        toastr.warning("Your branch does not match the volume's branch.","Cannot perform action!",{ positionClass: "toast-bottom-right" });
                     else {
                         if (stateId == 5) {
                             bootbox.confirm({
@@ -246,7 +246,7 @@
                                 }
                             });
                         } else {
-                            toastr.error(
+                            toastr.warning(
                                 "It appears this volume is stored at your registry. Must be in possession of a another user.",
                                 "Cannot perform action!",
                                 { positionClass: "toast-bottom-right" });
