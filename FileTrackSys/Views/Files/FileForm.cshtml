@@ -28,71 +28,71 @@
     @using (Html.BeginForm("Save", "Files", FormMethod.Post, new { @id = "fileFormId" }))
     { 
         @Html.ValidationSummary( true,"Ensure the following errors are resolved:");
-    <div class="col-md-4">
-        <div class="form-group">
-            @Html.LabelFor(f => f.File.FirstName, new { @class = "control-label" })
-            <div class="input-group">
-                <span class="input-group-addon">
-                    <i class="glyphicon glyphicon-user"></i>
-                </span>@Html.TextBoxFor(f => f.File.FirstName, new { @class = "form-control", @placeholder = "E.g. John" })
+        <div class="col-md-4">
+            <div class="form-group">
+                @Html.LabelFor(f => f.File.FirstName, new { @class = "control-label" })
+                <div class="input-group">
+                    <span class="input-group-addon">
+                        <i class="glyphicon glyphicon-user"></i>
+                    </span>@Html.TextBoxFor(f => f.File.FirstName, new { @class = "form-control", @placeholder = "E.g. John" })
+                </div>
+                @Html.ValidationMessageFor(f => f.File.FirstName)
             </div>
-            @Html.ValidationMessageFor(f => f.File.FirstName)
-        </div>
-        <div class="form-group">
-            @Html.LabelFor(f => f.File.MiddleName, new { @class = "control-label" })
-            <div class="input-group">
-                <span class="input-group-addon">
-                    <i class="glyphicon glyphicon-user"></i>
-                </span>@Html.TextBoxFor(f => f.File.MiddleName, new { @class = "form-control", @placeholder = "E.g. Micheal" })
+            <div class="form-group">
+                @Html.LabelFor(f => f.File.MiddleName, new { @class = "control-label" })
+                <div class="input-group">
+                    <span class="input-group-addon">
+                        <i class="glyphicon glyphicon-user"></i>
+                    </span>@Html.TextBoxFor(f => f.File.MiddleName, new { @class = "form-control", @placeholder = "E.g. Micheal" })
+                </div>
+                @Html.ValidationMessageFor(f => f.File.MiddleName)
             </div>
-            @Html.ValidationMessageFor(f => f.File.MiddleName)
-        </div>
-        <div class="form-group">
-            @Html.LabelFor(f => f.File.LastName, new { @class = "control-label" })
-            <div class="input-group">
-                <span class="input-group-addon">
-                    <i class="glyphicon glyphicon-user"></i>
-                </span>@Html.TextBoxFor(f => f.File.LastName, new { @class = "form-control", @placeholder = "E.g. Smith" })
+            <div class="form-group">
+                @Html.LabelFor(f => f.File.LastName, new { @class = "control-label" })
+                <div class="input-group">
+                    <span class="input-group-addon">
+                        <i class="glyphicon glyphicon-user"></i>
+                    </span>@Html.TextBoxFor(f => f.File.LastName, new { @class = "form-control", @placeholder = "E.g. Smith" })
+                </div>
+                @Html.ValidationMessageFor(f => f.File.LastName)
             </div>
-            @Html.ValidationMessageFor(f => f.File.LastName)
-        </div>
-        <div class="form-group">
-            @Html.LabelFor(f => f.File.Street, new { @class = "control-label" })
-            <div class="input-group">
-                <span class="input-group-addon">
-                    <i class="fa fa-map-pin"></i>
-                </span>
-                @Html.TextBoxFor(f => f.File.Street, new { @class = "form-control", @placeholder = "E.g. 21 Price Street" })
+            <div class="form-group">
+                @Html.LabelFor(f => f.File.Street, new { @class = "control-label" })
+                <div class="input-group">
+                    <span class="input-group-addon">
+                        <i class="fa fa-map-pin"></i>
+                    </span>
+                    @Html.TextBoxFor(f => f.File.Street, new { @class = "form-control", @placeholder = "E.g. 21 Price Street" })
+                </div>
+                @Html.ValidationMessageFor(f => f.File.Street)
             </div>
-            @Html.ValidationMessageFor(f => f.File.Street)
-        </div>
-        <div class="form-group">
-            @Html.LabelFor(f => f.File.DistrictsId, new { @class = "control-label" })
-            <div class="input-group">
-                <span class="input-group-addon" style="max-width: 100%;"><i class="fa fa-location-arrow"></i></span>
-                @Html.DropDownListFor(f => f.File.DistrictsId, new SelectList(Model.Districts, "Id", "District"), "Select client's district :", new { @class = "form-control" })
+            <div class="form-group">
+                @Html.LabelFor(f => f.File.DistrictsId, new { @class = "control-label" })
+                <div class="input-group">
+                    <span class="input-group-addon" style="max-width: 100%;"><i class="fa fa-location-arrow"></i></span>
+                    @Html.DropDownListFor(f => f.File.DistrictsId, new SelectList(Model.Districts, "Id", "District"), "Select client's district :", new { @class = "form-control" })
+                </div>
+                @Html.ValidationMessageFor(f => f.File.DistrictsId)
             </div>
-            @Html.ValidationMessageFor(f => f.File.DistrictsId)
-        </div>
-        <div class="form-group">
-            @Html.LabelFor(f => f.File.LocationId, new { @class = "control-label" })
-            <div class="input-group">
-                <span class="input-group-addon">
-                    <i class="fa fa-map-marker"></i>
-                </span>
-                @Html.DropDownListFor(f => f.File.LocationId, new SelectList(Model.Locations, "LocationId","Name"),"Select client's address :",new { @class = "form-control" })
+            <div class="form-group">
+                @Html.LabelFor(f => f.File.LocationId, new { @class = "control-label" })
+                <div class="input-group">
+                    <span class="input-group-addon">
+                        <i class="fa fa-map-marker"></i>
+                    </span>
+                    @Html.DropDownListFor(f => f.File.LocationId, new SelectList(Model.Locations, "LocationId","Name"),"Select client's address :",new { @class = "form-control" })
+                </div>
+                @Html.ValidationMessageFor(f => f.File.LocationId)
             </div>
-            @Html.ValidationMessageFor(f => f.File.LocationId)
-        </div>
-        <div class="form-group">
-            @Html.LabelFor(f => f.File.FileTypeId, new { @class = "control-label" })
-            <div class="input-group">
-                <span class="input-group-addon" style="max-width: 100%;"><i class="fa fa-file-text-o"></i></span>
-                @Html.DropDownListFor(f => f.File.FileTypeId, new SelectList(Model.FileTypes, "Id", "Type"), "Select a file type :", new { @class = "form-control" })
+            <div class="form-group">
+                @Html.LabelFor(f => f.File.FileTypeId, new { @class = "control-label" })
+                <div class="input-group">
+                    <span class="input-group-addon" style="max-width: 100%;"><i class="fa fa-file-text-o"></i></span>
+                    @Html.DropDownListFor(f => f.File.FileTypeId, new SelectList(Model.FileTypes, "Id", "Type"), "Select a file type :", new { @class = "form-control" })
+                </div>
+                @Html.ValidationMessageFor(f => f.File.FileTypeId)
             </div>
-            @Html.ValidationMessageFor(f => f.File.FileTypeId)
         </div>
-    </div>
         <div class="col-md-4">
             @if (Model.Title != "New File")
             {
@@ -155,44 +155,50 @@
 
         </div>
         
-             <div class="col-md-4">
-                 <p>Newly created file will by default be stored as volume 1</p>
-                 <p>Ensure an id number that corresponds to its Identification type is provided once a identification type is selected</p>
-                 @if (Model.Title == "New File")
-                 {
-                 <div class="form-group">
-                     @Html.LabelFor(f => f.File.VolumeOneDescription, new {@class = "control-label"})
-                     <div class="input-group">
-                         <span class="input-group-addon"><i class="glyphicon glyphicon-comment"></i>
-                         </span>@Html.TextAreaFor(f => f.File.VolumeOneDescription, new {@class = "form-control", @placeholder = "200 character limit..."})
-                     </div>
-                     @Html.ValidationMessageFor(f => f.File.VolumeOneDescription)
-                 </div>
-                 }
-                 else
-                 {                   
-                     @Html.HiddenFor(f=>f.File.VolumeOneDescription)
-                 }
+        <div class="col-md-4">
+            <p>Newly created file will by default be stored as volume 1</p>
+            <p>Ensure an id number that corresponds to its Identification type is provided once a identification type is selected</p>
+            @if (Model.Title == "New File")
+            {
+                <div class="form-group">
+                    @Html.LabelFor(f => f.File.VolumeOneDescription, new {@class = "control-label"})
+                    <div class="input-group">
+                        <span class="input-group-addon"><i class="glyphicon glyphicon-comment"></i>
+                        </span>@Html.TextAreaFor(f => f.File.VolumeOneDescription, new {@class = "form-control", @placeholder = "200 character limit..."})
+                    </div>
+                    @Html.ValidationMessageFor(f => f.File.VolumeOneDescription)
+                </div>
+            }
+            else
+            {                   
+                @Html.HiddenFor(f=>f.File.VolumeOneDescription)
+            }
 
-                 @Html.HiddenFor(f => f.File.Id)
-                 @Html.HiddenFor(f => f.File.FileNumber)
-                 @Html.HiddenFor(f => f.File.Volume)
-                 @Html.HiddenFor(f => f.File.IdentificationOptionId)
-                 @Html.HiddenFor(f => f.File.LoanNumber)
-                 @Html.HiddenFor(f=>f.File.PreviousFileNumber)
+            @Html.HiddenFor(f => f.File.Id)
+            @Html.HiddenFor(f => f.File.FileNumber)
+            @Html.HiddenFor(f => f.File.Volume)
+            @Html.HiddenFor(f => f.File.IdentificationOptionId)
+            @Html.HiddenFor(f => f.File.LoanNumber)
+            @Html.HiddenFor(f=>f.File.PreviousFileNumber)
 
-                 @Html.AntiForgeryToken()
-                 <button class="btn btn-primary btn-sm">Save File</button>
-                 <button type="button" class="btn btn-danger btn-sm" id="cancelBtn">Cancel</button>
-             </div>
+            @Html.AntiForgeryToken()
+            <button id="submitFileBtn" class="btn btn-primary btn-sm">Save File <i class="fa fa-floppy-o"></i></button>
+            <button type="button" class="btn btn-danger btn-sm" id="cancelBtn">Cancel <i class="fa fa-close"></i></button>
+        </div>
          
     }
+</div>
+<div class="modal fade" id="loadFormModal" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" data-backdrop="static" data-keyboard="true">
+    <div class="modal-dialog">
+        <div class="modal-content" id="pendingFilesModelContent">
+        </div>
+    </div>
 </div>
 @section scripts
 {
     @Scripts.Render("~/bundles/jqueryval")
     <script>
-        $(document).ready(function () {
+        $(document).ready(function() {
             //as page loads, this will ensure the default value disables the fields that follows
             if ($("#File_IdentificationOptionId").val() == 0)
                 $("#File_IdentificationNumber").prop("disabled", true);
@@ -221,12 +227,16 @@
                     bootbox.confirm("Are you sure you want to cancel and return to viewing files",
                         function(result) {
                             if (result) {
-                                window.location.href = siteURL+"/Files/SearchFiles";
+                                window.location.href = siteURL + "/Files/SearchFiles";
                             }
                         });
 
                 });
-           
+
+            $("#submitFileBtn").on('click', function() {
+                $(this).attr("disabled", true);
+            });
+
         });
     </script>
 

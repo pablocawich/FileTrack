@@ -33,7 +33,7 @@ namespace FileTracking.Controllers
             {
                 var userInDb = _context.AdUsers.Single(u => u.Username == AdUsername.Username);
 
-                var notifications = _context.Notifications.Include(n => n.RecipientUser).Include(n => n.Message).Include(n => n.Request).
+                var notifications = _context.Notifications.Include(n => n.RecipientUser).Include(n => n.Message).Include(n=>n.FileVolume).
                     Where(n => n.RecipientUserId == userInDb.Id).Where(n => n.Read == false).
                     Where(n => n.MessageId == Message.InAccept || n.MessageId == Message.InReject
                                                                || n.MessageId == Message.ExAccept || n.MessageId == Message.ExReject).ToList();
@@ -56,18 +56,18 @@ namespace FileTracking.Controllers
 
             var userInDb = _context.AdUsers.Single(u => u.Username == AdUsername.Username);
 
-            var notifications = _context.Notifications.Include(n => n.RecipientUser).Include(n => n.Message).Include(n => n.Request)
-                .Where(n=>n.Request.RecipientBranchId == userInDb.BranchesId).
+            var notifications = _context.Notifications.Include(n => n.RecipientUser).Include(n => n.Message)
+                .Where(n=>n.RecipientBranchId== userInDb.BranchesId).
                 Where(n=>n.MessageId == Message.Return || n.MessageId == Message.ExReturn)
                 .Where(n => n.Read == false).ToList();
 
             var viewModel = new RegistryNotificationViewModel()
             {
                 RegistryInReturns = notifications,
-                RegistryExReturns = _context.Notifications.Include(n => n.RecipientUser).Include(n => n.Message).Include(n => n.Request)
-                .Where(n => n.Request.RequesterBranchId == userInDb.BranchesId).Where(n => n.MessageId == Message.ExReturnApproval)
+                RegistryExReturns = _context.Notifications.Include(n => n.RecipientUser).Include(n => n.Message)
+                .Where(n => n.SenderBranchId == userInDb.BranchesId).Where(n => n.MessageId == Message.ExReturnApproval)
                 .Where(n => n.Read == false).ToList(),
-        };
+            };
             return PartialView("RegistryNotification",viewModel);
 
         }

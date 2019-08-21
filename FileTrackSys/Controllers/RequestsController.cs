@@ -32,10 +32,11 @@ namespace FileTracking.Controllers
         {
             var notif = new Notification()
             {
-                RecipientUserId = req.UserId,
+                RecipientUserId = req.UserId,//user 
                 MessageId = messageId,
                 Read = false,
-                RequestId = req.Id,
+                //RequestId = req.Id,
+                FileVolumeId = req.FileVolumesId,
                 DateTriggered = DateTime.Now,
                 SenderUserId = req.AcceptedById
             };
@@ -182,7 +183,7 @@ namespace FileTracking.Controllers
         [Authorize(Roles = Role.Registry)]
         public ActionResult GetPendingFiles()
         {
-            //for the most part, requesteeBranchId will always be the currentLocation Branch
+            //for the most part, recipintBranchId will always be the currentLocation Branch
             //we must ensure to take into account branches. registry is only to see request from user made within their respective branch
             var userObj = new AdUser(User.Identity.Name);
            
@@ -701,7 +702,9 @@ namespace FileTracking.Controllers
                 RecipientUserId = req.UserId,
                 MessageId = messageId,
                 Read = false,
-                RequestId = req.Id,
+                FileVolumeId = req.FileVolumesId,
+                RecipientBranchId = req.RecipientBranchId,
+                SenderBranchId = req.RequesterBranchId,
                 DateTriggered = DateTime.Now,
                 SenderUserId = req.AcceptedById
             };

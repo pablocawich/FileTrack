@@ -33,7 +33,7 @@
    //Implementation for action buttons on the dataTable (File/index)
    $("#fileTable").on("click", ".js-addVol", function () {
        var button = $(this);
-       bootbox.confirm("Are you sure you want to add volume to this file?", function (result) {
+       bootbox.confirm("Are you sure you want to add another volume to this file?", function (result) {
            if (result) {
                var url = siteURL+"/Files/AddNewVolume/" + button.attr("data-file-id");
               

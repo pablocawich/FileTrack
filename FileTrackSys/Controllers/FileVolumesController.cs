@@ -33,7 +33,10 @@ namespace FileTracking.Controllers
                 RecipientUserId = req.UserId,
                 MessageId = messageId,
                 Read = false,
-                RequestId = req.Id,
+                //RequestId = req.Id,
+                FileVolumeId = req.FileVolumesId,
+                RecipientBranchId = req.RecipientBranchId,
+                SenderBranchId = req.RequesterBranchId,
                 DateTriggered = DateTime.Now,
                 SenderUserId = req.AcceptedById
             };
@@ -193,7 +196,9 @@ namespace FileTracking.Controllers
                 RecipientUserId = req.UserId,
                 MessageId = messageId,
                 Read = false,
-                RequestId = req.Id,
+                FileVolumeId = req.FileVolumesId,
+                RecipientBranchId = req.RecipientBranchId,
+                SenderBranchId = req.RequesterBranchId,
                 DateTriggered = DateTime.Now,
                 SenderUserId = req.UserRequestedFromId
             };
@@ -248,13 +253,16 @@ namespace FileTracking.Controllers
                 _context.SaveChanges();
                 ChangeStateToStored(req.FileVolumesId);               
             }
-            //this request is finish no matter if associated with EXREQ, so we move to completed table
+            //this request is finished no matter if associated with EXREQ, so we move to completed table
             var completedRequestOperation = new CompletedRequestController();
             completedRequestOperation.SaveToCompletedRequestTable(req);
+
             //we want to remove the record from Requests as we kinda duplicated the fields and stored in CompletedRequest
             _context.Requests.Remove(req);
             _context.SaveChanges();
         }
+
+       
 
         //accepting external return
         [Authorize(Roles = Role.Registry)]

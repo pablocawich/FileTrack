@@ -10,6 +10,7 @@ using FileTracking.ViewModels;
 using System.Linq.Dynamic;
 using System.Text.RegularExpressions;
 using System.Web.WebPages;
+using Microsoft.Ajax.Utilities;
 
 namespace FileTracking.Controllers
 {
@@ -136,7 +137,7 @@ namespace FileTracking.Controllers
                 file.FileNumber = GetFileNumber();
                 //we remove once string contains whitespace
                 file.FirstName = Regex.Replace(file.FirstName, @"\s", "");
-                file.MiddleName = Regex.Replace(file.MiddleName, @"\s", "");
+                file.MiddleName = Regex.Replace(file.MiddleName ?? "", @"\s", "");
                 file.LastName = Regex.Replace(file.LastName, @"\s", "");
 
                 /*if(file.LoanNumber == null)

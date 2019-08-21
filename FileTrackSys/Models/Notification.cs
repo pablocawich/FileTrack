@@ -19,8 +19,17 @@ namespace FileTracking.Models
         public Message Message { get; set; }
         public string MessageId { get; set; }
 
-        public Request Request { get; set; }
-        public int? RequestId { get; set; }
+        //New notif features
+        public FileVolumes FileVolume { get; set; }
+        public int? FileVolumeId { get; set; }
+
+        public Branches RecipientBranch { get; set; }
+        public byte? RecipientBranchId { get; set; }
+
+        public Branches SenderBranch { get; set; }
+        public byte? SenderBranchId { get; set; }//requesterBranchId
+        /*public Request Request { get; set; }
+        public int? RequestId { get; set; }*/
 
         public DateTime? DateTriggered { get; set; }
 

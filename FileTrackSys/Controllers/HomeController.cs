@@ -26,18 +26,20 @@ namespace FileTracking.Controllers
 
         public ActionResult Index()
         {
-            var userObj = new AdUser(User.Identity.Name);
+            if (!(User.IsInRole(Role.Registry) || User.IsInRole(Role.RegularUser) || User.IsInRole(Role.AdminUser)))
+                return View("InvalidGroup");
 
+            var userObj = new AdUser(User.Identity.Name);
+            
+            
             try
             {
                 var user = _context.AdUsers.Include(u => u.Branches)
                     .SingleOrDefault(u => u.Username == userObj.Username);
 
                 if (user.IsDisabled == true)
-                {
                     return View("Locked");
-                    //return HttpNotFound("Your user account has been disabled. Cannot proceed.");
-                }
+                   
                
                 return View(user);
             }
@@ -47,6 +49,11 @@ namespace FileTracking.Controllers
             }
 
           
+        }
+
+        public ActionResult ContentArea()
+        {
+            return View();
         }
 
         //Labels the branch for the respective user on the navigation panel

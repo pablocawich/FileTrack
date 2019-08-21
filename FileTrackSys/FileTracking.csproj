@@ -47,6 +47,12 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="Microsoft.AspNet.SignalR.Core, Version=2.4.1.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.AspNet.SignalR.Core.2.4.1\lib\net45\Microsoft.AspNet.SignalR.Core.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.AspNet.SignalR.SystemWeb, Version=2.4.1.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.AspNet.SignalR.SystemWeb.2.4.1\lib\net45\Microsoft.AspNet.SignalR.SystemWeb.dll</HintPath>
+    </Reference>
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="Microsoft.ReportViewer.Common, Version=11.0.0.0, Culture=neutral, PublicKeyToken=89845dcd8080cc91, processorArchitecture=MSIL">
       <HintPath>..\packages\Microsoft.Report.Viewer.11.0.0.0\lib\net\Microsoft.ReportViewer.Common.dll</HintPath>
@@ -74,6 +80,7 @@
     <Reference Include="System.Net.Http.Formatting, Version=5.2.3.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <HintPath>..\packages\Microsoft.AspNet.WebApi.Client.5.2.3\lib\net45\System.Net.Http.Formatting.dll</HintPath>
     </Reference>
+    <Reference Include="System.Security" />
     <Reference Include="System.Web.DynamicData" />
     <Reference Include="System.Web.Entity" />
     <Reference Include="System.Web.ApplicationServices" />
@@ -494,6 +501,10 @@
     <Compile Include="Migrations\201907291713463_AddFullNameToFilesTable.cs" />
     <Compile Include="Migrations\201907291713463_AddFullNameToFilesTable.Designer.cs">
       <DependentUpon>201907291713463_AddFullNameToFilesTable.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201908152218115_RemoveRequestFromNotifAndAddNewFields.cs" />
+    <Compile Include="Migrations\201908152218115_RemoveRequestFromNotifAndAddNewFields.Designer.cs">
+      <DependentUpon>201908152218115_RemoveRequestFromNotifAndAddNewFields.cs</DependentUpon>
     </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Models\AccountViewModels.cs" />
@@ -1080,6 +1091,8 @@
     <Content Include="Views\Requests\UserConfirmTransfer.cshtml" />
     <Content Include="Views\AdUsers\SignInPrompt.cshtml" />
     <Content Include="Views\Files\_ChangeVolumeBranch.cshtml" />
+    <Content Include="Views\Home\ContentArea.cshtml" />
+    <Content Include="Views\Shared\InvalidGroup.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Reports\" />
@@ -1298,6 +1311,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201907291713463_AddFullNameToFilesTable.resx">
       <DependentUpon>201907291713463_AddFullNameToFilesTable.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201908152218115_RemoveRequestFromNotifAndAddNewFields.resx">
+      <DependentUpon>201908152218115_RemoveRequestFromNotifAndAddNewFields.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
