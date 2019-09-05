@@ -43,12 +43,12 @@ namespace FileTracking.Controllers
         public ActionResult SearchFiles()
         {
             var userObj = new AdUser(User.Identity.Name);
-            var userInDB = _context.AdUsers.Single(u => u.Username == userObj.Username);
+            var userInDb = _context.AdUsers.Single(u => u.Username == userObj.Username);
 
             //var file = _context.Files.Include(f => f.Districts).Include(f=>f.FileVolumes).ToList();
-            if (User.IsInRole(Role.Registry) && userInDB.IsDisabled == false)
+            if (User.IsInRole(Role.Registry) && userInDb.IsDisabled == false)
                 return View("RegistryView");
-            else if (User.IsInRole(Role.RegularUser) && userInDB.IsDisabled == false)
+            else if (User.IsInRole(Role.RegularUser) && userInDb.IsDisabled == false)
                 return View("UserView");
 
             return View("Locked");

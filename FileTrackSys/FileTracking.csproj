@@ -704,6 +704,7 @@
     <Content Include="Content\DataTables\swf\flashExport.swf" />
     <Content Include="Content\error.css" />
     <Content Include="Content\font-awesome.min.css" />
+    <Content Include="Content\Gif\loadFile.gif" />
     <Content Include="Content\metisMenu.min.css" />
     <Content Include="Content\morris.css" />
     <Content Include="Content\PagedList.css" />

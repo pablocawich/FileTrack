@@ -104,6 +104,6 @@
         else
             $("#extTransferUl").addClass("in");
     });
-    //tooltip implmentation
+    //tooltip implementation
     $('[data-toggle="tooltip"]').tooltip();
 });

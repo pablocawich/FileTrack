@@ -188,12 +188,7 @@
          
     }
 </div>
-<div class="modal fade" id="loadFormModal" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" data-backdrop="static" data-keyboard="true">
-    <div class="modal-dialog">
-        <div class="modal-content" id="pendingFilesModelContent">
-        </div>
-    </div>
-</div>
+
 @section scripts
 {
     @Scripts.Render("~/bundles/jqueryval")
@@ -233,9 +228,14 @@
 
                 });
 
-            $("#submitFileBtn").on('click', function() {
-                $(this).attr("disabled", true);
-            });
+            $("#submitFileBtn").on("click",
+                function () {
+                    $(this).attr("disabled", true);
+                    $("#fileFormId").submit(function(e) {
+                        //$(this).attr("disabled", true);
+                    });
+                    $(this).attr("disabled", false);
+                });
 
         });
     </script>

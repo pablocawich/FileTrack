@@ -79,11 +79,12 @@
                         "render": function(data, type, req) {
                             var buttonAccept =
                                 `<button class='btn btn-success btn-xs js-accept' data-accept-pending-id='${data}'
-                                                user-attr='${req.User.Name
+                                 user-attr='${req.User.Name}' vol-number-attr='${req.FileVolumes.Volume
                                     }'><i class="fa fa-check"></i> Check out</button>`;
                             var buttonDeny =
                                 `<button class='btn btn-danger btn-xs js-reject' data-deny-pending-id='${data}'
-                                               ><i class="fa fa-close"></i> Reject</button>`;
+                                               vol-rej-attr='${req.FileVolumes.Volume}' req-user-attr='${
+                                    req.User.Name}'><i class="fa fa-close"></i> Reject</button>`;
 
                             return buttonAccept + " | " + buttonDeny;
                         }
@@ -97,7 +98,9 @@
                     var button = $(this);
                     var id = button.attr("data-accept-pending-id");
                     var requester = button.attr("user-attr");
-                    bootbox.confirm("You are about to accept request for: <strong>" + requester + "</strong>",
+                    var volume = button.attr("vol-number-attr");
+                    bootbox.confirm(`You are about to check out volume's <strong>${volume}</strong> file to <strong>
+                        ${requester} </strong>`,
                         function(result) {
                             if (result) {
                                 $.ajax({
@@ -123,7 +126,6 @@
                                         } else if (response.success == false && response.opt == 2) {
                                             bootbox.alert({
                                                 closeButton: false,
-                                                size: "medium",
                                                 title: "<strong style='color: green'>SUCCESS</strong>",
                                                 message: response.message + ". Reload required.",
                                                 callback: function() {
@@ -151,7 +153,11 @@
                 function() {
                     var button = $(this);
                     var id = button.attr("data-deny-pending-id");
-                    bootbox.confirm("You are about to decline request from user: ",
+                    var requester = button.attr("req-user-attr");
+                    var volume = button.attr("vol-rej-attr");
+                    bootbox.confirm(
+                        `You are about to decline request for volume<strong> ${volume}</strong> from <strong> ${
+                        requester}</strong>`,
                         function(result) {
                             if (result) {
                                 $.ajax({
