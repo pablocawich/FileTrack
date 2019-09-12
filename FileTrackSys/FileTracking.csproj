@@ -506,6 +506,18 @@
     <Compile Include="Migrations\201908152218115_RemoveRequestFromNotifAndAddNewFields.Designer.cs">
       <DependentUpon>201908152218115_RemoveRequestFromNotifAndAddNewFields.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201909052231504_AddFileAccessToFileModel.cs" />
+    <Compile Include="Migrations\201909052231504_AddFileAccessToFileModel.Designer.cs">
+      <DependentUpon>201909052231504_AddFileAccessToFileModel.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201909122125114_RemovingRequiredfromFileFields.cs" />
+    <Compile Include="Migrations\201909122125114_RemovingRequiredfromFileFields.Designer.cs">
+      <DependentUpon>201909122125114_RemovingRequiredfromFileFields.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201909122151241_MakeFileDistrictNullable.cs" />
+    <Compile Include="Migrations\201909122151241_MakeFileDistrictNullable.Designer.cs">
+      <DependentUpon>201909122151241_MakeFileDistrictNullable.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Models\AccountViewModels.cs" />
     <Compile Include="Models\AddNumberIfIdentificationSelected.cs" />
@@ -1315,6 +1327,15 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201908152218115_RemoveRequestFromNotifAndAddNewFields.resx">
       <DependentUpon>201908152218115_RemoveRequestFromNotifAndAddNewFields.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201909052231504_AddFileAccessToFileModel.resx">
+      <DependentUpon>201909052231504_AddFileAccessToFileModel.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201909122125114_RemovingRequiredfromFileFields.resx">
+      <DependentUpon>201909122125114_RemovingRequiredfromFileFields.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201909122151241_MakeFileDistrictNullable.resx">
+      <DependentUpon>201909122151241_MakeFileDistrictNullable.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>

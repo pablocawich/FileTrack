@@ -97,27 +97,29 @@
             @if (Model.Title != "New File")
             {
                 <div class="form-group">
-                    @Html.LabelFor(f => f.File.PreviousFileNumber, new {@class = "control-label"})
+                    @Html.LabelFor(f => f.File.PreviousFileNumber, new { @class = "control-label" })
                     <div class="input-group">
-                        <span class="input-group-addon"><i class="fa fa-clipboard"></i>
-                        </span>@Html.TextBoxFor(f => f.File.PreviousFileNumber, new {@class = "form-control", @placeholder = "max of 100 characters..."})
+                        <span class="input-group-addon">
+                            <i class="fa fa-clipboard"></i>
+                        </span>@Html.TextBoxFor(f => f.File.PreviousFileNumber, new { @class = "form-control", @placeholder = "max of 100 characters..." })
                     </div>
                     @Html.ValidationMessageFor(f => f.File.PreviousFileNumber)
                 </div>
-            } 
+            }
             <div class="form-group">
-                @Html.LabelFor(f => f.File.LoanNumber, new {@class = "control-label"})
+                @Html.LabelFor(f => f.File.LoanNumber, new { @class = "control-label" })
                 <div class="input-group">
-                    <span class="input-group-addon"><i class="glyphicon glyphicon-list-alt"></i>
-                    </span>@Html.TextAreaFor(f => f.File.LoanNumber, new {@class = "form-control", @placeholder = "Can have a max of 164 characters"})
+                    <span class="input-group-addon">
+                        <i class="fa fa-credit-card"></i>
+                    </span>@Html.TextAreaFor(f => f.File.LoanNumber, new { @class = "form-control", @placeholder = "Can have a max of 164 characters" })
                 </div>
                 @Html.ValidationMessageFor(f => f.File.LoanNumber)
             </div>
             <div class="form-group">
-                @Html.LabelFor(f => f.File.FileStatusId, new {@class = "control-label"})
+                @Html.LabelFor(f => f.File.FileStatusId, new { @class = "control-label" })
                 <div class="input-group">
-                    <span class="input-group-addon" style="max-width: 100%;"><i class="glyphicon glyphicon-list"></i></span>
-                    @Html.DropDownListFor(f => f.File.FileStatusId, new SelectList(Model.FileStatuses, "Id", "Status"), "Select file type status :", new {@class = "form-control"})
+                    <span class="input-group-addon" style="max-width: 100%;"><i class="fa fa-ellipsis-h"></i></span>
+                    @Html.DropDownListFor(f => f.File.FileStatusId, new SelectList(Model.FileStatuses, "Id", "Status"), "Select file type status :", new { @class = "form-control" })
                 </div>
                 @Html.ValidationMessageFor(f => f.File.FileStatusId)
             </div>
@@ -127,28 +129,39 @@
                 </div>
                 <div class="panel-body">
                     <div class="form-group">
-                        @Html.LabelFor(f => f.File.IdentificationOptionId, new {@class = "control-label"})
+                        @Html.LabelFor(f => f.File.IdentificationOptionId, new { @class = "control-label" })
                         <div class="input-group">
                             <span class="input-group-addon" style="max-width: 100%;"><i class="glyphicon glyphicon-list"></i></span>
-                            @Html.DropDownListFor(f => f.File.IdentificationOptionId, new SelectList(Model.IdentificationOptions, "Id", "Identification"), "Select Identification Type :", new {@class = "form-control"})
+                            @Html.DropDownListFor(f => f.File.IdentificationOptionId, new SelectList(Model.IdentificationOptions, "Id", "Identification"), "Select Identification Type :", new { @class = "form-control" })
                         </div>
                         @Html.ValidationMessageFor(f => f.File.IdentificationOptionId)
                     </div>
                     <div class="form-group">
-                        @Html.LabelFor(f => f.File.IdentificationNumber, new {@class = "control-label"})
+                        @Html.LabelFor(f => f.File.IdentificationNumber, new { @class = "control-label" })
                         <div class="input-group">
-                            <span class="input-group-addon"><i class="glyphicon glyphicon-credit-card"></i>
-                            </span>@Html.TextBoxFor(f => f.File.IdentificationNumber, new {@class = "form-control", @placeholder = "E.g. 000333138 "})
+                            <span class="input-group-addon">
+                                <i class="glyphicon glyphicon-credit-card"></i>
+                            </span>@Html.TextBoxFor(f => f.File.IdentificationNumber, new { @class = "form-control", @placeholder = "E.g. 000333138 " })
                         </div>
                         @Html.ValidationMessageFor(f => f.File.IdentificationNumber)
                     </div>
                 </div>
             </div>
             <div class="form-group">
-                @Html.LabelFor(f => f.File.Comments, new {@class = "control-label"})
+                @Html.LabelFor(f => f.File.FileAccess, new { @class = "control-label" })
                 <div class="input-group">
-                    <span class="input-group-addon"><i class="glyphicon glyphicon-comment"></i>
-                    </span>@Html.TextAreaFor(f => f.File.Comments, new {@class = "form-control", @placeholder = "Maximum of 255 characters permitted..."})
+                    <span class="input-group-addon">
+                        <i class="fa fa-paper-plane"></i>
+                    </span>@Html.TextAreaFor(f => f.File.FileAccess, new { @class = "form-control", @placeholder = "Maximum of 200 characters permitted..." })
+                </div>
+                @Html.ValidationMessageFor(f => f.File.FileAccess)
+            </div>
+            <div class="form-group">
+                @Html.LabelFor(f => f.File.Comments, new { @class = "control-label" })
+                <div class="input-group">
+                    <span class="input-group-addon">
+                        <i class="fa fa-commenting"></i>
+                    </span>@Html.TextAreaFor(f => f.File.Comments, new { @class = "form-control", @placeholder = "Maximum of 255 characters permitted..." })
                 </div>
                 @Html.ValidationMessageFor(f => f.File.Comments)
             </div>
@@ -163,7 +176,7 @@
                 <div class="form-group">
                     @Html.LabelFor(f => f.File.VolumeOneDescription, new {@class = "control-label"})
                     <div class="input-group">
-                        <span class="input-group-addon"><i class="glyphicon glyphicon-comment"></i>
+                        <span class="input-group-addon"><i class="fa fa-commenting-o"></i>
                         </span>@Html.TextAreaFor(f => f.File.VolumeOneDescription, new {@class = "form-control", @placeholder = "200 character limit..."})
                     </div>
                     @Html.ValidationMessageFor(f => f.File.VolumeOneDescription)
@@ -198,7 +211,10 @@
             if ($("#File_IdentificationOptionId").val() == 0)
                 $("#File_IdentificationNumber").prop("disabled", true);
 
-            $("#File_FileStatusId").val(1);
+            //We only want to get the default value when the file being created, to do that we
+            //check if input element is 0, which means no value
+            if ($("#File_FileStatusId").val() == 0)
+                $("#File_FileStatusId").val(1);
 
             //Ensures Identification select list responds to the ID number text box according to input
             //if a value is selected the text box is enabled else remains disabled
@@ -228,15 +244,14 @@
 
                 });
 
-            $("#submitFileBtn").on("click",
-                function () {
+            /*$("#submitFileBtn").on("click",
+                function() {
                     $(this).attr("disabled", true);
-                    $("#fileFormId").submit(function(e) {
-                        //$(this).attr("disabled", true);
-                    });
+                    bootbox.alert("Attempting to submit....");
+
                     $(this).attr("disabled", false);
                 });
-
+                */
         });
     </script>
 

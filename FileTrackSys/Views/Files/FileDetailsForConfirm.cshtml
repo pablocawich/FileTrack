@@ -12,6 +12,10 @@
             <input class="form-control" type="text" placeholder="@Model.FullName" readonly>
         </div>
         <div class="form-group">
+            <label>District:</label>
+            <input class="form-control" type="text" placeholder="@Model.Districts.District" readonly>
+        </div>
+        <div class="form-group">
             <label>Street:</label>
             <input class="form-control" type="text" placeholder="@Model.Street" readonly>
         </div>
@@ -34,7 +38,11 @@
 
         </div>
     </div>
-    <div class="col-md-6">       
+    <div class="col-md-6">
+        <div class="form-group">
+            <label>File Status:</label>
+            <input class="form-control" type="text" placeholder="  @Model.FileStatus.Status" readonly>
+        </div>
         <div class="form-group">
             <label>Comment:</label>
             <input class="form-control" type="text" placeholder="@Model.Comments" readonly>
@@ -48,7 +56,7 @@
             <input class="form-control" type="text" placeholder="  @Model.FileType.Type" readonly>
         </div>
         <div class="form-group">
-            <label>Volume/s:</label>
+            <label>Total Volumes:</label>
             <input class="form-control" type="text" placeholder="  @Model.Volume" readonly>
         </div>
     </div>

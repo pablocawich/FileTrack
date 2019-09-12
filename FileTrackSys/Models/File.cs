@@ -44,21 +44,25 @@ namespace FileTracking.Models
         public string Street { get; set; }
 
         public Location Location { get; set; }
-        [Required]
+        //[Required] //--- making location nullable
         [Display(Name = "Address")]
         public string LocationId { get; set; }
 
         public Districts Districts { get; set; }
 
-        [Required]
+        
         [Display(Name = "District")]
         [DistrictToLocationValidation]
-        public byte DistrictsId { get; set; }
+        public byte? DistrictsId { get; set; }
 
         //----------End basic profile info----------------------------------------------------
 
         [StringLength(255)]
         public string Comments { get; set; }
+
+        [StringLength(200)]
+        [Display(Name = "File Access")]
+        public string FileAccess { get; set; }//added to suite a migration field
 
         [Required]
         [Display(Name = "Date Created")]

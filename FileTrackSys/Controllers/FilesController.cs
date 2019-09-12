@@ -59,7 +59,7 @@ namespace FileTracking.Controllers
         public ActionResult FileDetails(int id)
         {
             var file = _context.Files.Include(f=>f.Districts).Include(f => f.FileType).
-                Include(f => f.IdentificationOption).Include(f=>f.Location).Single(f => f.Id == id);
+                Include(f => f.IdentificationOption).Include(f=>f.FileStatus).Include(f=>f.Location).Single(f => f.Id == id);
             return PartialView(file);
         }
         
@@ -67,7 +67,7 @@ namespace FileTracking.Controllers
         public ActionResult FileDetailsForConfirm(int id)
         {
             var file = _context.Files.Include(f => f.Districts).Include(f => f.FileType).
-                Include(f => f.IdentificationOption).Include(f => f.Location).Single(f => f.Id == id);
+                Include(f => f.IdentificationOption).Include(f=>f.FileStatus).Include(f => f.Location).Single(f => f.Id == id);
             return PartialView(file);
 
         }
@@ -174,6 +174,7 @@ namespace FileTracking.Controllers
                 fileInDb.LoanNumber = file.LoanNumber;
                 fileInDb.PreviousFileNumber = file.PreviousFileNumber;
                 fileInDb.FullName = CreateFullName(file.FirstName, file.MiddleName, file.LastName);
+                fileInDb.FileAccess = file.FileAccess;
                 _context.SaveChanges();
             }           
 
