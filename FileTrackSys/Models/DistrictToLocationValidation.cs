@@ -23,6 +23,13 @@ namespace FileTracking.Models
             //return base.IsValid(value, validationContext);
 
             var file = (File)validationContext.ObjectInstance;
+            if(file.DistrictsId == null && file.LocationId == null)
+                return ValidationResult.Success;
+            if(file.DistrictsId == null && file.LocationId != null)
+                return new ValidationResult("A district must be provided before that matches the selected location.");
+            if(file.DistrictsId != null && file.LocationId == null)
+                return new ValidationResult("Ensure you provide a valid location associated with the selected district.");
+
             var fileLocation = _context.Locations.Single(l => l.LocationId == file.LocationId);
             bool error = false;
             if (file.LocationId != null && file.DistrictsId != 0)

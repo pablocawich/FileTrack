@@ -15,11 +15,19 @@
             <label>Street:</label>
             <input class="form-control" type="text" placeholder="@Model.Street" readonly>
         </div>
-
-        <div class="form-group">
+        @if (Model.LocationId == null)
+        {
             <label>File Address:</label>
-            <input class="form-control" type="text" placeholder="@Model.Location.Name" readonly>
-        </div>
+            <input class="form-control" type="text" placeholder="N/A" readonly>
+        }
+        else
+        {
+            <div class="form-group">
+                <label>File Address:</label>
+                <input class="form-control" type="text" placeholder="@Model.Location.Name" readonly>
+            </div>
+        }
+       
         <div class="form-group">
             <label>Loan Number/s</label>
             <input class="form-control" type="text" placeholder=" @Model.LoanNumber" readonly>
@@ -28,7 +36,7 @@
             @if (Model.IdentificationOptionId == null)
             {
                 <label>Other ID</label>
-                <input class="form-control" type="text" placeholder="Not Provided" readonly>
+                <input class="form-control" type="text" placeholder="N/A" readonly>
             }
             else
             {

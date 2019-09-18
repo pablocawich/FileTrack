@@ -53,34 +53,59 @@
 
 @section scripts{
     <script>
-        $(document).ready(function () {
+        $(document).ready(function() {
             var userFileTable = $("#userFileTable").DataTable({
                 "ajax": {
-                    "url": siteURL+"/Files/GetFiles",
+                    "url": siteURL + "/Files/GetFiles",
                     "data": "POST",
                     "datatype": "json"
                 },
                 "columns": [
                     {
-                        "data": "FileNumber", "name": "FileNumber",
+                        "data": "FileNumber",
+                        "name": "FileNumber",
                         render: function(data, type, file) {
-                            return "<span data-url='"+file.Id+" 'class='glyphicon glyphicon-file btn btn-block btn-sm btn-primary spanModal'>" + file.FileNumber+"</span>";
+                            return "<span data-url='" +
+                                file.Id +
+                                " 'class='glyphicon glyphicon-file btn btn-block btn-sm btn-primary spanModal'>" +
+                                file.FileNumber +
+                                "</span>";
                         }
                     },
                     {
                         "data": "FullName",
                     },
-                   
-                    { "data": "Location.Name", "name": "Location.Name" },
-                    { "data": "Districts.District", "name": "Districts.District" },
+                    {
+                        "data": "Location.Name",
+                        "name": "Location.Name",
+                        render: function(data) {
+                            if (data == null) {
+                                return "<i>N/A</i>";
+                            }
+                            return data;
+                        }
+                    },
+                    {
+                        "data": "Districts.District", "name": "Districts.District",
+                        render: function (data) {
+                            if (data == null) {
+                                return "<i>N/A</i>";
+                            }
+                            return data;
+                        }
+                    },
                     { "data": "LoanNumber", "name": "LoanNumber" },
                     { data: "PreviousFileNumber" },
                     { "data": "Volume", "name": "Volume" },
                     {
                         data: "Id",
 
-                        "render": function (data, type, vol) {                           
-                            var buttonRequest = "<button class='btn js-requestFile' data-request-name='" + vol.FirstName + "'data-request-file-id='" + data + "'><i class='fa fa-outdent'></i></button>";
+                        "render": function(data, type, vol) {
+                            var buttonRequest = "<button class='btn js-requestFile' data-request-name='" +
+                                vol.FirstName +
+                                "'data-request-file-id='" +
+                                data +
+                                "'><i class='fa fa-outdent'></i></button>";
                             return buttonRequest;
                         }
                     }
@@ -92,14 +117,14 @@
                     "processing": "Processing Files... Kindly hold"
                 },
                 "dom": '<"top"l>rt<"bottom"ip><"clear">',
-                "fnInitComplete": function (oSettings, json) {
+                "fnInitComplete": function(oSettings, json) {
                     addUserSearchControl(json);
                 }
             });
 
             function addUserSearchControl(json) {
                 $("#searchUserTable thead tr").append($("#userFileTable thead .searchable2").clone());
-                $("#searchUserTable thead tr:eq(0) th").each(function (index) {
+                $("#searchUserTable thead tr:eq(0) th").each(function(index) {
                     if (index != 2) {
                         $(this).replaceWith(
                             '<th><div class="input-group"><input class="inputSearch2 form-control" type="text" ' +
@@ -109,7 +134,7 @@
                             '<button class="btn btn-success" type="button" disabled> <i class="fa fa-search"></i></button> </span></div></th>');
                         var searchControl = $("#searchUserTable thead tr:eq(0) th:eq(" + index + ") input");
                         searchControl.on('keyup',
-                            function () {
+                            function() {
                                 userFileTable.column(index).search(searchControl.val()).draw();
                             });
                     } else {
@@ -117,22 +142,23 @@
                         $(this).replaceWith(
                             "<th><div class='input-group'><select class='form-control' id = 'distList2'>" +
                             "<option value>Select District:</option> " +
-                            "<option value = 'Corozal'>Corozal</option> " +
-                            "<option value = 'Orange Walk'>Orange Walk</option> " +
-                            "<option value = 'Belize'>Belize</option>" +
-                            "<option value = 'Cayo'>Cayo</option>" +
-                            "<option value = 'Stann Creek'>Stann Creek</option>" +
-                            "<option value = 'Toledo'>Toledo</option>" +
+                            "<option value = '1'>Corozal</option> " +
+                            "<option value = '2'>Orange Walk</option> " +
+                            "<option value = '3'>Belize</option>" +
+                            "<option value = '4'>Cayo</option>" +
+                            "<option value = '5'>Stann Creek</option>" +
+                            "<option value = '6'>Toledo</option>" +
                             "</select> <span class='input-group-btn'>" +
                             "<button class='btn btn-success' type='button' disabled><i class='fa fa-list-ol'></i></button></span></div></th>");
                         var searchControlSelect = $("#searchUserTable thead tr:eq(0) th:eq(" + index + ") select");
                         searchControlSelect.on('change',
-                            function () {
+                            function() {
                                 userFileTable.column(index).search(searchControlSelect.val()).draw();
                             });
                     }
                 });
             }
+
             //-------------------------End dataTables implementation ---------------------------------------
             //converts c#'s dateTime value to readable jquery string
             function getDateString(date) {
@@ -141,39 +167,49 @@
             }
 
             //opens modal that displays file information for a specif file
-            $("#userFileTable").on("click",".spanModal",function() {
-                var id = $(this).attr("data-url");
-                var url = siteURL+"/Files/FileDetails/" + id;
+            $("#userFileTable").on("click",
+                ".spanModal",
+                function() {
+                    var id = $(this).attr("data-url");
+                    var url = siteURL + "/Files/FileDetails/" + id;
                     // alert(url);
 
                     $('#modelContent').load(url);
                     $('#myModal').modal('show');
-            });
+                });
 
             //sends user to the volumes page to be able specify and request a volume
-            $("#userFileTable").on("click", ".js-requestFile", function () {
-                var button = $(this);
-                var name = button.attr("data-request-name");
-                bootbox.confirm("Please specify the volume you want for <strong>"+name.toUpperCase()+"</strong>. Click Ok to choose.", function (result) {
-                    if (result) {
-                        window.location.href = siteURL+"/FileVolumes/RequestFile/" + button.attr("data-request-file-id");
-                    }
+            $("#userFileTable").on("click",
+                ".js-requestFile",
+                function() {
+                    var button = $(this);
+                    var name = button.attr("data-request-name");
+                    bootbox.confirm(
+                        "Please specify the volume you want for <strong>" +
+                        name.toUpperCase() +
+                        "</strong>. Click Ok to choose.",
+                        function(result) {
+                            if (result) {
+                                window.location.href =
+                                    siteURL + "/FileVolumes/RequestFile/" + button.attr("data-request-file-id");
+                            }
+                        });
                 });
-            });
             //clear form button functionality
-            $("#userSearchClearBtn").on('click',function () {
-                                
-                      userFileTable.column(0).search('').draw();
-                      userFileTable.column(1).search('').draw();
-                      userFileTable.column(2).search('').draw();
-                      userFileTable.column(3).search('').draw();
-                      userFileTable.column(4).search('').draw();
+            $("#userSearchClearBtn").on('click',
+                function() {
 
-                      $(".inputSearch2").val('');
+                    userFileTable.column(0).search('').draw();
+                    userFileTable.column(1).search('').draw();
+                    userFileTable.column(2).search('').draw();
+                    userFileTable.column(3).search('').draw();
+                    userFileTable.column(4).search('').draw();
 
-                      $("#distList2").val(null);
+                    $(".inputSearch2").val('');
 
-            });
+                    $("#distList2").val(null);
+
+                });
 
         });
     </script>

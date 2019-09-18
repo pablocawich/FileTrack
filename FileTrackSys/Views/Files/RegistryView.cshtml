@@ -76,8 +76,24 @@
                         }
                     },
                     {"data": "FullName"},
-                    { "data": "Location.Name", "name": "Location.Name" },
-                    { "data": "Districts.District", "name": "Districts.District" },
+                    {
+                        "data": "Location.Name", "name": "Location.Name",
+                        render: function (data) {
+                            if (data == null) {
+                                return "<i>N/A</i>";
+                            }
+                            return data;
+                        }
+                    },
+                    {
+                        "data": "Districts.District", "name": "Districts.District",
+                        render: function (data) {
+                            if (data == null) {
+                                return "<i>N/A</i>";
+                            }
+                            return data;
+                        }
+                    },
                     { "data": "LoanNumber", "name": "LoanNumber" },
                     {
                         data: "PreviousFileNumber"
@@ -135,12 +151,12 @@
                         $(this).replaceWith(
                             "<th><div class='input-group'><select class='form-control' id = 'distList'>" +
                             "<option value>Districts:</option> " +
-                            "<option value = 'Corozal'>Corozal</option> " +
-                            "<option value = 'Orange Walk'>Orange Walk</option> " +
-                            "<option value = 'Belize'>Belize</option>" +
-                            "<option value = 'Cayo'>Cayo</option>" +
-                            "<option value = 'Stann Creek'>Stann Creek</option>" +
-                            "<option value = 'Toledo'>Toledo</option>" +
+                            "<option value = '1'>Corozal</option> " +
+                            "<option value = '2'>Orange Walk</option> " +
+                            "<option value = '3'>Belize</option>" +
+                            "<option value = '4'>Cayo</option>" +
+                            "<option value = '5'>Stann Creek</option>" +
+                            "<option value = '6'>Toledo</option>" +
                             "</select><span class='input-group-btn'>" +
                             "<button class='btn btn-success' type='button' disabled><i class='fa fa-list-ol'></i></button></span></div></th>");
                         var searchControlSelect = $("#searchTable thead tr:eq(0) th:eq(" + index + ") select");

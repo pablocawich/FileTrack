@@ -22,7 +22,7 @@ namespace FileTracking.Models
 
         //Basic Profile like info----------------------------------------------------------
         [Required]
-        [MaxLength(54)]
+        [MaxLength(100)]
         [Display(Name = "First Name")]
         public string FirstName { get; set; }
 
