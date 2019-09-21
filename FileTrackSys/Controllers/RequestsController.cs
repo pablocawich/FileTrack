@@ -755,6 +755,12 @@ namespace FileTracking.Controllers
 
             return Json(new { success = false, message = "This account is not active. Kindly exit" }, JsonRequestBehavior.AllowGet);
         }
+
+        [Authorize(Roles = Role.RegularUser)]
+        public JsonResult DirectTransfer()
+        {
+            return null;
+        }
     }
 
 }

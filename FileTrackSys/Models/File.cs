@@ -40,7 +40,7 @@ namespace FileTracking.Models
         public string FullName { get; set; }
 
         [Required]
-        [MaxLength(64)]
+        [MaxLength(250)]
         public string Street { get; set; }
 
         public Location Location { get; set; }

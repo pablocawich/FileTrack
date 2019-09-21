@@ -63,7 +63,9 @@
                     },
                     {
                         "data": "AcceptedBy.Name",
-                        render: function (data) { return `<strong><i class="fa fa-user-circle-o"></i> ${data}</strong>`; }
+                        render: function(data) {
+                            return `<strong><i class="fa fa-user-circle-o"></i> ${data}</strong>`;
+                        }
                     },
                     {
                         "data": "AcceptedDate",
@@ -73,7 +75,9 @@
                     },
                     {
                         data: "RequesterBranch.Branch",
-                        render: function (data) { return `<strong><i class="fa fa-location-arrow"></i> ${data}</strong>`; }
+                        render: function(data) {
+                            return `<strong><i class="fa fa-location-arrow"></i> ${data}</strong>`;
+                        }
                     },
                     {
                         data: "Id",
@@ -81,12 +85,24 @@
                             var buttonReturn =
                                 `<a class="btn js-return" data-return-id="${data
                                     }"><i class="fa fa-share-square-o"></i> Return</a>`;
-                            return buttonReturn;
+                            var buttonDirectTransfer = `<a class="btn js-trans" data-trans-id="${data
+                                }"><i class="fa fa-share-square-o"></i> Transfer</a>`;
+                            return buttonReturn + " | " + buttonDirectTransfer;
                         }
                     }
                 ]
             });
             //----------------------------post ajax -------------------------
+            $("#myFiles").on('click',
+                '.js-trans',
+                function() {
+                    bootbox.confirm('Are you sure you want to perform a direct transfer?',
+                        function(result) {
+                            if (result) {
+
+                            }
+                        });
+                });
             $("#myFiles").on('click',
                 '.js-return',
                 function() {

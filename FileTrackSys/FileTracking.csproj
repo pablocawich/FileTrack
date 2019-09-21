@@ -522,6 +522,10 @@
     <Compile Include="Migrations\201909181929415_ChangeFirstNameLength.Designer.cs">
       <DependentUpon>201909181929415_ChangeFirstNameLength.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201909191556274_UpdateFileStreetLength.cs" />
+    <Compile Include="Migrations\201909191556274_UpdateFileStreetLength.Designer.cs">
+      <DependentUpon>201909191556274_UpdateFileStreetLength.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Models\AccountViewModels.cs" />
     <Compile Include="Models\AddNumberIfIdentificationSelected.cs" />
@@ -1343,6 +1347,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201909181929415_ChangeFirstNameLength.resx">
       <DependentUpon>201909181929415_ChangeFirstNameLength.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201909191556274_UpdateFileStreetLength.resx">
+      <DependentUpon>201909191556274_UpdateFileStreetLength.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
