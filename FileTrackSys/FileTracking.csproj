@@ -561,6 +561,7 @@
     <Compile Include="ViewModels\FileViewModel.cs" />
     <Compile Include="ViewModels\FileVolumeViewModel.cs" />
     <Compile Include="ViewModels\RegistryNotificationViewModel.cs" />
+    <Compile Include="ViewModels\RequestAndUserViewModel.cs" />
     <Compile Include="ViewModels\UserAdModel.cs" />
     <Compile Include="ViewModels\UserBranchViewModel.cs" />
     <Compile Include="ViewModels\VolumeBranchesViewModel.cs" />
@@ -1114,6 +1115,7 @@
     <Content Include="Views\Files\_ChangeVolumeBranch.cshtml" />
     <Content Include="Views\Home\ContentArea.cshtml" />
     <Content Include="Views\Shared\InvalidGroup.cshtml" />
+    <Content Include="Views\Requests\_DirectTransferUsers.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Reports\" />

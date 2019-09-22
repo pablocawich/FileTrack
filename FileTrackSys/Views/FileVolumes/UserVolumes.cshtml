@@ -10,15 +10,15 @@
     <!-- /.col-lg-12 -->
 </div>
 <link rel="stylesheet" href="https://cdn.datatables.net/1.10.19/css/dataTables.bootstrap.min.css">
-<div class="row">   
+<div class="row">
     <div>
         <p>
             <i>
-                File registered here are, as of this moment, in your possession and must be returned to registry when use is 
+                File registered here are, as of this moment, in your possession and must be returned to registry when use is
                 no longer required.
             </i>
         </p>
-    </div> 
+    </div>
     <table id="myFiles" class="table table-hover">
         <thead>
             <tr>
@@ -30,11 +30,17 @@
                 <th>Return</th>
             </tr>
         </thead>
-        
+
     </table>
     <div class="modal fade" id="userReturnModal" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" data-backdrop="static" data-keyboard="true">
         <div class="modal-dialog">
             <div class="modal-content" id="returnModelContent">
+            </div>
+        </div>
+    </div>
+    <div class="modal fade" id="directTransferModal" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" data-backdrop="static" data-keyboard="true">
+        <div class="modal-dialog">
+            <div class="modal-content" id="directTransferModelContent">
             </div>
         </div>
     </div>
@@ -86,23 +92,13 @@
                                 `<a class="btn js-return" data-return-id="${data
                                     }"><i class="fa fa-share-square-o"></i> Return</a>`;
                             var buttonDirectTransfer = `<a class="btn js-trans" data-trans-id="${data
-                                }"><i class="fa fa-share-square-o"></i> Transfer</a>`;
+                                }"><i class="fa fa-rocket"></i> Transfer</a>`;
                             return buttonReturn + " | " + buttonDirectTransfer;
                         }
                     }
                 ]
             });
             //----------------------------post ajax -------------------------
-            $("#myFiles").on('click',
-                '.js-trans',
-                function() {
-                    bootbox.confirm('Are you sure you want to perform a direct transfer?',
-                        function(result) {
-                            if (result) {
-
-                            }
-                        });
-                });
             $("#myFiles").on('click',
                 '.js-return',
                 function() {
@@ -170,6 +166,8 @@
                         });
                 });
 
+            //modal initiation
+
             $("#myFiles").on("click",
                 ".returnModal",
                 function() {
@@ -181,11 +179,78 @@
                     $('#returnModelContent').load(url);
                     $('#userReturnModal').modal('show');
                 });
+            //transfer button in files with me interface, event handler
+            $("#myFiles").on("click",
+                ".js-trans",
+                function() {
+                    var $btn = $(this);
+                    bootbox.confirm('Are you sure you want to perform a <strong>DIRECT TRANSFER</strong>?',
+                        function(result) {
+                            if (result) {
+                                var id = $btn.attr("data-trans-id");
+                                var url = siteURL + "/Requests/DirectTransferModal/" + id;
+                                // alert(url);
+
+                                $('#directTransferModelContent').load(url);
+                                $('#directTransferModal').modal('show');
+                            }
+                        });
+
+                });
+            //
+            $("#directTransferModelContent").on('click',
+                "#directTransBtn",
+                function() {
+
+                    if ($("#userSelect").val() === '') {
+                        alert("Not a valid selection. Choose a user");
+                    } else {
+                        var userId = $("#userSelect").val();
+                        let userName = $("#userSelect option:selected").text();
+                        bootbox.confirm({
+                            message: `You have selected <strong>${userName}</strong>. Are you sure?`,
+                            buttons: {
+                                confirm: {
+                                    label: 'Yes',
+                                    className: 'btn-success'
+                                },
+                                cancel: {
+                                    label: 'No',
+                                    className: 'btn-danger'
+                                }
+                            },
+                            callback: function(result) {
+                                // ...
+                                if (result) {
+                                    $.ajax({
+                                        url: siteURL + '/Requests/TransferToUser/' + 1083,
+                                        success: function(response) {
+                                            if (!response.success)
+                                                toastr.error(response.message,
+                                                    "Direct Transfer",
+                                                    { positionClass: "toast-bottom-right" });
+
+
+                                        },
+                                        statusCode: {
+                                            404: function(content) { alert('cannot find resource'); },
+                                            500: function(content) { alert('internal server error'); }
+                                        }
+                                    });
+                                    $('#directTransferModal').modal('hide');
+                                }
+
+                            }
+                        });
+                    }
+
+                });
 
             function getDateString(date) {
                 var dateObj = new Date(parseInt(date.substr(6)));
                 return dateObj.toDateString();
             }
+
         });
     </script>
 }

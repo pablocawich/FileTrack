@@ -5,6 +5,7 @@ using System.Linq;
 using System.Linq.Dynamic;
 using System.Net;
 using System.Web;
+using System.Web.Management;
 using System.Web.Mvc;
 using System.Web.Script.Serialization;
 using FileTracking.Models;
@@ -756,10 +757,35 @@ namespace FileTracking.Controllers
             return Json(new { success = false, message = "This account is not active. Kindly exit" }, JsonRequestBehavior.AllowGet);
         }
 
+        //Initiating direct transfer -----------------------------------------------------------------------
+
         [Authorize(Roles = Role.RegularUser)]
-        public JsonResult DirectTransfer()
+        public ActionResult DirectTransferModal(int id)
         {
-            return null;
+            var request = _context.Requests.Single(r => r.Id == id);
+            var userList = _context.AdUsers.Where(u => u.Role == Role.RegularUser && u.Id != request.UserId && 
+                  u.BranchesId == request.RequesterBranchId && u.IsDisabled == false).ToList();
+
+            var viewModel = new RequestAndUserViewModel()
+            {
+                Users = userList,
+                Request = request
+            };
+
+            return PartialView("_DirectTransferUsers", viewModel);
+        }
+
+
+        [Authorize(Roles = Role.RegularUser)]
+        public JsonResult TransferToUser(int id)
+        {
+            var user = _context.AdUsers.Single(u => u.Id == id);
+
+            
+            return Json(new {success = false, message = "not a valid user" }, JsonRequestBehavior.AllowGet);
+            
+
+            //return Json(new { data = "temp"}, JsonRequestBehavior.AllowGet);
         }
     }
 
