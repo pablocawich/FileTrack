@@ -14,7 +14,7 @@
                 <span class="input-group-addon" style="max-width: 100%;"><i class="fa fa-location-arrow"></i></span>
                 @Html.DropDownListFor(u => u.Users, new SelectList(Model.Users, "Id", "Name"), "Select User:", new { @class = "form-control", @id = "userSelect" })
             </div>
-            <span id="userSelectError" style="color: red"></span>
+            
         </div>
     </div>
     <div class="col-md-6">
@@ -22,7 +22,7 @@
 
 </div>
 <div class="modal-footer">
-    <button class="btn btn-default" id="directTransBtn">Transfer</button>
+    <button class="btn btn-default" id="directTransBtn" data-reqId="@Model.Request.Id">Transfer</button>
     <button type="button" class="btn btn-github"
             data-dismiss="modal">
         Close

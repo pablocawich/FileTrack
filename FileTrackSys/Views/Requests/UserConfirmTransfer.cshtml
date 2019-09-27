@@ -56,7 +56,7 @@
                     },
                     {
                         "data": "FileVolumes.Volume",
-                        render: function(data) { return `<strong>${data}</strong>` }
+                        render: function(data) { return `<strong>Vol. ${data}</strong>` }
                     },
                     {
                         "data": "UserRequestedFrom.Name",
@@ -81,12 +81,21 @@
                         "render": function(data, type, req) {
                             //req.User.Name -> is requesting user not the user who made the transfer or 
                             //from whom the transfer was requested from
+
                             var buttonAccept =
                                 `<button class='btn btn-info btn-circle btn-sm js-confirmBtn' data-prevUser='${
-                                    req.UserRequestedFrom.Name}' data-confirm-reqId='${
-                                    data}' data-acc-user='${req.User.Name}'><i class='fa fa-check'></i></button>`;
+                                    req.UserRequestedFrom.Name}' data-confirm-reqId='${data}'
+                                    data-acc-user='${req.User.Name}'><i class='fa fa-check'></i></button>`;
 
+                            if (req.RequestTypeId === 'DITFR') {
+                                var directBtnReject =
+                                    `<button class='btn btn-danger btn-circle btn-sm js-rejectDirect' data-directPrevUser='${
+                                        req.UserRequestedFrom.Name}' data-directConfirm-reqId='${data
+                                        }' data-direct-username=${req.User.Name}><i class='fa fa-close'></i></button>`;
+                                return buttonAccept + " | " + directBtnReject;
+                            }
                             return buttonAccept;
+
                         }
                     }
                 ]
@@ -98,9 +107,12 @@
                     var btn = $(this);
                     var previousUser = btn.attr('data-prevUser');
                     var reqId = btn.attr('data-confirm-reqId');
+                    //var bindVal = btn.attr('data-bindVal');
+                    //var confirmType = (bindVal == 0) ? "REGULAR" : "DIRECT";
+
                     bootbox.confirm({
-                        title: "<strong>CONFIRMING TRANSFER</strong>",
-                        message:`You are confirming the handling of this file from <strong>${previousUser
+                        title: `<strong>Confirming transfer</strong>`,
+                        message: `You are confirming the handling of this file from <i class='fa fa-user'><i/> <strong>${previousUser
                             }</strong>. Are you sure?`,
                         callback: function(result) {
                             if (result) {
@@ -112,7 +124,9 @@
                                                 "Transfer",
                                                 { positionClass: "toast-bottom-right" });
                                         else
-                                            toastr.error(response.message,"Transfer",{ positionClass: "toast-bottom-right" });
+                                            toastr.error(response.message,
+                                                "Transfer",
+                                                { positionClass: "toast-bottom-right" });
 
                                         confirmTransferTable.row(btn.parents('tr')).remove().draw();
                                     },
@@ -126,6 +140,43 @@
                         }
                     });
 
+                });
+
+            $("#userTransferConfirm").on('click',
+                '.js-rejectDirect',
+                function () {
+                    var $btn = $(this);
+                    var transferringUser = $btn.attr('data-directPrevUser');
+
+                    var reqId = $btn.attr('data-directConfirm-reqId');
+                    bootbox.confirm({
+                        title: '<strong>Reject Direct File Transfer</strong>',
+                        message: `Are you sure you want to reject this direct file transfer from 
+                                   <i class='fa fa-user'></i> <strong>${transferringUser}</strong>?`,
+                        callback: function(result) {
+                            if (result) {
+                                $.ajax({
+                                    url: siteURL + '/Requests/OnRejectDirectTransfer/' + reqId,
+                                    success: function (response) {
+                                        if (response.success)
+                                            toastr.success(response.message ,
+                                                "Transfer",
+                                                { positionClass: "toast-bottom-right" });
+                                        else
+                                            toastr.error(response.message,
+                                                "Transfer",
+                                                { positionClass: "toast-bottom-right" });
+
+                                        confirmTransferTable.row($btn.parents('tr')).remove().draw();
+                                    },
+                                    statusCode: {
+                                        404: function (content) { alert('cannot find resource'); },
+                                        500: function (content) { alert('internal server error'); }
+                                    }
+                                });
+                            }
+                        }
+                    });
                 });
 
             //file number link to modal

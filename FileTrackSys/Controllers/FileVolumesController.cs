@@ -101,8 +101,8 @@ namespace FileTracking.Controllers
             {
                 var request = _context.Requests.Include(r => r.FileVolumes).Include(r => r.RequesterBranch).Include(r => r.AcceptedBy).
                     Where(r => r.UserId == userInDb.Id).Where(r => r.IsRequestActive == true)
-                    .Where(r => r.IsConfirmed == true).
-                    Where(r => r.ReturnStateId == 1).Where(r => r.RequestTypeId == RequestType.InternalRequest).ToList();
+                    .Where(r => r.IsConfirmed == true).Where(r => r.ReturnStateId == 1).
+                    Where(r => r.RequestTypeId == RequestType.InternalRequest  || r.RequestTypeId == RequestType.DirectTransfer).ToList();
 
                 return Json(new { data = request }, JsonRequestBehavior.AllowGet);
 
@@ -220,7 +220,8 @@ namespace FileTracking.Controllers
             var username = new AdUser(User.Identity.Name);
             var adUser = _context.AdUsers.Single(a => a.Username == username.Username);
             var returnedReq = _context.Requests.Include(r => r.FileVolumes).
-                Include(r => r.User.Branches).Where(r=>r.RecipientBranchId == adUser.BranchesId).Where(r=>r.RequestTypeId == RequestType.InternalRequest)
+                Include(r => r.User.Branches).Where(r=>r.RecipientBranchId == adUser.BranchesId)
+                .Where(r=>r.RequestTypeId == RequestType.InternalRequest || r.RequestTypeId == RequestType.DirectTransfer)
                 .Where(r=>r.IsRequestActive == true).Where(r=>r.ReturnStateId == 2).ToList();
 
 

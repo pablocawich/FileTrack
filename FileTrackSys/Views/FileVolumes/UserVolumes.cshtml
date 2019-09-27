@@ -27,7 +27,7 @@
                 <th>Checked Out By</th>
                 <th>Checked Out Date</th>
                 <th>Branch</th>
-                <th>Return</th>
+                <th>Action</th>
             </tr>
         </thead>
 
@@ -65,7 +65,7 @@
                     },
                     {
                         "data": "FileVolumes.Volume",
-                        render: function(data) { return `<strong>${data}</strong>`; }
+                        render: function(data) { return `<strong>Vol. ${data}</strong>`; }
                     },
                     {
                         "data": "AcceptedBy.Name",
@@ -179,11 +179,14 @@
                     $('#returnModelContent').load(url);
                     $('#userReturnModal').modal('show');
                 });
+
             //transfer button in files with me interface, event handler
+            var $tempBtnTbl = null;
             $("#myFiles").on("click",
                 ".js-trans",
                 function() {
                     var $btn = $(this);
+                    $tempBtnTbl = $btn;
                     bootbox.confirm('Are you sure you want to perform a <strong>DIRECT TRANSFER</strong>?',
                         function(result) {
                             if (result) {
@@ -197,16 +200,17 @@
                         });
 
                 });
-            //
+            //checks click event for the modal button
             $("#directTransferModelContent").on('click',
                 "#directTransBtn",
                 function() {
-
+                    var $btn = $(this);
                     if ($("#userSelect").val() === '') {
                         alert("Not a valid selection. Choose a user");
                     } else {
                         var userId = $("#userSelect").val();
                         let userName = $("#userSelect option:selected").text();
+                        var reqId = $btn.attr('data-reqId');
                         bootbox.confirm({
                             message: `You have selected <strong>${userName}</strong>. Are you sure?`,
                             buttons: {
@@ -223,13 +227,18 @@
                                 // ...
                                 if (result) {
                                     $.ajax({
-                                        url: siteURL + '/Requests/TransferToUser/' + 1083,
+                                        url: siteURL + `/Requests/TransferToUser/${userId}/${reqId}`,
                                         success: function(response) {
-                                            if (!response.success)
+                                            if (!response.success) {
                                                 toastr.error(response.message,
                                                     "Direct Transfer",
                                                     { positionClass: "toast-bottom-right" });
-
+                                            } else {
+                                                toastr.success(response.message,
+                                                    "Direct Transfer",
+                                                    { positionClass: "toast-bottom-right" });
+                                                myFilesTable.row($tempBtnTbl.parents('tr')).remove().draw();
+                                            }
 
                                         },
                                         statusCode: {

@@ -4,12 +4,14 @@ using System.Data.Entity;
 using System.Linq;
 using System.Linq.Dynamic;
 using System.Net;
+using System.Runtime.InteropServices;
 using System.Web;
 using System.Web.Management;
 using System.Web.Mvc;
 using System.Web.Script.Serialization;
 using FileTracking.Models;
 using FileTracking.ViewModels;
+using Microsoft.Ajax.Utilities;
 using Microsoft.AspNet.Identity;
 
 namespace FileTracking.Controllers
@@ -743,21 +745,28 @@ namespace FileTracking.Controllers
             //user account not disable carry on
             if (!userInSession.IsDisabled)
             {
-                var requestInDb = _context.Requests.Single(r => r.Id == id);
+                var requestInDb = _context.Requests.Include(r=>r.AcceptedBy).Single(r => r.Id == id);
                 requestInDb.IsConfirmed = true;
+                requestInDb.AcceptedDate = DateTime.Now;
+                if (requestInDb.RequestTypeId ==  RequestType.DirectTransfer)
+                {
+                    //look for bounded request to relieve the previous req to file off it's responsibility.
+                    DeleteBoundedRequest(requestInDb.Id, requestInDb.FileVolumesId, userInSession.Id);
+                }
+
                 _context.SaveChanges();
 
                 //volume record must be updated
                 CheckoutVolume(requestInDb.FileVolumesId, userInSession.Id);
 
                 //FROM obj in the return statement indicates from whom the confirmation is being made in response to.
-                return Json(new { success = true, message = "Confirmation Successful", from = requestInDb.AcceptedBy}, JsonRequestBehavior.AllowGet);
+                return Json(new { success = true, message = "Confirmation Successful", from = requestInDb.AcceptedBy.Name}, JsonRequestBehavior.AllowGet);
             }
 
             return Json(new { success = false, message = "This account is not active. Kindly exit" }, JsonRequestBehavior.AllowGet);
         }
 
-        //Initiating direct transfer -----------------------------------------------------------------------
+        //Initiating direct transfer ----------------------------------------------------------------------------
 
         [Authorize(Roles = Role.RegularUser)]
         public ActionResult DirectTransferModal(int id)
@@ -775,17 +784,131 @@ namespace FileTracking.Controllers
             return PartialView("_DirectTransferUsers", viewModel);
         }
 
-
         [Authorize(Roles = Role.RegularUser)]
-        public JsonResult TransferToUser(int id)
+        [Route("Requests/TransferToUser/{userId}/{reqId}")]
+        public JsonResult TransferToUser(int userId, int reqId)
         {
-            var user = _context.AdUsers.Single(u => u.Id == id);
+            var userInDb = _context.AdUsers.Single(u => u.Id == userId);
+            var request = _context.Requests.Single(r => r.Id == reqId);
+            if (userInDb.Role == Role.RegularUser && userInDb.BranchesId == request.RequesterBranchId)
+            {
+                //int bindVal = RetrieveBindValue();
+                request.IsRequestActive = false;
+                //request.RequestBinder = bindVal;
+                //invoke the binder function and add an increment so as to link the 2 records.
 
-            
-            return Json(new {success = false, message = "not a valid user" }, JsonRequestBehavior.AllowGet);
-            
+                //create a new request record
+                var newReq = new Request()
+                {
+                    FileVolumesId = request.FileVolumesId,
+                    UserId = userId,
+                    RecipientBranchId = request.RecipientBranchId,
+                    RequestStatusId = 2,
+                    RequestDate = DateTime.Now,
+                    //AcceptedDate = DateTime.Now,
+                    IsConfirmed = false,
+                    ReturnStateId = 1,
+                    IsRequestActive = true,
+                   // RequestBinder = bindVal, 
+                    RequestTypeId = RequestType.DirectTransfer,
+                    AcceptedById = request.UserId,
+                    UserRequestedFromId = request.UserId,
+                    RequesterBranchId = request.RequesterBranchId
+                };
 
-            //return Json(new { data = "temp"}, JsonRequestBehavior.AllowGet);
+                _context.Requests.Add(newReq);
+
+                var volumeInDb = _context.FileVolumes.Single(v=>v.Id == request.FileVolumesId);
+                volumeInDb.StatesId = 4;//indicates that the volumes is being transferred
+
+                _context.SaveChanges();
+                
+                //update volume to transfer
+                
+                return Json(new { success = true, message = $"Transferring to {userInDb.Name}. He/She must further confirm to complete transfer." }, JsonRequestBehavior.AllowGet);
+            }
+
+            return Json(new { success = false, message = "Something went wrong. invalid User or Incorrect Request Id." }, JsonRequestBehavior.AllowGet);
+            
+        }
+
+        /*[Authorize(Roles = Role.RegularUser)]
+        public ActionResult ConfirmDirectTransfer()
+        {
+            return View();
+        }
+        [Authorize(Roles = Role.RegularUser)]
+        public JsonResult GetDirectTransfersForConfirmation()
+        {
+            var userInSession = new AdUser(User.Identity.Name);
+
+            var adUserInDb = _context.AdUsers.Single(u => u.Username == userInSession.Username);
+
+            var requestsInDb = _context.Requests.Include(r => r.User).Include(r => r.UserRequestedFrom).Include(r => r.FileVolumes).Include(r => r.RequesterBranch).
+                Where(r => r.UserId == adUserInDb.Id && r.RequestBinder != 0).Where(r => r.UserRequestedFromId != null).Where(r => r.IsConfirmed == false).
+                Where(r => r.RequestStatusId == 2).Where(r => r.IsRequestActive == true).ToList();
+
+            return Json(new { data = requestsInDb }, JsonRequestBehavior.AllowGet);
+        }*/
+        public JsonResult OnRejectDirectTransfer(int id)
+        {
+            var rejReq = _context.Requests.Single(r => r.Id == id);
+
+            //reactivate previous record, since the transfer was rejected.
+            //recall we are searching for a record that is not active
+            var originalReq = FindInitialRequestAndActivate(rejReq.Id, rejReq.FileVolumesId);
+            originalReq.IsRequestActive = true;
+
+            _context.SaveChanges();
+
+            var rejectRecOperation = new RejectedRequestController();
+            rejectRecOperation.SaveToRejectedRequestTable(rejReq);
+
+            _context.Requests.Remove(rejReq);
+            _context.SaveChanges();
+
+            CheckoutVolume(originalReq.FileVolumesId, originalReq.UserId);//since parent req was on transfer prior, we need to change back to checkout since it was never accepted
+
+            return Json(new { success = true, message = $"File should be still be the responsibility of the holding user." +
+                                                        $" {originalReq.User.Name}"}, JsonRequestBehavior.AllowGet);
+        }
+
+        public Request FindInitialRequestAndActivate(int exId, int volId)
+        {
+            var reqObj = _context.Requests.Include(u=>u.User).SingleOrDefault(r=>r.Id != exId && 
+                         r.FileVolumesId == volId && r.RequestTypeId != RequestType.ExternalRequest && r.IsRequestActive == false);
+
+            return reqObj;
+        }
+
+        public int RetrieveBindValue()
+        {
+            int value = 0;
+            var extBinder = _context.ExternalRequestsBinder.Single(b => b.Id == 1);
+
+            value = extBinder.CurrentNumberBinder;
+
+            extBinder.CurrentNumberBinder++;
+            _context.SaveChanges();
+
+            return value;
+        }
+
+        public void DeleteBoundedRequest(int reqId,  int volId, int userId)
+        {
+            var oldRequest = _context.Requests.Single(r =>
+                r.Id != reqId && r.FileVolumesId == volId && r.RequestTypeId != RequestType.ExternalRequest);
+
+            oldRequest.ReturnStateId = 3;
+            oldRequest.ReturnedDate = DateTime.Now;
+            oldRequest.ReturnAcceptById = userId;
+            _context.SaveChanges();
+
+            var completedReqOperation = new CompletedRequestController();
+            completedReqOperation.SaveToCompletedRequestTable(oldRequest);
+
+            _context.Requests.Remove(oldRequest);
+            _context.SaveChanges();
         }
     }
 

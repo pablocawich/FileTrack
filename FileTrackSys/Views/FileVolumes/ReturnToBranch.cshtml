@@ -19,7 +19,7 @@
                 <th>Requester</th>
                 <th>Requester Branch</th>
                 <th>Requested Date</th>
-                <th>File Branch</th>
+                <th>File Origin</th>
                 <th>Action</th>
             </tr>
         </thead>
@@ -54,7 +54,7 @@
                     {
                         "data": "FileVolumes.Volume",
                         render: function (data) {
-                            return `<strong>${data}</strong>`;
+                            return `<strong>Vol. ${data}</strong>`;
                         }
                     },
                     {

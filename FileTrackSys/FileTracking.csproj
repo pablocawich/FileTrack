@@ -526,6 +526,10 @@
     <Compile Include="Migrations\201909191556274_UpdateFileStreetLength.Designer.cs">
       <DependentUpon>201909191556274_UpdateFileStreetLength.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201909242300016_AddNewFileType.cs" />
+    <Compile Include="Migrations\201909242300016_AddNewFileType.Designer.cs">
+      <DependentUpon>201909242300016_AddNewFileType.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Models\AccountViewModels.cs" />
     <Compile Include="Models\AddNumberIfIdentificationSelected.cs" />
@@ -1352,6 +1356,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201909191556274_UpdateFileStreetLength.resx">
       <DependentUpon>201909191556274_UpdateFileStreetLength.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201909242300016_AddNewFileType.resx">
+      <DependentUpon>201909242300016_AddNewFileType.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>

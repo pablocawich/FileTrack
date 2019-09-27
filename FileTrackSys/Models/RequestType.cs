@@ -19,5 +19,7 @@ namespace FileTracking.Models
         public const string InternalRequest = "INREQ";
         [NotMapped]
         public const string ExternalRequest = "EXREQ";
+        [NotMapped]
+        public const string DirectTransfer = "DITFR";
     }
 }
