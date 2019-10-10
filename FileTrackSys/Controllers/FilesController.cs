@@ -361,13 +361,15 @@ namespace FileTracking.Controllers
             //Server side parameters
             int start = Convert.ToInt32(Request["start"]);
             int length = Convert.ToInt32(Request["length"]);
-           // string searchValue = Request["search[value]"];
+
+            //OrderByDescending(r=>r.RequestDate)
+            // string searchValue = Request["search[value]"];
             string sortColumnName = Request["columns["+Request["order[0][column]"]+"][name]"];
             string sortDirection = Request["order[0][dir]"];
 
             //We retrieve the data from the file database with respect to its table relationships
             List<File> FileList = new List<File>();
-            FileList = _context.Files.Include(f=>f.Location).Include(f => f.Districts).ToList<File>();
+            FileList = _context.Files.Include(f => f.Districts).ToList<File>();
 
             int totalFiles = FileList.Count;
             //We check if search value if null or otherwise
@@ -397,8 +399,8 @@ namespace FileTracking.Controllers
 
             int totalFileAfterFilter = FileList.Count;
             //sort Operation
-            FileList = FileList.OrderBy(sortColumnName + " " + sortDirection).ToList<File>();
-
+            //FileList = FileList.OrderBy(sortColumnName + " " + sortDirection).ToList<File>();
+            FileList = FileList.OrderByDescending(f=>f.FileNumber).ToList<File>();
             //Paging Operation
             FileList = FileList.Skip(start).Take(length).ToList<File>();
             return Json(new

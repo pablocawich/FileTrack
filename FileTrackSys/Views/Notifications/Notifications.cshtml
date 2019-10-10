@@ -46,6 +46,36 @@
                     </a>
                 </li>
             }
+            if (notif.MessageId == "TRANREQ")
+            {
+                <li class="alertList" notif-id-attr=@notif.Id>
+                    <a href="#">
+                        <div>
+                            <i class='fa  fa-refresh'></i>@notif.Message.MessageType<span class='pull-right text-muted small'>@notif.Message.MessageText</span>
+                        </div>
+                    </a>
+                </li>
+            }
+            if (notif.MessageId == "TRANACC")
+            {
+                <li class="alertList" notif-id-attr=@notif.Id>
+                    <a href="#">
+                        <div>
+                            <i class='fa  fa-check-circle'></i>@notif.Message.MessageType<span class='pull-right text-muted small'>@notif.Message.MessageText</span>
+                        </div>
+                    </a>
+                </li>
+            }
+            if (notif.MessageId == "TRANREJ")
+            {
+                <li class="alertList" notif-id-attr=@notif.Id>
+                    <a href="#">
+                        <div>
+                            <i class='fa  fa-times-rectangle'></i>@notif.Message.MessageType<span class='pull-right text-muted small'>@notif.Message.MessageText</span>
+                        </div>
+                    </a>
+                </li>
+            }
 
 
         }
@@ -58,30 +88,3 @@
         </li>
     </ul>
 </li>
-@section scripts{
-    <script>
-        $(document).ready(function () {
-            $(".alertList").on("click",
-                function () {
-                    var list = $(this);
-                    var notifId = $(this).attr("notif-id-attr");
-
-                    $.ajax({
-                        url: siteURL+'/Notifications/ChangeToRead/' + notifId,
-                        success: function () {
-                            list.remove();
-                            if ($("#notifAlert").length() == 1)
-                                $("#notifIcon").css('color', 'white');
-
-                        },
-                        statusCode: {
-                            404: function (content) { alert('cannot find resource'); },
-                            500: function (content) { alert('internal server error'); }
-                        }
-                    });
-
-                });
-        });
-
-    </script>
-}

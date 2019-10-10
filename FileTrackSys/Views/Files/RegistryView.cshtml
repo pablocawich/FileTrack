@@ -32,11 +32,10 @@
                 <tr class="firstRow">
                     <th class="searchable" width="60">File No.</th>
                     <th class="searchable" width="90">Name</th>
-                    <th width="80">Address</th>
                     <th class="searchable" width="50">District</th>
-                    <th class="searchable" width="100">Loan No.</th>
-                    <th class="searchable" width="80">Prev File No.</th>
-                    <th width="80">Total Volumes</th>
+                    <th class="searchable" width="100">Loan Number</th>
+                    <th class="searchable" width="80">Previous File No.</th>
+               
                     <th width="105">Actions</th>
                 </tr>
             </thead>
@@ -76,7 +75,7 @@
                         }
                     },
                     {"data": "FullName"},
-                    {
+                    /*{
                         "data": "Location.Name", "name": "Location.Name",
                         render: function (data) {
                             if (data == null) {
@@ -84,7 +83,7 @@
                             }
                             return data;
                         }
-                    },
+                    },*/
                     {
                         "data": "Districts.District", "name": "Districts.District",
                         render: function (data) {
@@ -98,7 +97,7 @@
                     {
                         data: "PreviousFileNumber"
                     },
-                    { "data": "Volume", "name": "Volume" },
+                    //{ "data": "Volume", "name": "Volume" },
                     {
                         data: "Id",
 

@@ -530,6 +530,14 @@
     <Compile Include="Migrations\201909242300016_AddNewFileType.Designer.cs">
       <DependentUpon>201909242300016_AddNewFileType.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201910091739070_AddNewMessageData.cs" />
+    <Compile Include="Migrations\201910091739070_AddNewMessageData.Designer.cs">
+      <DependentUpon>201910091739070_AddNewMessageData.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201910102120167_AddExtRequestMessageToMssgDb.cs" />
+    <Compile Include="Migrations\201910102120167_AddExtRequestMessageToMssgDb.Designer.cs">
+      <DependentUpon>201910102120167_AddExtRequestMessageToMssgDb.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Models\AccountViewModels.cs" />
     <Compile Include="Models\AddNumberIfIdentificationSelected.cs" />
@@ -1359,6 +1367,12 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201909242300016_AddNewFileType.resx">
       <DependentUpon>201909242300016_AddNewFileType.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201910091739070_AddNewMessageData.resx">
+      <DependentUpon>201910091739070_AddNewMessageData.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201910102120167_AddExtRequestMessageToMssgDb.resx">
+      <DependentUpon>201910102120167_AddExtRequestMessageToMssgDb.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>

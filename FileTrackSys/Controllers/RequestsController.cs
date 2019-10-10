@@ -30,7 +30,7 @@ namespace FileTracking.Controllers
         {
             _context.Dispose();
         }
-
+        //for regular request notification
         public void CreateNotification(Request req, string messageId)
         {
             var notif = new Notification()
@@ -44,6 +44,43 @@ namespace FileTracking.Controllers
                 SenderUserId = req.AcceptedById
             };
 
+            _context.Notifications.Add(notif);
+            _context.SaveChanges();
+        }
+
+        //for initial transfer request.
+        public void NotificationForInitialTransfer(Request req, string messageId)
+        {
+            
+            var notif = new Notification()
+            {
+                RecipientUserId = req.UserRequestedFromId,//user 
+                MessageId = messageId,
+                Read = false,
+                //RequestId = req.Id,
+                FileVolumeId = req.FileVolumesId,
+                DateTriggered = DateTime.Now,
+                SenderUserId = req.UserId
+            };
+            _context.Notifications.Add(notif);
+            _context.SaveChanges();
+        }
+
+        //creates and sends a request to registry
+        public void NotificationForInitialRequest(Request req, string messageId)
+        {
+
+            var notif = new Notification()
+            {
+                RecipientUserId = null,//user 
+                MessageId = messageId,
+                Read = false,
+                //RequestId = req.Id,
+                RecipientBranchId = req.RecipientBranchId, //imperative, since all branch registry should receive the notif
+                FileVolumeId = req.FileVolumesId,
+                DateTriggered = DateTime.Now,
+                SenderUserId = req.UserId
+            };
             _context.Notifications.Add(notif);
             _context.SaveChanges();
         }
@@ -81,6 +118,8 @@ namespace FileTracking.Controllers
                         UpdateVolumeState(volume);
                         return View();
                     }
+          
+                    
                 }
                 else if(user.BranchesId != volume.BranchesId && volume.BranchesId == volume.CurrentLocationId)
                 {
@@ -122,10 +161,14 @@ namespace FileTracking.Controllers
                 RequestTypeId = RequestType.InternalRequest
             };
             _context.Requests.Add(requestRecord);
-            
+
             if (_context.SaveChanges() > 0)
+            {
+                //sending a notification to corresponding registry
+                NotificationForInitialRequest(requestRecord, Message.PendingFile);
                 return true;
-            
+            }
+           
             return false;
         }
 
@@ -153,8 +196,14 @@ namespace FileTracking.Controllers
              _context.Requests.Add(externalRequestRec);
              
              bindVal.CurrentNumberBinder++;//we increment the value in order to generate a unique value on another instance
-             if (_context.SaveChanges() > 0)//confirms changes
-                 return true;
+
+             if (_context.SaveChanges() > 0)
+             {
+                 NotificationForInitialRequest(externalRequestRec, Message.ExternalPending);
+                return true;
+             } //confirms changes
+
+             
              return false;
         }
 
@@ -550,7 +599,8 @@ namespace FileTracking.Controllers
 
             if (HasBeenRequested(volInDb, thisUser))//if request has not been already made
                 return View("AlreadyRequested");
-            //if(volInDb.CurrentLocation = userrequestingtransfer.branchId){}
+
+           //creating new request
             var newRequest = new Request() //creating that new request record
             {
                 UserId = thisUser.Id,//this is the new user making the request
@@ -564,9 +614,12 @@ namespace FileTracking.Controllers
                 RequestTypeId = RequestType.InternalRequest,
                 UserRequestedFromId = userId //THIS is the user from who the transfer is being requested
             };
-
+            
             _context.Requests.Add(newRequest);
             _context.SaveChanges();
+
+            //creating notification for the transfer request
+            NotificationForInitialTransfer(newRequest,Message.TransferRequest);
 
             return View("RequestSuccessful"); 
         }
@@ -632,7 +685,7 @@ namespace FileTracking.Controllers
                 requestInDb.AcceptedById = userInSessionInDb.Id;
                 requestInDb.RequestBinder = binder;
                 //create ACCEPT NOTIFICATION
-                CreateNotification(requestInDb,Message.InAccept);
+                CreateNotification(requestInDb,Message.TransferAccept);
 
                 //now we change the file volume to TRANSFER state (4) since transfer was granted
                 volumeInDb.StatesId = 4;
@@ -660,7 +713,7 @@ namespace FileTracking.Controllers
             var rejectedRequestOperation = new RejectedRequestController();
             rejectedRequestOperation.SaveToRejectedRequestTable(requestInDb);
 
-            CreateNotification(requestInDb, Message.InReject);
+            CreateNotification(requestInDb, Message.TransferDenied);
 
             _context.Requests.Remove(requestInDb);
             _context.SaveChanges();
@@ -832,24 +885,7 @@ namespace FileTracking.Controllers
             
         }
 
-        /*[Authorize(Roles = Role.RegularUser)]
-        public ActionResult ConfirmDirectTransfer()
-        {
-            return View();
-        }
-        [Authorize(Roles = Role.RegularUser)]
-        public JsonResult GetDirectTransfersForConfirmation()
-        {
-            var userInSession = new AdUser(User.Identity.Name);
-
-            var adUserInDb = _context.AdUsers.Single(u => u.Username == userInSession.Username);
-
-            var requestsInDb = _context.Requests.Include(r => r.User).Include(r => r.UserRequestedFrom).Include(r => r.FileVolumes).Include(r => r.RequesterBranch).
-                Where(r => r.UserId == adUserInDb.Id && r.RequestBinder != 0).Where(r => r.UserRequestedFromId != null).Where(r => r.IsConfirmed == false).
-                Where(r => r.RequestStatusId == 2).Where(r => r.IsRequestActive == true).ToList();
-
-            return Json(new { data = requestsInDb }, JsonRequestBehavior.AllowGet);
-        }*/
+      //reject on  reject direcct transfer
         public JsonResult OnRejectDirectTransfer(int id)
         {
             var rejReq = _context.Requests.Single(r => r.Id == id);

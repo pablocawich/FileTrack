@@ -35,6 +35,23 @@ namespace FileTracking.Models
         public const string ExReturn = "EX_RET";
         [NotMapped]
         public const string ExReturnApproval = "ExRetAcc";
+        //newly added messages 
+        [NotMapped]
+        public const  string PendingFile = "PENDING";
+        [NotMapped]
+        public const string TransferRequest = "TRANREQ";
+        [NotMapped]
+        public const string TransferAccept = "TRANACC";
+        [NotMapped]
+        public const string TransferDenied = "TRANREJ";
+        [NotMapped]
+        public const string DirectTransferReq = "DIRTREQ";
+        [NotMapped]
+        public const string DirectTransferAcc = "DIRTACC";
+        [NotMapped]
+        public const string DirectTransferRej = "DIRTREJ";
+        [NotMapped]
+        public const string ExternalPending = "XPENDING";
 
     }
 }

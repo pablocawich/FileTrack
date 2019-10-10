@@ -11,7 +11,7 @@
             success: function () {
                 list.remove();
                 //alert($(".alertList").length);
-                toastr.info("Notification marked as read","Notification",{ positionClass: "toast-bottom-right" });
+                toastr.info("Notification marked as read. Will be deleted.","Notification",{ positionClass: "toast-bottom-right" });
                 if ($(".alertList").length == 0) {
                     $("#notifIcon").css('color', 'white'); 
                     $("#caretIcon").css('color', 'white');

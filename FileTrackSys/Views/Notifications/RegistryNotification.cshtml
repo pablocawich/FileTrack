@@ -18,7 +18,7 @@
         @foreach (var notif in Model.RegistryInReturns)
         {
 
-            if (notif.MessageId == "RET" || notif.MessageId == "EX_RET" || notif.MessageId == "RET_ACC")
+            if (notif.MessageId == "RET" || notif.MessageId == "EX_RET" || notif.MessageId == "RET_ACC" || notif.MessageId == "PENDING")
             {
                 <li class="alertList" notif-id-attr=@notif.Id>
                     <a href="#">
@@ -34,7 +34,7 @@
         @foreach (var notif in Model.RegistryExReturns)
         {
 
-            if (notif.MessageId == "ExRetAcc")
+            if (notif.MessageId == "ExRetAcc" || notif.MessageId == "XPENDING")
             {
                 <li class="alertList" notif-id-attr=@notif.Id>
                     <a href="#">

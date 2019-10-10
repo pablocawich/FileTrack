@@ -27,16 +27,18 @@ namespace FileTracking.Controllers
         [Authorize(Roles = Role.RegularUser)]
         public ActionResult Index()
         {
+            //for regular user role
             var AdUsername = new AdUser(User.Identity.Name);
-
+            
             try
             {
                 var userInDb = _context.AdUsers.Single(u => u.Username == AdUsername.Username);
 
                 var notifications = _context.Notifications.Include(n => n.RecipientUser).Include(n => n.Message).Include(n=>n.FileVolume).
                     Where(n => n.RecipientUserId == userInDb.Id).Where(n => n.Read == false).
-                    Where(n => n.MessageId == Message.InAccept || n.MessageId == Message.InReject
-                                                               || n.MessageId == Message.ExAccept || n.MessageId == Message.ExReject).ToList();
+                    Where(n => n.MessageId == Message.InAccept || n.MessageId == Message.InReject || n.MessageId == Message.TransferRequest
+                    ||n.MessageId == Message.TransferAccept || n.MessageId == Message.TransferDenied
+                    || n.MessageId == Message.ExAccept || n.MessageId == Message.ExReject).ToList();
 
                 return PartialView("Notifications", notifications);
             }
@@ -49,6 +51,8 @@ namespace FileTracking.Controllers
             return HttpNotFound("User not yet registered to database");
 
         }
+
+        //registry purposes
         [Authorize(Roles = Role.Registry)]
         public ActionResult NotificationRegistry()
         {
@@ -57,16 +61,17 @@ namespace FileTracking.Controllers
             var userInDb = _context.AdUsers.Single(u => u.Username == AdUsername.Username);
 
             var notifications = _context.Notifications.Include(n => n.RecipientUser).Include(n => n.Message)
-                .Where(n=>n.RecipientBranchId== userInDb.BranchesId).
-                Where(n=>n.MessageId == Message.Return || n.MessageId == Message.ExReturn)
+                .Where(n=>n.RecipientBranchId == userInDb.BranchesId).
+                Where(n=>n.MessageId == Message.Return || n.MessageId == Message.ExReturn || n.MessageId == Message.PendingFile)
                 .Where(n => n.Read == false).ToList();
+            //for internal returns 
 
             var viewModel = new RegistryNotificationViewModel()
             {
                 RegistryInReturns = notifications,
                 RegistryExReturns = _context.Notifications.Include(n => n.RecipientUser).Include(n => n.Message)
-                .Where(n => n.SenderBranchId == userInDb.BranchesId).Where(n => n.MessageId == Message.ExReturnApproval)
-                .Where(n => n.Read == false).ToList(),
+                .Where(n => n.SenderBranchId == userInDb.BranchesId || n.RecipientBranchId == userInDb.BranchesId).Where(n => n.MessageId == Message.ExReturnApproval || n.MessageId == Message.ExternalPending)
+                .Where(n => n.Read == false).ToList(),//for external returns
             };
             return PartialView("RegistryNotification",viewModel);
 

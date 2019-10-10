@@ -219,7 +219,7 @@ namespace FileTracking.Controllers
         {
             var username = new AdUser(User.Identity.Name);
             var adUser = _context.AdUsers.Single(a => a.Username == username.Username);
-            var returnedReq = _context.Requests.Include(r => r.FileVolumes).
+            var returnedReq = _context.Requests.Include(r => r.FileVolumes.Branches).
                 Include(r => r.User.Branches).Where(r=>r.RecipientBranchId == adUser.BranchesId)
                 .Where(r=>r.RequestTypeId == RequestType.InternalRequest || r.RequestTypeId == RequestType.DirectTransfer)
                 .Where(r=>r.IsRequestActive == true).Where(r=>r.ReturnStateId == 2).ToList();

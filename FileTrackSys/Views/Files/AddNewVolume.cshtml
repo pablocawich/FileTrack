@@ -34,6 +34,7 @@
     @Html.HiddenFor(v => v.FileVolumes.FileNumber)
     @Html.HiddenFor(v => v.FileVolumes.StatesId)
     @Html.HiddenFor(v => v.FileVolumes.BranchesId)
+    \
     @Html.HiddenFor(v => v.FileVolumes.CurrentLocation)
 
     @Html.HiddenFor(v => v.File.Id)
@@ -42,6 +43,7 @@
     @Html.HiddenFor(v => v.File.LastName)
     @Html.HiddenFor(v => v.File.MiddleName)
     @Html.HiddenFor(v => v.File.Street)
+    @Html.HiddenFor(v => v.File.DistrictsId)
     @Html.HiddenFor(f => f.File.LocationId)
 
     @Html.AntiForgeryToken()
