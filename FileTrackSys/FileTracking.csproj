@@ -538,6 +538,10 @@
     <Compile Include="Migrations\201910102120167_AddExtRequestMessageToMssgDb.Designer.cs">
       <DependentUpon>201910102120167_AddExtRequestMessageToMssgDb.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201910111735380_AddExternalRoutingMesage.cs" />
+    <Compile Include="Migrations\201910111735380_AddExternalRoutingMesage.Designer.cs">
+      <DependentUpon>201910111735380_AddExternalRoutingMesage.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Models\AccountViewModels.cs" />
     <Compile Include="Models\AddNumberIfIdentificationSelected.cs" />
@@ -1373,6 +1377,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201910102120167_AddExtRequestMessageToMssgDb.resx">
       <DependentUpon>201910102120167_AddExtRequestMessageToMssgDb.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201910111735380_AddExternalRoutingMesage.resx">
+      <DependentUpon>201910111735380_AddExternalRoutingMesage.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>

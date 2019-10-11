@@ -37,7 +37,7 @@ namespace FileTracking.Controllers
                 var notifications = _context.Notifications.Include(n => n.RecipientUser).Include(n => n.Message).Include(n=>n.FileVolume).
                     Where(n => n.RecipientUserId == userInDb.Id).Where(n => n.Read == false).
                     Where(n => n.MessageId == Message.InAccept || n.MessageId == Message.InReject || n.MessageId == Message.TransferRequest
-                    ||n.MessageId == Message.TransferAccept || n.MessageId == Message.TransferDenied
+                    ||n.MessageId == Message.TransferAccept || n.MessageId == Message.TransferDenied || n.MessageId == Message.DirectTransferReq
                     || n.MessageId == Message.ExAccept || n.MessageId == Message.ExReject).ToList();
 
                 return PartialView("Notifications", notifications);
@@ -70,7 +70,8 @@ namespace FileTracking.Controllers
             {
                 RegistryInReturns = notifications,
                 RegistryExReturns = _context.Notifications.Include(n => n.RecipientUser).Include(n => n.Message)
-                .Where(n => n.SenderBranchId == userInDb.BranchesId || n.RecipientBranchId == userInDb.BranchesId).Where(n => n.MessageId == Message.ExReturnApproval || n.MessageId == Message.ExternalPending)
+                .Where(n => n.SenderBranchId == userInDb.BranchesId || n.RecipientBranchId == userInDb.BranchesId).
+                Where(n => n.MessageId == Message.ExReturnApproval || n.MessageId == Message.ExternalPending || n.MessageId == Message.ExternalRoute)
                 .Where(n => n.Read == false).ToList(),//for external returns
             };
             return PartialView("RegistryNotification",viewModel);

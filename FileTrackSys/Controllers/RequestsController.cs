@@ -41,7 +41,26 @@ namespace FileTracking.Controllers
                 //RequestId = req.Id,
                 FileVolumeId = req.FileVolumesId,
                 DateTriggered = DateTime.Now,
-                SenderUserId = req.AcceptedById
+                SenderUserId = req.UserRequestedFromId
+            };
+
+            _context.Notifications.Add(notif);
+            _context.SaveChanges();
+        }
+        //the notification that will be sent to localregistry for external request
+        public void CreateInitialExternalRequest(Request req, string messageId)
+        {
+            var notif = new Notification()
+            {
+                RecipientUserId = req.UserId,//user 
+                MessageId = messageId,
+                Read = false,
+                RecipientBranchId = req.RequesterBranchId,
+                //SenderBranchId = req.RecipientBranchId,
+                //RequestId = req.Id,
+                FileVolumeId = req.FileVolumesId,
+                DateTriggered = DateTime.Now,
+                SenderUserId = req.UserRequestedFromId
             };
 
             _context.Notifications.Add(notif);
@@ -377,8 +396,11 @@ namespace FileTracking.Controllers
 
                     _context.SaveChanges();
                     UpdateVolumeState(request.FileVolumesId);
-                    //Since the 
-                    CreateNotification(request, Message.ExAccept);
+                    
+                    CreateNotification(request, Message.ExAccept);//this notification only informs the acting user
+
+                    //since it's an external request, the registry also needs to be informed, function below does this.
+                    CreateInitialExternalRequest(request, Message.ExternalRoute);
 
                     //note: this does not cancel this requests, only those who have requested the same file
                     if (CancelIfOtherRequests(request.FileVolumesId, request.Id))
@@ -842,11 +864,11 @@ namespace FileTracking.Controllers
         public JsonResult TransferToUser(int userId, int reqId)
         {
             var userInDb = _context.AdUsers.Single(u => u.Id == userId);
-            var request = _context.Requests.Single(r => r.Id == reqId);
-            if (userInDb.Role == Role.RegularUser && userInDb.BranchesId == request.RequesterBranchId)
+            var request = _context.Requests.Single(r => r.Id == reqId);//the acting request
+            if (userInDb.BranchesId == request.RequesterBranchId)
             {
                 //int bindVal = RetrieveBindValue();
-                request.IsRequestActive = false;
+                request.IsRequestActive = false;//temporarily inactivate
                 //request.RequestBinder = bindVal;
                 //invoke the binder function and add an increment so as to link the 2 records.
 
@@ -862,7 +884,7 @@ namespace FileTracking.Controllers
                     IsConfirmed = false,
                     ReturnStateId = 1,
                     IsRequestActive = true,
-                   // RequestBinder = bindVal, 
+                    RequestBinder = request.RequestBinder, 
                     RequestTypeId = RequestType.DirectTransfer,
                     AcceptedById = request.UserId,
                     UserRequestedFromId = request.UserId,
@@ -876,6 +898,8 @@ namespace FileTracking.Controllers
 
                 _context.SaveChanges();
                 
+                //creating notification for a direct transfer
+                CreateNotification(newReq,Message.DirectTransferReq);
                 //update volume to transfer
                 
                 return Json(new { success = true, message = $"Transferring to {userInDb.Name}. He/She must further confirm to complete transfer." }, JsonRequestBehavior.AllowGet);

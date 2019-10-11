@@ -76,6 +76,16 @@
                     </a>
                 </li>
             }
+            if (notif.MessageId == "DIRTREQ")
+            {
+                <li class="alertList" notif-id-attr=@notif.Id>
+                    <a href="#">
+                        <div>
+                            <i class='fa  fa-times-rectangle'></i>@notif.Message.MessageType<span class='pull-right text-muted small'>@notif.Message.MessageText</span>
+                        </div>
+                    </a>
+                </li>
+            }
 
 
         }

@@ -52,6 +52,8 @@ namespace FileTracking.Models
         public const string DirectTransferRej = "DIRTREJ";
         [NotMapped]
         public const string ExternalPending = "XPENDING";
+        [NotMapped]
+        public const string ExternalRoute = "EXROUTE";
 
     }
 }

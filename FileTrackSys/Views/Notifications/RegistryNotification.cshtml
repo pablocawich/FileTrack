@@ -34,7 +34,7 @@
         @foreach (var notif in Model.RegistryExReturns)
         {
 
-            if (notif.MessageId == "ExRetAcc" || notif.MessageId == "XPENDING")
+            if (notif.MessageId == "ExRetAcc" || notif.MessageId == "XPENDING" || notif.MessageId == "EXROUTE")
             {
                 <li class="alertList" notif-id-attr=@notif.Id>
                     <a href="#">
@@ -44,6 +44,7 @@
                     </a>
                 </li>
             }
+          
 
 
         }
