@@ -21,7 +21,7 @@
         </thead>
         <tbody>
         <tr style="background-color: white">
-            <td><button id="userSearchClearBtn" class="btn btn-danger"><i class="fa fa-search-minus"></i></button></td>
+            <td><button id="userSearchClearBtn" class="btn btn-round-danger"><i class="fa fa-search-minus"></i></button></td>
         </tr>
         </tbody>
     </table>
@@ -29,12 +29,12 @@
     <table id="userFileTable" class="table table-striped table-bordered table-hover" style="width:100%">
         <thead>
             <tr>
-                <th class="searchable2"> File Number</th>
+                <th id="fileNoCol" class="searchable2"> File Number</th>
                 <th class="searchable2">Name</th>
                 <th class="searchable2">District</th>
                 <th class="searchable2">Loan No.</th>
-                <th class="searchable2">Prev. File No.</th>              
-                <th>Volume's Total</th>
+                <th class="searchable2" hidden>Prev. File No.</th> 
+
                 <th>Actions</th>
 
             </tr>
@@ -64,11 +64,8 @@
                         "data": "FileNumber",
                         "name": "FileNumber",
                         render: function(data, type, file) {
-                            return "<span data-url='" +
-                                file.Id +
-                                " 'class='glyphicon glyphicon-file btn btn-block btn-sm btn-primary spanModal'>" +
-                                file.FileNumber +
-                                "</span>";
+                            return `<div style="text-align: center"><span data-url='${file.Id}'  class='btn example_btn spanModal'>
+                                        <i class="fa fa-file-text"></i> ${file.FileNumber}</span></div>`;
                         }
                     },
                     {
@@ -85,8 +82,9 @@
                         }
                     },*/
                     {
-                        "data": "Districts.District", "name": "Districts.District",
-                        render: function (data) {
+                        "data": "Districts.District",
+                        "name": "Districts.District",
+                        render: function(data) {
                             if (data == null) {
                                 return "<i>N/A</i>";
                             }
@@ -94,8 +92,8 @@
                         }
                     },
                     { "data": "LoanNumber", "name": "LoanNumber" },
-                    { data: "PreviousFileNumber" },
-                    { "data": "Volume", "name": "Volume" },
+                    // { data: "PreviousFileNumber" },
+                    // { "data": "Volume", "name": "Volume" },
                     {
                         data: "Id",
 

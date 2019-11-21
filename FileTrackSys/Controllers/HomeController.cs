@@ -34,6 +34,7 @@ namespace FileTracking.Controllers
             
             try
             {
+                
                 var user = _context.AdUsers.Include(u => u.Branches)
                     .SingleOrDefault(u => u.Username == userObj.Username);
 

@@ -385,8 +385,16 @@ namespace FileTracking.Controllers
             if (!string.IsNullOrEmpty(Request["columns[0][search][value]"]))
                 FileList = FileList.Where(x => (x.FileNumber != 0 && x.FileNumber.ToString().Contains(Request["columns[0][search][value]"]))).ToList<File>();
 
+
             if (!string.IsNullOrEmpty(Request["columns[1][search][value]"]))
-                FileList = FileList.Where(x => (x.FullName != null && x.FullName.ToLower().Contains(Request["columns[1][search][value]"].ToLower()))).ToList<File>();
+            {
+                //FileList = FileList.Where(x => (x.FullName != null && x.FullName.ToLower().Contains(Request["columns[1][search][value]"].ToLower()))).ToList<File>();
+                FileList = FileList.Where(x =>
+                    (x.FullName != null &&
+                     x.FullName.ToLower().Contains(Request["columns[1][search][value]"].ToLower()))).ToList();
+            }
+
+           
 
             if (!string.IsNullOrEmpty(Request["columns[2][search][value]"]))
                 FileList = FileList.Where(x => (x.DistrictsId != null && x.DistrictsId.ToString().Contains(Request["columns[2][search][value]"].ToLower()))).ToList<File>();

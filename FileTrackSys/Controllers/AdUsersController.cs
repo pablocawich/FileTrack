@@ -36,7 +36,7 @@ namespace FileTracking.Controllers
             return View();
         }
 
-        // GET: AdUsers
+        // GET: AdUsers -- not used in application 
         [Authorize(Roles = "WEB_IT")]
         [Route("adUsers/TestUsers/{role}")]
         public ActionResult TestUsers(string role)
@@ -284,20 +284,41 @@ namespace FileTracking.Controllers
         {
             var adUser = new AdUser(User.Identity.Name);
             
+
             dynamic func_param = JsonConvert.DeserializeObject(function_param);
 
             foreach (var user in func_param)
             {
                 int result = Int32.Parse(user.ToString());
                 var userinDb = _context.AdUsers.Single(u => u.Id == result);
-                if(userinDb.Username != adUser.Username)
+                if (!HasRequestActivity(userinDb.Id) && userinDb.Username != adUser.Username)
+                {
                     userinDb.IsDisabled = true;
+                }
+                else
+                {
+                    return this.Json(new { success = false, message = $"Action Terminated. It appears {userinDb.Name} has request activities pending" }, JsonRequestBehavior.AllowGet);
+                }   
 
             }
             if (_context.SaveChanges() > 0)
                 return this.Json(new { success = true }, JsonRequestBehavior.AllowGet);
-            return this.Json(new { success = false }, JsonRequestBehavior.AllowGet);
+            return this.Json(new { success = false, message = "Something went wrong with access to the database. Try again later." }, JsonRequestBehavior.AllowGet);
         }
+
+        //checking if user has requests activity
+        public bool HasRequestActivity(int id)
+        {
+            var requestsInDb = _context.Requests.Where(r => r.UserId == id).ToList();
+
+            if (requestsInDb.Any())
+            {
+                return true;
+            }
+
+            return false;
+        }
+
 
         [HttpPost]
         [Authorize(Roles = Role.AdminUser)]

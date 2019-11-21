@@ -155,3 +155,53 @@ table.blueTable tfoot .links a{
     padding: 2px 8px;
     border-radius: 5px;
 }
+.btn-round-iv {
+    font-family: Raleway-SemiBold;
+    font-size: 13px;
+    color: rgba(30, 50, 56, 0.75);
+    letter-spacing: 1px;
+    line-height: 15px;
+    border: 2px solid rgba(91, 192, 222, 0.75);
+    border-radius: 40px;
+    background: transparent;
+    transition: all 0.3s ease 0s;
+}
+.btn-round-iv:hover {
+    color: #FFF;
+    background: rgba(91, 192, 222, 0.75);
+    border: 2px solid rgba(91, 192, 222, 0.75);
+}
+.example_btn {
+    color: #fff !important;
+    text-transform: uppercase;
+    text-decoration: none;
+    background: #60a3bc;
+    padding: 15px;
+    border-radius: 50px;
+    display: inline-block;
+    border: none;
+    transition: all 0.4s ease 0s;
+    text-align: center;
+}
+.example_b:hover {
+    text-shadow: 0px 0px 6px rgba(255, 255, 255, 1);
+    -webkit-box-shadow: 0px 5px 40px -10px rgba(0,0,0,0.57);
+    -moz-box-shadow: 0px 5px 40px -10px rgba(0,0,0,0.57);
+    transition: all 0.4s ease 0s;
+}
+.btn-round-danger {
+    font-family: Raleway-SemiBold;
+    font-size: 13px;
+    color: rgba(217, 83, 78, 0.75);
+    letter-spacing: 1px;
+    line-height: 16px;
+    border: 3px solid rgba(217, 83, 78, 0.75);
+    border-radius: 40px;
+    background: transparent;
+    transition: all 0.3s ease 0s;
+}
+.btn-round-danger:hover {
+    color: #FFF;
+    background: rgba(217, 83, 78, 0.75);
+    border: 2px solid rgba(217, 83, 78, 0.75);
+}

@@ -11,6 +11,7 @@
     </div>
     <!-- /.col-lg-12 -->
 </div>
+
 <div class="row" style="height: 65px">
     <label style="color: #5d5d96"><i>Please select a view below to further perform an action:</i> </label><br>
     <a href="#" class='btn btn-xs' id="addAdBtn"><i class='glyphicon glyphicon-level-up'></i> Add From Directory</a>
@@ -282,40 +283,30 @@
             //----------------------------Handler for disabling buttons--------------------------------------------
             $('#delBtn').on("click",
                 function() {
-
                     bootbox.confirm("You are about to disable <strong>" + userIDs.length + "</strong> user/s.",
                         function(result) {
                             if (result) {
                                 $.ajax({
                                     type: "POST",
-                                    url: siteURL + "/AdUsers/DeleteUser",
+                                    url: siteURL + "/AdUsers/DeleteUser",//by delete we mean disable
                                     data: { function_param: JSON.stringify(userIDs) },
                                     success: function(response) {
                                         if (response.success == true) {
-                                            toastr.success("User successfully deleted",
+                                            toastr.success("User successfully deactivated.",
                                                 "Action Complete",
                                                 { positionClass: "toast-bottom-right" });
                                             setTimeout(function() {
                                                     location.reload();
                                                 },
                                                 1000);
-                                            /*$(".selectUser").each(function (index) {
-                                                console.log(index);
-                                                if ($(this).prop("checked")) {
-                                                    adTable.row($(this).prop('checked', false)).draw();
-                                                    adTable.row($(this).parents('tr').css({
-                                                        "opacity": "0.5",
-                                                        "background-color": "#ffffff"
-                                                    })).draw();
-                                                }
-                                            });*/
-
-                                            userIDs = [];
+                                           
+                                            userIDs = [];//emptying array
 
                                         } else {
-                                            toastr.error("Error",
-                                                "An error occured during the request. Refresh page and try again",
+                                            toastr.error(response.message,
+                                                "Something went wrong!",
                                                 { positionClass: "toast-bottom-right" });
+                                            userIDs = [];
                                         }
 
                                     }

@@ -187,11 +187,7 @@
                     });
                 });
 
-            function getDateString(date) {
-                var dateObj = new Date(parseInt(date.substr(6)));
-                return dateObj.toLocaleString();
-            }
-
+            
             $("#externalBranchPendingTable").on("click",
                 ".extBranchModal-js",
                 function() {
@@ -202,6 +198,11 @@
                     $('#extBranchModelContent').load(url);
                     $('#extBranchModal').modal('show');
                 });
+
+            function getDateString(date) {
+                var dateObj = new Date(parseInt(date.substr(6)));
+                return dateObj.toLocaleString();
+            }
 
         });
     </script>

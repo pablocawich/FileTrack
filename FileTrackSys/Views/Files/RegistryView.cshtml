@@ -21,7 +21,7 @@
             </thead>
             <tbody>
             <tr style="background-color: white">
-                <td><button id="searchClearBtn" type="button" class="btn btn-danger"><i class="fa fa-search-minus"></i></button></td>
+                <td><button id="searchClearBtn" type="button" class="btn-round-danger"><i class="fa fa-search-minus"></i> clear search</button></td>
             </tr>
             </tbody>
         </table>
@@ -34,7 +34,7 @@
                     <th class="searchable" width="90">Name</th>
                     <th class="searchable" width="50">District</th>
                     <th class="searchable" width="100">Loan Number</th>
-                    <th class="searchable" width="80">Previous File No.</th>
+                    <th class="searchable" width="80" hidden>Previous File No.</th>
                
                     <th width="105">Actions</th>
                 </tr>
@@ -56,7 +56,7 @@
 
             var fileTable = $("#fileTable").DataTable({
                 "ajax": {
-                    "url": siteURL+"/Files/GetFiles",
+                    "url": siteURL + "/Files/GetFiles",
                     "data": "POST",
                     "datatype": "json"
                 },
@@ -66,15 +66,12 @@
                         "name": "FileNumber",
                         render: function(data, type, file) {
 
-                            return "<span data-url='" +
-                                file.Id +
-                                " 'class='glyphicon glyphicon-file btn btn-block btn-sm btn-primary spanModal'>" +
-                                data+
-                                "</span>";
+                            return `<span data-url='${file.Id}' class='btn btn-block btn-sm btn-round-iv spanModal'>
+                                <i class='fa fa-file-text'></i> ${data} </span>`;
 
                         }
                     },
-                    {"data": "FullName"},
+                    { "data": "FullName" },
                     /*{
                         "data": "Location.Name", "name": "Location.Name",
                         render: function (data) {
@@ -85,8 +82,9 @@
                         }
                     },*/
                     {
-                        "data": "Districts.District", "name": "Districts.District",
-                        render: function (data) {
+                        "data": "Districts.District",
+                        "name": "Districts.District",
+                        render: function(data) {
                             if (data == null) {
                                 return "<i>N/A</i>";
                             }
@@ -94,23 +92,27 @@
                         }
                     },
                     { "data": "LoanNumber", "name": "LoanNumber" },
-                    {
+                    /*{
                         data: "PreviousFileNumber"
-                    },
+                    },*/
                     //{ "data": "Volume", "name": "Volume" },
                     {
                         data: "Id",
 
-                        "render": function (data) {
-                            var actionButtons = `<div class="btn-group"><button type="button" class="btn btn-circle" disabled><i class="fa fa-th-list"></i></button>
+                        "render": function(data) {
+                            var actionButtons =
+                                `<div class="btn-group"><button type="button" class="btn btn-circle" disabled><i class="fa fa-th-list"></i></button>
                                     <button type="button" class="btn btn-circle dropdown-toggle" data-toggle="dropdown">
                                         <span class="caret"></span><span class="sr-only">Social</span>
                                     </button>
                                     <ul class="dropdown-menu" role="menu">
-                                        <li><a href="#" class='btn js-addVol' data-file-id=${data}><i class='glyphicon glyphicon-plus-sign'></i> Add Volume</a></li>
-                                        <li><a href="#" class='btn js-editFile' data-edit-file-id=${data}><i class='fa fa-edit'></i> Edit</a></li>
+                                        <li><a href="#" class='btn js-addVol' data-file-id=${data
+                                    }><i class='glyphicon glyphicon-plus-sign'></i> Add Volume</a></li>
+                                        <li><a href="#" class='btn js-editFile' data-edit-file-id=${data
+                                    }><i class='fa fa-edit'></i> Edit</a></li>
                                         <li class="divider"></li>
-                                        <li><a href="#" class='btn js-viewVolumes'data-view-vol-id=${data}><i class='fa fa-navicon'></i> View Volumes</a></li>
+                                        <li><a href="#" class='btn js-viewVolumes'data-view-vol-id=${data
+                                    }><i class='fa fa-navicon'></i> View Volumes</a></li>
                                     </ul></div>`;
 
                             return actionButtons;
@@ -172,17 +174,20 @@
             // i moved it because i honestly hate seeing too much code on one page   
 
             //opens modal that displays file information for a specif file
-            $("#fileTable").on("click",".spanModal", function() {
+            $("#fileTable").on("click",
+                ".spanModal",
+                function() {
                     var id = $(this).attr("data-url");
-                var url = siteURL+"/Files/FileDetails/" + id;
+                    var url = siteURL + "/Files/FileDetails/" + id;
                     // alert(url);
 
                     $('#modelContent').load(url);
                     $('#myModal').modal('show');
-            });
+                });
 
-            $("#searchClearBtn").on('click', function () {
-                    
+            $("#searchClearBtn").on('click',
+                function() {
+
                     fileTable.column(0).search('').draw();
                     fileTable.column(1).search('').draw();
                     fileTable.column(2).search('').draw();

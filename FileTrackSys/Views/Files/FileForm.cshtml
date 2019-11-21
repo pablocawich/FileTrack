@@ -194,7 +194,7 @@
             @Html.HiddenFor(f=>f.File.PreviousFileNumber)
 
             @Html.AntiForgeryToken()
-            <button id="submitFileBtn" class="btn btn-primary btn-sm">Save File <i class="fa fa-floppy-o"></i></button>
+            <button id="submitFileBtn" type="button" class="btn btn-primary btn-sm">Save File <i class="fa fa-floppy-o"></i></button>
             <button type="button" class="btn btn-danger btn-sm" id="cancelBtn">Cancel <i class="fa fa-close"></i></button>
         </div>
          
@@ -206,6 +206,7 @@
     @Scripts.Render("~/bundles/jqueryval")
     <script>
         $(document).ready(function() {
+            let submitCounter = 0;
             //as page loads, this will ensure the default value disables the fields that follows
             if ($("#File_IdentificationOptionId").val() == 0)
                 $("#File_IdentificationNumber").prop("disabled", true);
@@ -242,6 +243,53 @@
                         });
 
                 });
+            /*$('#fileFormId').submit(function(e) {
+                // e.preventDefault();
+                bootbox.confirm({
+                    size: "medium",
+                    message: "Are you sure want to submit?",
+                    buttons: {
+                        confirm: {
+                            label: 'Yes',
+                            className: 'btn-round-iv'
+                        },
+                        cancel: {
+                            label: 'No',
+                            className: 'btn-round-danger'
+                        }
+                    },
+                    callback: function(result) {
+                        if (result) {
+                            return true;
+                        } else {
+                            return false;
+                        }
+                    }
+                });*/
+            $("#submitFileBtn").on("click", function () {
+          
+                    bootbox.confirm({
+                        size: "medium",
+                        message: "Are you sure want to submit?",
+                        buttons: {
+                            confirm: {
+                                label: 'Yes',
+                                className: 'btn-round-iv'
+                            },
+                            cancel: {
+                                label: 'No',
+                                className: 'btn-round-danger'
+                            }
+                        },
+                        callback: function(result) { /* result is a boolean; true = OK, false = Cancel*/
+                            if (result) {
+                                $("#fileFormId").submit();
+                            } 
+                        }
+                    });
+                });
+                // return true;
+           
 
             /*$("#submitFileBtn").on("click",
                 function() {
