@@ -32,7 +32,7 @@
                 <tr class="firstRow">
                     <th class="searchable" width="60">File No.</th>
                     <th class="searchable" width="90">Name</th>
-                    <th class="searchable" width="50">District</th>
+                    <th class="searchable" width="50" hidden>District</th>
                     <th class="searchable" width="100">Loan Number</th>
                     <th class="searchable" width="80" hidden>Previous File No.</th>
                
@@ -57,7 +57,7 @@
             var fileTable = $("#fileTable").DataTable({
                 "ajax": {
                     "url": siteURL + "/Files/GetFiles",
-                    "data": "POST",
+                    "data": "GET",
                     "datatype": "json"
                 },
                 "columns": [
@@ -72,25 +72,8 @@
                         }
                     },
                     { "data": "FullName" },
-                    /*{
-                        "data": "Location.Name", "name": "Location.Name",
-                        render: function (data) {
-                            if (data == null) {
-                                return "<i>N/A</i>";
-                            }
-                            return data;
-                        }
-                    },*/
-                    {
-                        "data": "Districts.District",
-                        "name": "Districts.District",
-                        render: function(data) {
-                            if (data == null) {
-                                return "<i>N/A</i>";
-                            }
-                            return data;
-                        }
-                    },
+
+                 
                     { "data": "LoanNumber", "name": "LoanNumber" },
                     /*{
                         data: "PreviousFileNumber"
@@ -120,12 +103,16 @@
                     }
                 ],
                 "serverSide": "true",
-                "order": [0, "asc"],
+                //"deferLoading": true,
+                //"deferRender": true,
+                //"order": [0, "asc"],
+                "ordering": false,
                 "processing": "true",
                 "language": {
-                    "processing": "Processing DFC Files... Kindly hold"
+                    "processing": "<i class='fa fa-refresh fa-spin'></i>"
                 },
                 "dom": '<"top"l>rt<"bottom"ip><"clear">',
+                
                 "fnInitComplete": function(oSettings, json) {
                     addSearchControl(json);
                 }

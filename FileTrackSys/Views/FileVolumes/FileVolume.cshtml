@@ -68,11 +68,13 @@
 
                         <td class="tdBtn">
                             <button type="button" vol-state="@fileVol.States.Id" user-loc="@Model.AdUser.BranchesId" originLoc="@fileVol.BranchesId" currLoc-attr="@fileVol.CurrentLocation.Id"
-                                    vol-data-id="@fileVol.Id" file-name="@Model.File.FirstName" location="@fileVol.Branches.Branch" class="btn btn-dropbox js-req-vol">
+                                    vol-data-id="@fileVol.Id" file-name="@Model.File.FirstName" location="@fileVol.Branches.Branch" class="btn btn-dropbox js-req-vol"
+                                    data-toggle="tooltip" data-placement="top" title="Request File From Registry">
                                 <i class="glyphicon glyphicon-new-window"></i>
                             </button>
                             <button type="button" class="btn btn-bitbucket js-transfer-vol" original-Loc="@fileVol.BranchesId" my-loc="@Model.AdUser.BranchesId"
-                                    data-vol-id="@fileVol.Id" data-current-loc="@fileVol.CurrentLocationId" data-state="@fileVol.StatesId" data-holdingUser="@fileVol.AdUserId">
+                                    data-vol-id="@fileVol.Id" data-current-loc="@fileVol.CurrentLocationId" data-state="@fileVol.StatesId" data-holdingUser="@fileVol.AdUserId"
+                                    data-toggle="tooltip" data-placement="top" title="Request Transfer From User">
                                 <i class="glyphicon glyphicon-paste"></i></button>
                         </td>
 

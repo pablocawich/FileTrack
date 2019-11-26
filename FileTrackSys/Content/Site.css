@@ -155,6 +155,8 @@ table.blueTable tfoot .links a{
     padding: 2px 8px;
     border-radius: 5px;
 }
+
+/* ----------------------------------Custom Buttons------------------------------------------------ */
 .btn-round-iv {
     font-family: Raleway-SemiBold;
     font-size: 13px;
@@ -166,10 +168,26 @@ table.blueTable tfoot .links a{
     background: transparent;
     transition: all 0.3s ease 0s;
 }
+.btn-round-iv-green {
+    font-family: Raleway-SemiBold;
+    font-size: 13px;
+    color: rgba(37, 66, 45, 0.75);
+    letter-spacing: 1px;
+    line-height: 15px;
+    border: 2px solid rgba(135, 222, 91, 0.75);
+    border-radius: 40px;
+    background: transparent;
+    transition: all 0.3s ease 0s;
+}
 .btn-round-iv:hover {
-    color: #FFF;
+    color: #dedcdc;
     background: rgba(91, 192, 222, 0.75);
     border: 2px solid rgba(91, 192, 222, 0.75);
+}
+.btn-round-iv-green:hover {
+    color: #FFF;
+    background: rgba(99, 222, 91, 0.75);
+    border: 2px solid rgba(80, 150, 67, 0.75);
 }
 .example_btn {
     color: #fff !important;

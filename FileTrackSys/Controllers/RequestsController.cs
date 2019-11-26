@@ -236,7 +236,6 @@ namespace FileTracking.Controllers
             } 
         }
 
-        // Direct to pendingFiles page (RegistryOnly)
         [Authorize(Roles = Role.Registry)]
         public ActionResult PendingFiles()
         {           
@@ -969,6 +968,43 @@ namespace FileTracking.Controllers
 
             _context.Requests.Remove(oldRequest);
             _context.SaveChanges();
+        }
+
+        [Authorize(Roles = Role.Registry)]
+        public ActionResult BranchRequestActivity()
+        {
+            return View();
+        }
+
+        //retrieves active request for users based on branch
+        [Authorize(Roles = Role.Registry)]
+        public JsonResult GetActiveRequestsForBranch()
+        {
+            var userInSession = new AdUser(User.Identity.Name);
+
+            try
+            {
+
+                var userInDb = _context.AdUsers.Single(u => u.Username == userInSession.Username);
+
+                if (!userInDb.IsDisabled)
+                {
+                    var requests = _context.Requests.Include(u=>u.User).Include(r=>r.FileVolumes).Include(f=>f.FileVolumes.States).
+                        Include(r=>r.AcceptedBy).Include(r=>r.UserRequestedFrom).
+                        Where(r => r.RecipientBranchId == userInDb.BranchesId && r.RequestStatusId != 1).ToList();
+                    
+                    return Json(new { data = requests.OrderByDescending(r=>r.RequestDate), success = true ,message = "Requests for this branch retrieved." }, JsonRequestBehavior.AllowGet);
+                }
+                else
+                {
+                    return Json(new { success = false, message = "This account cannot perform this action. Kindly logout." }, JsonRequestBehavior.AllowGet);
+                }
+            }
+            catch (Exception e)//DbEntityValidation e
+            {
+                return Json(new { success = false, message = $"Something occured with the database. {e.Message}" }, JsonRequestBehavior.AllowGet);
+            }
+
         }
     }
 

@@ -1,0 +1,169 @@
+﻿
+@{
+    ViewBag.Title = "BranchRequestActivity";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="row">
+    <div class="col-lg-12">
+        <h2 class="page-header"><strong>Active Requests</strong></h2>
+    </div>
+    <!-- /.col-lg-12 -->
+</div>
+<link rel="stylesheet" href="https://cdn.datatables.net/1.10.19/css/dataTables.bootstrap.min.css">
+<div class="row" style="margin-top: 20px">
+    <p><i>Search values should be those pertaining to the fields in the table</i></p>
+    <div class="col-md-4">
+        <div class="input-group">
+            <div class="input-group-btn">
+                <button type="button" class="btn btn-github" disabled>
+                    Search
+                </button>
+            </div>
+            <input type="text" class="form-control" style="height: 36px" id="mySearchTextAct" name="x" placeholder="Search term...">
+            <span class="input-group-btn">
+                <button class="btn btn-default" id="mySearchButtonAct" type="button"><i class="fa fa-search"></i></button>
+            </span>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <button class="btn btn-danger btn-sm" id="clearActSearch">Clear Search</button>
+    </div>
+</div>
+
+<div class="row">
+    <hr/>
+    <div class="col-md-4">
+
+    </div>
+    <div class="col-md-4"></div>
+    <div class="col-md-4 alert alert-info" role="alert" hidden>
+
+    </div>
+</div>
+<div class="row">
+    <div class="col-md-12">
+        <table id="branchReqActivity" class="blueTable">
+            <thead>
+            <tr>
+                <th>File</th>
+                <th style="text-align: center">Volume No.</th>
+                <th>State</th>
+                <th>Requester/Borrowing User</th>
+                <th>Transfer Request from</th>
+                <th>Accepted By</th>
+                <th>Borrowed Date</th>
+
+            </tr>
+            </thead>
+        </table>
+    </div>
+      
+</div>
+@section scripts
+{
+    <script>
+        $(document).ready(function() {
+            var table = $("#branchReqActivity").DataTable({
+                "ajax": {
+                    "url": siteURL + "/Requests/GetActiveRequestsForBranch",
+                    "data": "GET",
+                    "datatype": "json"
+                },
+
+                "columns": [
+                    {
+                        "data": "FileVolumes.FileNumber",
+                        render: function(data, type, req) {
+                            return `<a href="#" data-act-req-id="${req.FileVolumes.FileId}" 
+                            class="branchReqActv"><i class="fa fa fa-address-card"> ${data
+                                }</i></a>`;
+                        }
+                    },
+                    {
+                        data: "FileVolumes.Volume",
+                        render: function(data) {
+                            return `<div style="text-align: center"><strong>${data}</strong></div>`;
+                        }
+                    },
+                    {
+                        data: "FileVolumes.States.State",
+                        render: function(data) {
+                            return `<strong>${data}</strong>`;
+                        }
+                    },
+                    {
+                        "data": "User.Name",
+                        render: function(data) {
+                            return `<strong><i class="fa fa-user-circle-o"></i> ${data}</strong>`;
+                        }
+                    },
+                    {
+                        data: "UserRequestedFrom.Name",
+                        render: function (data) {
+                            if (data == null)
+                                return `<i style='color: red'>Not a user transfer</i>`;
+                            return `<strong><i class='fa fa-user-o'></i> ${data}</strong>`;
+                        }
+                    },
+                    {
+                        "data": "AcceptedBy.Name",
+                        render: function(data) {
+                            return `<strong><i class="fa fa-user-circle"></i> ${data}</strong>`;
+                        }
+                    },
+                    {
+                        data: "RequestDate",
+                        "render": function(data) {
+                            return getDateString(data);
+                        }
+                    }
+                ],
+                "dom": 'lrtip', //hides the search box on the dom
+                "ordering": false,
+                "columnDefs": [
+                    { "targets": [1,6], "searchable": false }
+                ]
+            });
+
+            function getDateString(date) {
+                var dateObj = new Date(parseInt(date.substr(6)));
+                return dateObj.toLocaleString();
+            }
+
+            $("#branchReqActivity").on("click",
+                ".branchReqActv",
+                function() {
+                    var id = $(this).attr("data-act-req-id");
+                    var url = siteURL + "/Files/FileVolumes/" + id;
+                    // alert(url);
+
+                    /* $('#branchReqActvModelContent').load(url);
+                     $('#branchReqActvModal').modal('show');*/
+                    window.location = url;
+                });
+
+            //custom search button
+            $('#mySearchButtonAct').on('keyup click',
+                function() {
+                    table.search($('#mySearchTextAct').val()).draw();
+                });
+
+            $('#mySearchTextAct').on('keyup',
+                function(event) {
+                    if (event.keyCode === 13) {
+                        // Cancel the default action, if needed
+                        event.preventDefault();
+                        // Trigger the button element with a click
+                        $("#mySearchButtonAct").click();
+                    }
+                });
+
+            $("#clearActSearch").on('click',
+                function() {
+                    table.search("").draw();
+                    $('#mySearchTextAct').val("");
+                });
+        });
+    </script>
+}

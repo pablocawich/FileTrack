@@ -13,8 +13,7 @@ using System.Web.WebPages;
 using Microsoft.Ajax.Utilities;
 
 namespace FileTracking.Controllers
-{
-    
+{   
     public class FilesController : Controller
     {
         // GET: Files
@@ -364,12 +363,12 @@ namespace FileTracking.Controllers
 
             //OrderByDescending(r=>r.RequestDate)
             // string searchValue = Request["search[value]"];
-            string sortColumnName = Request["columns["+Request["order[0][column]"]+"][name]"];
-            string sortDirection = Request["order[0][dir]"];
+            //string sortColumnName = Request["columns["+Request["order[0][column]"]+"][name]"];
+            //string sortDirection = Request["order[0][dir]"];
 
             //We retrieve the data from the file database with respect to its table relationships
             List<File> FileList = new List<File>();
-            FileList = _context.Files.Include(f => f.Districts).ToList<File>();
+            FileList = _context.Files.ToList<File>();//removed the includes
 
             int totalFiles = FileList.Count;
             //We check if search value if null or otherwise
@@ -400,7 +399,7 @@ namespace FileTracking.Controllers
                 FileList = FileList.Where(x => (x.DistrictsId != null && x.DistrictsId.ToString().Contains(Request["columns[2][search][value]"].ToLower()))).ToList<File>();
 
             if (!string.IsNullOrEmpty(Request["columns[3][search][value]"]))
-                FileList = FileList.Where(x => (x.LoanNumber != null && x.LoanNumber.ToString().Contains(Request["columns[3][search][value]"]))).ToList<File>();
+                FileList = FileList.Where(x => (x.LoanNumber != null && x.LoanNumber.ToString().ToLower().Contains(Request["columns[3][search][value]"].ToLower()))).ToList<File>();
 
             if (!string.IsNullOrEmpty(Request["columns[4][search][value]"]))
                 FileList = FileList.Where(x => (x.PreviousFileNumber != null && x.PreviousFileNumber.ToString().ToLower().Contains(Request["columns[4][search][value]"]))).ToList<File>();
@@ -408,7 +407,7 @@ namespace FileTracking.Controllers
             int totalFileAfterFilter = FileList.Count;
             //sort Operation
             //FileList = FileList.OrderBy(sortColumnName + " " + sortDirection).ToList<File>();
-            FileList = FileList.OrderByDescending(f=>f.FileNumber).ToList<File>();
+           FileList = FileList.OrderByDescending(f=>f.FileNumber).ToList<File>();
             //Paging Operation
             FileList = FileList.Skip(start).Take(length).ToList<File>();
             return Json(new
@@ -479,6 +478,7 @@ namespace FileTracking.Controllers
 
             return this.Json(new { success = true }, JsonRequestBehavior.AllowGet);
         }
+       
 
     }
 }

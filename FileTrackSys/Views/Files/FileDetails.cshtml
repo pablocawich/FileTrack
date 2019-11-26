@@ -9,68 +9,134 @@
     <div class="col-md-6">
         <div class="form-group">
             <label>Full Name:</label>
-            <input class="form-control" type="text" placeholder="@Model.FullName" readonly>
-        </div>
+            <div class="input-group">
+                <span class="input-group-addon"><i class="fa fa-user-circle-o"></i></span>
+                <input class="form-control" type="text" placeholder="@Model.FullName" readonly>
+            </div>            
+        </div>   
         <div class="form-group">
             <label>Street:</label>
-            <input class="form-control" type="text" placeholder="@Model.Street" readonly>
+            <div class="input-group">
+                <span class="input-group-addon"><i class="fa fa-map-signs"></i></span>
+                <input class="form-control" type="text" placeholder="@Model.Street" readonly>
+            </div>           
         </div>
         @if (Model.LocationId == null)
         {
             <label>File Address:</label>
-            <input class="form-control" type="text" placeholder="N/A" readonly>
+            <div class="input-group">
+                <span class="input-group-addon"><i class="fa fa-map-marker"></i></span>
+                <input class="form-control" type="text" placeholder="N/A" readonly>
+            </div>            
         }
         else
         {
             <div class="form-group">
                 <label>File Address:</label>
-                <input class="form-control" type="text" placeholder="@Model.Location.Name" readonly>
+                <div class="input-group">
+                    <span class="input-group-addon"><i class="fa fa-map-marker"></i></span>
+                    <input class="form-control" type="text" placeholder="@Model.Location.Name" readonly>
+                </div>                  
             </div>
         }
-       
+        @if (Model.DistrictsId == null)
+        {
+            <label>District</label>
+            <div class="input-group">
+                <span class="input-group-addon"><i class="fa fa-location-arrow"></i></span>
+                <input class="form-control" type="text" placeholder="N/A" readonly>
+            </div>
+        }
+        else
+        {
+            <div class="form-group">
+                <label>District:</label>
+                <div class="input-group">
+                    <span class="input-group-addon"><i class="fa fa-location-arrow"></i></span>
+                    <input class="form-control" type="text" placeholder="@Model.Districts.District" readonly>
+                </div>
+            </div>
+        }
         <div class="form-group">
             <label>Loan Number/s</label>
-            <input class="form-control" type="text" placeholder=" @Model.LoanNumber" readonly>
+            <div class="input-group">
+                <span class="input-group-addon"><i class="fa fa-dedent"></i></span>
+                <input class="form-control" type="text" placeholder=" @Model.LoanNumber" readonly>
+            </div>
         </div>
         <div class="form-group">
             @if (Model.IdentificationOptionId == null)
             {
                 <label>Other ID</label>
-                <input class="form-control" type="text" placeholder="N/A" readonly>
+                <div class="input-group">
+                    <span class="input-group-addon"><i class="fa fa-drivers-license-o"></i></span>
+                    <input class="form-control" type="text" placeholder="N/A" readonly>
+                </div>
             }
             else
             {
                 <label>@Model.IdentificationOption.Identification:</label>
-                <input class="form-control" type="text" placeholder=" @Model.IdentificationNumber" readonly>
+                <div class="input-group">
+                    <span class="input-group-addon"><i class="fa fa-drivers-license-o"></i></span>
+                    <input class="form-control" type="text" placeholder=" @Model.IdentificationNumber" readonly>
+                </div>
             }
 
         </div>
-        <div class="form-group">
-            <label>File Status:</label>
-            <input class="form-control" type="text" placeholder="  @Model.FileStatus.Status" readonly>
-        </div>
+
     </div>
     <div class="col-md-6">
         <div class="form-group">
             <label>Comment:</label>
-            <input class="form-control" type="text" placeholder="@Model.Comments" readonly>
+            <div class="input-group">
+                <span class="input-group-addon"><i class="fa fa-commenting"></i></span>
+                <input class="form-control" type="text" placeholder="@Model.Comments" readonly>
+            </div>          
         </div>
         <div class="form-group">
             <label>Date Created:</label>
-            <input class="form-control" type="text" placeholder=" @Model.DateCreated" readonly>
+            <div class="input-group">
+                <span class="input-group-addon"><i class="fa fa-calendar-check-o"></i></span>
+                <input class="form-control" type="text" placeholder=" @Model.DateCreated" readonly>
+            </div>
         </div>
         <div class="form-group">
             <label>File type:</label>
-            <input class="form-control" type="text" placeholder="  @Model.FileType.Type" readonly>
+            <div class="input-group">
+                <span class="input-group-addon"><i class="fa fa-file-excel-o"></i></span>
+                <input class="form-control" type="text" placeholder="  @Model.FileType.Type" readonly>
+            </div>           
         </div>
         <div class="form-group">
             <label>Number of Volume(s):</label>
-            <input class="form-control" type="text" placeholder="  @Model.Volume" readonly>
+            <div class="input-group">
+                <span class="input-group-addon"><i class="fa fa-plus-square"></i></span>
+                <input class="form-control" type="text" placeholder="  @Model.Volume" readonly>
+            </div>
         </div>
         <div class="form-group">
             <label>File Access:</label>
-            <input class="form-control" type="text" placeholder="  @Model.FileAccess" readonly>
+            <div class="input-group">
+                <span class="input-group-addon"><i class="fa fa-question-circle-o"></i></span>
+                <input class="form-control" type="text" placeholder="  @Model.FileAccess" readonly>
+            </div>
         </div>
+        @if (Model.FileStatusId == 0)
+        {
+
+        }
+        else
+        {
+            <div class="form-group">
+                <label>File Status:</label>
+                <div class="input-group">
+                    <span class="input-group-addon"><i class="fa fa-bar-chart-o"></i></span>
+                    <input class="form-control" type="text" placeholder="  @Model.FileStatus.Status" readonly>
+                 </div>
+            </div>
+        }
+       
+
     </div>
    
 </div>

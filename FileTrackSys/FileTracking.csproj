@@ -1132,6 +1132,7 @@
     <Content Include="Views\Home\ContentArea.cshtml" />
     <Content Include="Views\Shared\InvalidGroup.cshtml" />
     <Content Include="Views\Requests\_DirectTransferUsers.cshtml" />
+    <Content Include="Views\Requests\BranchRequestActivity.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Reports\" />

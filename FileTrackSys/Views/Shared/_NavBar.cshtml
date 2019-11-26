@@ -22,6 +22,10 @@
     <ul class="nav navbar-nav navbar-top-links">
         <li>@Html.ActionLink("About", "About", "Home")</li>
         <li>@Html.ActionLink("Contact", "Contact", "Home")</li>
+        <li>
+            <a href="@Url.Action("BranchRequestActivity", "Requests")"> <i class="fa fa-retweet"></i> Ongoing Activities</a>
+        </li>
+        
     </ul>
 
     @Html.Partial("_LoginPartial")

@@ -31,7 +31,7 @@
             <tr>
                 <th id="fileNoCol" class="searchable2"> File Number</th>
                 <th class="searchable2">Name</th>
-                <th class="searchable2">District</th>
+                <th class="searchable2" hidden>District</th>
                 <th class="searchable2">Loan No.</th>
                 <th class="searchable2" hidden>Prev. File No.</th> 
 
@@ -64,7 +64,8 @@
                         "data": "FileNumber",
                         "name": "FileNumber",
                         render: function(data, type, file) {
-                            return `<div style="text-align: center"><span data-url='${file.Id}'  class='btn example_btn spanModal'>
+                            return `<div style="text-align: center"><span data-url='${file.Id
+                                }'  class='btn example_btn spanModal'>
                                         <i class="fa fa-file-text"></i> ${file.FileNumber}</span></div>`;
                         }
                     },
@@ -81,7 +82,7 @@
                             return data;
                         }
                     },*/
-                    {
+                    /*{
                         "data": "Districts.District",
                         "name": "Districts.District",
                         render: function(data) {
@@ -90,7 +91,7 @@
                             }
                             return data;
                         }
-                    },
+                    },*/
                     { "data": "LoanNumber", "name": "LoanNumber" },
                     // { data: "PreviousFileNumber" },
                     // { "data": "Volume", "name": "Volume" },
@@ -98,17 +99,17 @@
                         data: "Id",
 
                         "render": function(data, type, vol) {
-                            var buttonRequest = "<button class='btn js-requestFile' data-request-name='" +
-                                vol.FirstName +
-                                "'data-request-file-id='" +
-                                data +
-                                "'><i class='fa fa-outdent'></i></button>";
+                            var buttonRequest =
+                                `<button class='btn btn-round-iv-green js-requestFile' data-request-name='${vol.FirstName}'
+                                data-request-file-id='${data}' data-toggle="tooltip" data-placement="top" title="Go To Volumes">
+                                <i class='fa fa-outdent'></i></button>`;
                             return buttonRequest;
                         }
                     }
                 ],
                 "serverSide": "true",
-                "order": [0, "asc"],
+                //"order": [0, "asc"],
+                "ordering": false,
                 "processing": "true",
                 "language": {
                     "processing": "Processing Files... Kindly hold"

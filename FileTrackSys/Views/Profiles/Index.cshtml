@@ -53,7 +53,12 @@
                                     <i class="glyphicon glyphicon-import"></i> @Model.Role
                                     <br />
                                     <i class="glyphicon glyphicon-import"></i> Authentication: @User.Identity.AuthenticationType
-                                </p>
+                                    <br />
+                                    <i class="fa fa-id-badge"></i> Is Admin User: @{
+                                                                                                  string response = (User.IsInRole("FMS_Admin")) ? "Yes" : "No";
+                                                                                                  
+                                                                                              } @response
+                                 </>
                                 <!-- Split button -->
                                 
                             </div>

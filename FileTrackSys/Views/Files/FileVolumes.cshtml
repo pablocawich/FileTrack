@@ -67,24 +67,24 @@
                     {
                         <td>@fileVol.AdUser.Name</td>
                     }
-                    <td class="tdBtn">
-                        <button vol-data-id="@fileVol.Id" file-name="@Model.File.FirstName" vol-num-attr="@fileVol.Volume" class="btn btn-circle js-edit-vol" data-toggle="tooltip" data-placement="top" title="Update Description">
-                            <i class="glyphicon glyphicon-pencil"></i>
-                        </button> |
-                        <button class="btn btn-circle history-js" vol-id-attr="@fileVol.Id" data-toggle="tooltip" data-placement="top" title="Volume's History"><i class="fa fa-history"></i></button> |
-                        <button class="btn btn-circle changeBranch-js" vol-changeBranchId="@fileVol.Id" vol-num-editBranch="@fileVol.Volume" state-editBranch="@fileVol.StatesId" data-toggle="tooltip" data-placement="top" title="Change Branch"><i class="fa fa-location-arrow"></i></button> |
-                        @if (fileVol.AdUserId != null)
-                        {
-                            var userWithFile = fileVol.AdUser.Name;
-                            <button class="btn btn-circle reclaimFile-js" vol-reclaimFileId="@fileVol.Id" vol-num-reclaimFile="@fileVol.Volume" volBranch="@fileVol.BranchesId" state-reclaim="@fileVol.StatesId" user-reclaim="@userWithFile" data-toggle="tooltip" data-placement="top" title="Reclaim File"><i class="fa fa-refresh"></i></button>
-                        }
-                        else
-                        {
-                            <button class="btn btn-circle reclaimFile-js" vol-reclaimFileId="@fileVol.Id" vol-num-reclaimFile="@fileVol.Volume" volBranch="@fileVol.BranchesId" state-reclaim="@fileVol.StatesId" data-toggle="tooltip" data-placement="top" title="Reclaim File" ><i class="fa fa-refresh"></i></button>
-                        }
+                        <td class="tdBtn">
+                            <button vol-data-id="@fileVol.Id" file-name="@Model.File.FirstName" vol-num-attr="@fileVol.Volume" class="btn btn-circle js-edit-vol" data-toggle="tooltip" data-placement="top" title="Update Description">
+                                <i class="glyphicon glyphicon-pencil"></i>
+                            </button> |
+                            <button class="btn btn-circle history-js" vol-id-attr="@fileVol.Id" data-toggle="tooltip" data-placement="top" title="Volume's History"><i class="fa fa-history"></i></button> |
+                            <button class="btn btn-circle changeBranch-js" vol-changeBranchId="@fileVol.Id" vol-num-editBranch="@fileVol.Volume" state-editBranch="@fileVol.StatesId" data-toggle="tooltip" data-placement="top" title="Change Branch"><i class="fa fa-location-arrow"></i></button> |
+                            @if (fileVol.AdUserId != null)
+                            {
+                                var userWithFile = fileVol.AdUser.Name;
+                                <button class="btn btn-circle reclaimFile-js" vol-reclaimFileId="@fileVol.Id" vol-num-reclaimFile="@fileVol.Volume" volBranch="@fileVol.BranchesId" state-reclaim="@fileVol.StatesId" user-reclaim="@userWithFile" data-toggle="tooltip" data-placement="top" title="Reclaim File"><i class="fa fa-refresh"></i></button>
+                            }
+                            else
+                            {
+                                <button class="btn btn-circle reclaimFile-js" vol-reclaimFileId="@fileVol.Id" vol-num-reclaimFile="@fileVol.Volume" volBranch="@fileVol.BranchesId" state-reclaim="@fileVol.StatesId" data-toggle="tooltip" data-placement="top" title="Reclaim File"><i class="fa fa-refresh"></i></button>
+                            }
 
-
-                    </td>
+                            | <button class="btn btn-circle directTrans-js" vol-changeBranchId="@fileVol.Id" vol-num-editBranch="@fileVol.Volume" state-editBranch="@fileVol.StatesId" data-toggle="tooltip" data-placement="top" title="Directly Transfer To User"><i class="fa fa-send"></i></button>
+                        </td>
                 </tr>
             }
         </tbody>
