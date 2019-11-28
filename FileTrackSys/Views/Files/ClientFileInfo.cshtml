@@ -1,0 +1,42 @@
+﻿@model FileTracking.Models.File
+
+       
+            <!--Header-->
+            <div class="modal-header">
+                <h3 class="modal-title">File @Model.FileNumber Info</h3>
+
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+
+            <!--Body-->
+            <div class="modal-body">
+                <div class="row">
+                    <div class="col-sm-4 col-md-4">
+                        <img src="~/Images/file-icon.png"
+                             alt="" class="img-rounded img-responsive"/>
+                    </div>
+                    <div class="col-sm-8 col-md-8">
+                        <blockquote>
+                            <h5>User Associated with file:</h5><p>@Model.FullName</p> <small><cite title="Source Title"> Client's Location: @{
+                                                                                           string loc = "";
+                                                                                           if (Model.LocationId != null)
+                                                                                            {
+                                                                                               loc =  Model.Location.Name;
+                                                                                            }
+                                                                                       } <strong>@loc </strong><i class="glyphicon glyphicon-map-marker"></i></cite></small>
+                        </blockquote>
+                        <p> <i class="fa fa-file-powerpoint-o"></i> Previous File Number: <strong>@Model.PreviousFileNumber</strong>
+                            <br/> <i class="fa fa-file-excel-o"></i> File Access: <strong>@Model.FileAccess</strong>
+                            <br/> <i class="fa fa-calendar-o"></i> Date Created: <strong>@Model.DateCreated</strong></p>
+                    </div>
+                </div>
+
+            </div>
+
+            <!--Footer-->
+            <div class="modal-footer justify-content-center">
+                <a class="btn btn-outline-success" data-dismiss="modal">Got it</a>
+            </div>
+        

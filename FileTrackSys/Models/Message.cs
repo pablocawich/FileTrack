@@ -55,5 +55,7 @@ namespace FileTracking.Models
         [NotMapped]
         public const string ExternalRoute = "EXROUTE";
 
+        [NotMapped] public const string RegistryTransfer = "REG_TRAN";
+
     }
 }

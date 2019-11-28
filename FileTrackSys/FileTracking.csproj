@@ -542,6 +542,10 @@
     <Compile Include="Migrations\201910111735380_AddExternalRoutingMesage.Designer.cs">
       <DependentUpon>201910111735380_AddExternalRoutingMesage.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201911282139056_AddRegistryTransferMessage.cs" />
+    <Compile Include="Migrations\201911282139056_AddRegistryTransferMessage.Designer.cs">
+      <DependentUpon>201911282139056_AddRegistryTransferMessage.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Models\AccountViewModels.cs" />
     <Compile Include="Models\AddNumberIfIdentificationSelected.cs" />
@@ -760,6 +764,7 @@
     <Content Include="fonts\fontawesome-webfont.woff" />
     <Content Include="fonts\fontawesome-webfont.woff2" />
     <Content Include="fonts\FontAwesome.otf" />
+    <Content Include="Images\file-icon.png" />
     <Content Include="Images\request-sent.jpg" />
     <Content Include="Scripts\bootbox.js" />
     <Content Include="Scripts\bootbox.min.js" />
@@ -1133,6 +1138,8 @@
     <Content Include="Views\Shared\InvalidGroup.cshtml" />
     <Content Include="Views\Requests\_DirectTransferUsers.cshtml" />
     <Content Include="Views\Requests\BranchRequestActivity.cshtml" />
+    <Content Include="Views\Files\ClientFileInfo.cshtml" />
+    <Content Include="Views\Files\_RegistryFileTransfer.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Reports\" />
@@ -1381,6 +1388,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201910111735380_AddExternalRoutingMesage.resx">
       <DependentUpon>201910111735380_AddExternalRoutingMesage.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201911282139056_AddRegistryTransferMessage.resx">
+      <DependentUpon>201911282139056_AddRegistryTransferMessage.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>

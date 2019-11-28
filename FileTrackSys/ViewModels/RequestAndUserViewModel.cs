@@ -12,5 +12,7 @@ namespace FileTracking.ViewModels
 
         public Request Request { get; set; }
 
+        public FileVolumes FileVolumes { get; set; }
+
     }
 }

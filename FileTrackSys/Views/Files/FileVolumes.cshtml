@@ -47,7 +47,7 @@
             @foreach (var fileVol in Model.FileVolumes)
             {
                 <tr>
-                    <td>@fileVol.Volume</td>
+                    <td style="text-align: center">@fileVol.Volume</td>
                     @if (fileVol.Comment == null)
                     {
                         <td>Comment not provided</td>
@@ -67,12 +67,12 @@
                     {
                         <td>@fileVol.AdUser.Name</td>
                     }
-                        <td class="tdBtn">
+                        <td class="tdBtn" style="text-align: center">
                             <button vol-data-id="@fileVol.Id" file-name="@Model.File.FirstName" vol-num-attr="@fileVol.Volume" class="btn btn-circle js-edit-vol" data-toggle="tooltip" data-placement="top" title="Update Description">
                                 <i class="glyphicon glyphicon-pencil"></i>
                             </button> |
                             <button class="btn btn-circle history-js" vol-id-attr="@fileVol.Id" data-toggle="tooltip" data-placement="top" title="Volume's History"><i class="fa fa-history"></i></button> |
-                            <button class="btn btn-circle changeBranch-js" vol-changeBranchId="@fileVol.Id" vol-num-editBranch="@fileVol.Volume" state-editBranch="@fileVol.StatesId" data-toggle="tooltip" data-placement="top" title="Change Branch"><i class="fa fa-location-arrow"></i></button> |
+                            <button class="btn btn-circle changeBranch-js" vol-changeBranchId="@fileVol.Id" vol-num-editBranch="@fileVol.Volume" state-editBranch="@fileVol.StatesId" data-toggle="tooltip" data-placement="top" title="Change Branch"><i class="fa fa-chevron-circle-up"></i></button> |
                             @if (fileVol.AdUserId != null)
                             {
                                 var userWithFile = fileVol.AdUser.Name;
@@ -83,7 +83,7 @@
                                 <button class="btn btn-circle reclaimFile-js" vol-reclaimFileId="@fileVol.Id" vol-num-reclaimFile="@fileVol.Volume" volBranch="@fileVol.BranchesId" state-reclaim="@fileVol.StatesId" data-toggle="tooltip" data-placement="top" title="Reclaim File"><i class="fa fa-refresh"></i></button>
                             }
 
-                            | <button class="btn btn-circle directTrans-js" vol-changeBranchId="@fileVol.Id" vol-num-editBranch="@fileVol.Volume" state-editBranch="@fileVol.StatesId" data-toggle="tooltip" data-placement="top" title="Directly Transfer To User"><i class="fa fa-send"></i></button>
+                            | <button class="btn btn-circle directTrans-js" transfer-fileId="@fileVol.Id" vol-num-transfer="@fileVol.Volume" state-transfer="@fileVol.StatesId" file-branchId="@fileVol.BranchesId" data-toggle="tooltip" data-placement="top" title="Directly Transfer To User"><i class="fa fa-send"></i></button>
                         </td>
                 </tr>
             }
@@ -102,7 +102,12 @@
             </div>
         </div>
     </div>
-    
+    <div class="modal fade" id="registryTransModel" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" data-backdrop="static" data-keyboard="true">
+        <div class="modal-dialog">
+            <div class="modal-content" id="registryTransModelContent">
+            </div>
+        </div>
+    </div>
 </div>
 @section scripts
 {
@@ -136,7 +141,7 @@
                         callback: function(result) {
                             if (result) {
                                 //window.location.href = siteURL + "/FileVolumes/VolHistory/" + volId;
-                                window.open(siteURL + "/FileVolumes/VolHistory/" + volId,"_blank");
+                                window.open(siteURL + "/FileVolumes/VolHistory/" + volId, "_blank");
                             }
 
                         }
@@ -202,7 +207,9 @@
                     let volBranchId = btn.attr("volBranch");
 
                     if (userInSessionBranch != volBranchId)
-                        toastr.warning("Your branch does not match the volume's branch.","Cannot perform action!",{ positionClass: "toast-bottom-right" });
+                        toastr.warning("Your branch does not match the volume's branch.",
+                            "Cannot perform action!",
+                            { positionClass: "toast-bottom-right" });
                     else {
                         if (stateId == 5) {
                             bootbox.confirm({
@@ -219,11 +226,11 @@
                                         className: 'btn-danger'
                                     }
                                 },
-                                callback: function (result) {
+                                callback: function(result) {
                                     if (result) {
                                         $.ajax({
                                             url: siteURL + '/FileVolumes/ReclaimFileVolume/' + volId,
-                                            success: function (response) {
+                                            success: function(response) {
                                                 if (response.success) {
                                                     toastr.success(response.message,
                                                         "Reclaim",
@@ -238,8 +245,8 @@
 
                                             },
                                             statusCode: {
-                                                404: function (content) { alert('cannot find resource'); },
-                                                500: function (content) { alert('internal server error'); }
+                                                404: function(content) { alert('cannot find resource'); },
+                                                500: function(content) { alert('internal server error'); }
                                             }
                                         });
                                     }
@@ -252,7 +259,109 @@
                                 { positionClass: "toast-bottom-right" });
                         }
                     }
+
+                });
+            //registry direct transfer btn
+            $("#registryVolumeTable").on('click',
+                '.directTrans-js',
+                function() {
+                    var $btn = $(this);
+                    let userInSessionBranch = @Model.AdUser.BranchesId;
+                    let fileOriginBranch = $btn.attr("file-branchId");
+                    let volId = $btn.attr("transfer-fileId");
+
+                    let btnState = $btn.attr("state-transfer");
+                    if (userInSessionBranch != fileOriginBranch) {
+                        toastr.error("Cannot transfer file that is not assigned to your registry",
+                            "Registry Transfer",
+                            { positionClass: "toast-bottom-right" });
+                    } else if (btnState == '1') {
+                        bootbox.confirm({
+                            message:
+                                "You are about to perform a direct transfer to a user from within your branch. Continue?",
+                            title: "Registry transfer confirmation",
+                            buttons: {
+                                confirm: {
+                                    label: 'Yes',
+                                    className: 'btn-success'
+                                },
+                                cancel: {
+                                    label: 'No',
+                                    className: 'btn-danger'
+                                }
+                            },
+                            callback: function(response) {
+                                if (response) {
+                                    var url = siteURL + `/Files/RegistryFileTransfer/${volId}`;
+                                    // alert(url);
+
+                                    $('#registryTransModelContent').load(url);
+                                    $('#registryTransModel').modal('show');
+                                }
+                            }
+                        });
+                    } else {
+                        toastr.error("File must be in a stored state",
+                            "Registry Transfer",
+                            { positionClass: "toast-bottom-right" });
+                    }
+
+                });
+
+            //Registry transfer button 
+            $("#registryTransModel").on('click',
+                '#registryTransBtn',
+                function () {
                     
+                    var userValId = $("#userSelectForRegistry").val();
+                    let volId = $(this).attr("vol-rec-js");
+                    //alert("userId"+userValId+" vol Id"+volId);
+                    
+                    if (userValId == "")
+                        alert("Please select from the given list");
+                    else {
+                        let userVal = $("#userSelectForRegistry option:selected").text();
+                        bootbox.confirm({
+                            message: `You have selected <strong>${userVal}</strong>. Are you sure?`,
+                            buttons: {
+                                confirm: {
+                                    label: 'Yes',
+                                    className: 'btn-success'
+                                },
+                                cancel: {
+                                    label: 'No',
+                                    className: 'btn-danger'
+                                }
+                            },
+                            callback: function(result) {
+                                // 
+                                if (result) {
+                                    $.ajax({
+                                        url: siteURL + `/Requests/CreateRegistryTransferRequest/${userValId}/${volId}`,
+                                        success: function(response) {
+                                            if (!response.success) {
+                                                toastr.error(response.message,
+                                                    "Registry Transfer",
+                                                    { positionClass: "toast-bottom-right" });
+                                            } else {
+                                                toastr.success(response.message,
+                                                    "Registry Transfer",
+                                                    { positionClass: "toast-bottom-right" });
+
+                                            }
+
+                                        },
+                                        statusCode: {
+                                            404: function(content) { alert('cannot find resource'); },
+                                            500: function(content) { alert('internal server error'); }
+                                        }
+                                    });
+                                    $('#registryTransModel').modal('hide');
+                                }
+
+                            }
+                        });
+                    }
                 });
         });
     </script>

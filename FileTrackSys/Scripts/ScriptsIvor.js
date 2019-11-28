@@ -1,5 +1,5 @@
 ﻿$(document).ready(function () {
-
+   
     //notification front end code
     //listens for a click event so that link can be mark as read and removed from the database
     $(".alertList").on("click", function () {

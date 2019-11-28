@@ -30,8 +30,8 @@
         <table id="fileTable" class="table table-striped table-bordered table-hover" style="width: 100%">
             <thead>
                 <tr class="firstRow">
-                    <th class="searchable" width="60">File No.</th>
-                    <th class="searchable" width="90">Name</th>
+                    <th class="searchable" width="30">File No.</th>
+                    <th class="searchable" width="60">Name</th>
                     <th class="searchable" width="50" hidden>District</th>
                     <th class="searchable" width="100">Loan Number</th>
                     <th class="searchable" width="80" hidden>Previous File No.</th>
@@ -66,8 +66,8 @@
                         "name": "FileNumber",
                         render: function(data, type, file) {
 
-                            return `<span data-url='${file.Id}' class='btn btn-block btn-sm btn-round-iv spanModal'>
-                                <i class='fa fa-file-text'></i> ${data} </span>`;
+                            return `<div style="text-align: center"><span data-url='${file.Id}' class='btn btn-md btn-round-iv spanModal'>
+                                <i class='fa fa-file-text'></i> ${data} </span></div>`;
 
                         }
                     },

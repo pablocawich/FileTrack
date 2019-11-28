@@ -88,5 +88,80 @@ namespace FileTracking.Controllers
             _context.Notifications.Remove(notifInDb);
             _context.SaveChanges();
         }
+        //------------------------------------------NOTIFICATIONS------------------------------------------------------------
+        //-------------------------------------------------------------------------------------------------------------------
+        //for regular request notification
+        public void CreateNotification(Request req, string messageId)
+        {
+            var notif = new Notification()
+            {
+                RecipientUserId = req.UserId,//user 
+                MessageId = messageId,
+                Read = false,
+                //RequestId = req.Id,
+                FileVolumeId = req.FileVolumesId,
+                DateTriggered = DateTime.Now,
+                SenderUserId = req.UserRequestedFromId
+            };
+
+            _context.Notifications.Add(notif);
+            _context.SaveChanges();
+        }
+        //the notification that will be sent to local registry for external request
+        public void CreateInitialExternalRequest(Request req, string messageId)
+        {
+            var notif = new Notification()
+            {
+                RecipientUserId = req.UserId,//user 
+                MessageId = messageId,
+                Read = false,
+                RecipientBranchId = req.RequesterBranchId,
+                //SenderBranchId = req.RecipientBranchId,
+                //RequestId = req.Id,
+                FileVolumeId = req.FileVolumesId,
+                DateTriggered = DateTime.Now,
+                SenderUserId = req.UserRequestedFromId
+            };
+
+            _context.Notifications.Add(notif);
+            _context.SaveChanges();
+        }
+
+        //for initial transfer request.
+        public void NotificationForInitialTransfer(Request req, string messageId)
+        {
+
+            var notif = new Notification()
+            {
+                RecipientUserId = req.UserRequestedFromId,//user 
+                MessageId = messageId,
+                Read = false,
+                //RequestId = req.Id,
+                FileVolumeId = req.FileVolumesId,
+                DateTriggered = DateTime.Now,
+                SenderUserId = req.UserId
+            };
+            _context.Notifications.Add(notif);
+            _context.SaveChanges();
+        }
+
+        //creates and sends a request to registry
+        public void NotificationForInitialRequest(Request req, string messageId)
+        {
+
+            var notif = new Notification()
+            {
+                RecipientUserId = null,//user 
+                MessageId = messageId,
+                Read = false,
+                //RequestId = req.Id,
+                RecipientBranchId = req.RecipientBranchId, //imperative, since all branch registry should receive the notif
+                FileVolumeId = req.FileVolumesId,
+                DateTriggered = DateTime.Now,
+                SenderUserId = req.UserId
+            };
+            _context.Notifications.Add(notif);
+            _context.SaveChanges();
+        }
     }
 }

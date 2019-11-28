@@ -1,0 +1,31 @@
+﻿@model FileTracking.ViewModels.RequestAndUserViewModel
+
+<div class="modal-header" style="background-color: #deefcf">
+    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+        <span aria-hidden="true"><i class="fa fa-times-circle"></i></span>
+    </button>
+    <h4 class="modal-title" style="color: #358e59"><strong>Select a user to transfer file to:</strong></h4>
+</div>
+<div class="modal-body container-fluid">
+    <h5><i>Transfer can only be done to users from within the same branch</i></h5>
+    <div class="col-md-6">
+        <div class="form-group">
+            <label>User List:</label>
+            <div class="input-group">
+                <span class="input-group-addon" style="max-width: 100%;"><i class="fa fa-location-arrow"></i></span>
+                @Html.DropDownListFor(u=>u.Users, new SelectList(Model.Users, "Id", "Name"), "Select User:", new { @class = "form-control", @id = "userSelectForRegistry" })
+            </div>
+
+        </div>
+    </div>
+    <div class="col-md-6">
+    </div>
+
+</div>
+<div class="modal-footer">
+    <button class="btn btn-default" id="registryTransBtn" vol-rec-js="@Model.FileVolumes.Id">Transfer to User</button>
+    <button type="button" class="btn btn-github"
+            data-dismiss="modal">
+        Close
+    </button>
+</div>

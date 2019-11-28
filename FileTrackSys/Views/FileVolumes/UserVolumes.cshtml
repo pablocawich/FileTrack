@@ -131,11 +131,14 @@
                                                                 '/FileVolumes/VerifiedReturnOfVolume/' +
                                                                 requestId,
                                                             success: function(response) {
-                                                                toastr.success("Return Request Sent to registry",
-                                                                    "Return",
-                                                                    { positionClass: "toast-bottom-right" });
+                                                                if (response) {
+                                                                    toastr.success("Return Request Sent to registry",
+                                                                        "Return",
+                                                                        { positionClass: "toast-bottom-right" });
 
-                                                                $($btn).closest("tr").remove();
+                                                                    $($btn).closest("tr").remove();
+                                                                }
+                                                                
                                                             },
                                                             error: function(jqXhr, textStatus, errorThrown) {
                                                                 alert(errorThrown);
@@ -225,7 +228,7 @@
                                 }
                             },
                             callback: function(result) {
-                                // ...
+                                // 
                                 if (result) {
                                     $.ajax({
                                         url: siteURL + `/Requests/TransferToUser/${userId}/${reqId}`,

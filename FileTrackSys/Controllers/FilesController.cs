@@ -478,7 +478,34 @@ namespace FileTracking.Controllers
 
             return this.Json(new { success = true }, JsonRequestBehavior.AllowGet);
         }
-       
+
+        [Authorize(Roles = Role.Registry)]
+        public ActionResult ClientFileInfo(int id)
+        {
+            var clientFile = _context.Files.Include(f=>f.Location).Single(f => f.Id == id);
+
+            return PartialView("ClientFileInfo", clientFile);
+        }
+
+        [Authorize(Roles = Role.Registry)]
+        [Route("Files/RegistryFileTransfer/{volId}")]
+        public ActionResult RegistryFileTransfer(int volId)
+        {
+            var adUser = new AdUser(User.Identity.Name);
+            var userInSession = _context.AdUsers.Single(u => u.Username == adUser.Username);
+            var userList = _context.AdUsers.Where(u => u.Role == Role.RegularUser && u.IsDisabled == false &&
+                                                       u.BranchesId == userInSession.BranchesId).ToList();
+            var viewModel = new RequestAndUserViewModel()
+            {
+                Users = userList,
+                Request = null,
+                FileVolumes = _context.FileVolumes.Single(v=>v.Id == volId)
+            };
+            
+
+            return PartialView("_RegistryFileTransfer", viewModel);
+        }
+
 
     }
 }

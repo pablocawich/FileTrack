@@ -12,15 +12,15 @@
 </div>
 <link rel="stylesheet" href="https://cdn.datatables.net/1.10.19/css/dataTables.bootstrap.min.css">
 <div class="row" style="margin-top: 20px">
-    <p><i>Search values should be those pertaining to the fields in the table</i></p>
+    <h5><i>Search values should be those pertaining to the fields in the table</i></h5>
     <div class="col-md-4">
         <div class="input-group">
             <div class="input-group-btn">
                 <button type="button" class="btn btn-github" disabled>
-                    Search
+                    Search By :
                 </button>
             </div>
-            <input type="text" class="form-control" style="height: 36px" id="mySearchTextAct" name="x" placeholder="Search term...">
+            <input type="text" class="form-control" style="height: 36px" id="mySearchTextAct" placeholder="File No./Req User/Accept By">
             <span class="input-group-btn">
                 <button class="btn btn-default" id="mySearchButtonAct" type="button"><i class="fa fa-search"></i></button>
             </span>
@@ -46,7 +46,8 @@
         <table id="branchReqActivity" class="blueTable">
             <thead>
             <tr>
-                <th>File</th>
+                <th>File No.</th>
+                <th>Client's File</th>
                 <th style="text-align: center">Volume No.</th>
                 <th>State</th>
                 <th>Requester/Borrowing User</th>
@@ -58,12 +59,18 @@
             </thead>
         </table>
     </div>
-      
+    <div class="modal fade" id="activeReqModal" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" data-backdrop="static" data-keyboard="true">
+        <div class="modal-dialog">
+            <div class="modal-content" id="activeReqModelContent">
+            </div>
+        </div>
+    </div>
 </div>
 @section scripts
 {
     <script>
-        $(document).ready(function() {
+        $(document).ready(function () {
+            $("#ongoingNavLi").css("background-color", "grey");
             var table = $("#branchReqActivity").DataTable({
                 "ajax": {
                     "url": siteURL + "/Requests/GetActiveRequestsForBranch",
@@ -76,8 +83,16 @@
                         "data": "FileVolumes.FileNumber",
                         render: function(data, type, req) {
                             return `<a href="#" data-act-req-id="${req.FileVolumes.FileId}" 
-                            class="branchReqActv"><i class="fa fa fa-address-card"> ${data
-                                }</i></a>`;
+                            class="branchReqActv" data-toggle="tooltip" title="View Volumes"> ${data
+                                }</a>`;
+                        }
+                    },
+                    {
+                        data: "FileVolumes.FileId",
+                        render: function(data) {
+                            return `<div style="text-align: center"> <button class="btn btn-circle custBtn-js" data-cust-id='${
+                                data}'>
+                                <i class="fa fa fa-address-card"></i></button></div>`;
                         }
                     },
                     {
@@ -100,7 +115,7 @@
                     },
                     {
                         data: "UserRequestedFrom.Name",
-                        render: function (data) {
+                        render: function(data) {
                             if (data == null)
                                 return `<i style='color: red'>Not a user transfer</i>`;
                             return `<strong><i class='fa fa-user-o'></i> ${data}</strong>`;
@@ -122,7 +137,7 @@
                 "dom": 'lrtip', //hides the search box on the dom
                 "ordering": false,
                 "columnDefs": [
-                    { "targets": [1,6], "searchable": false }
+                    { "targets": [1, 2,5,7], "searchable": false }
                 ]
             });
 
@@ -164,6 +179,21 @@
                     table.search("").draw();
                     $('#mySearchTextAct').val("");
                 });
+
+            //Customer modal info
+            $("#branchReqActivity").on('click', '.custBtn-js', function() {
+                var $custId = $(this).attr("data-cust-id");
+                //alert($custId);
+    
+                var url = siteURL + "/Files/ClientFileInfo/" + $custId;
+                // alert(url);
+
+                $('#activeReqModelContent').load(url);
+                 $('#activeReqModal').modal('show');
+            });
+
+            
+            
         });
     </script>
 }

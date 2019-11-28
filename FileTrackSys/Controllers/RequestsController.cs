@@ -30,79 +30,7 @@ namespace FileTracking.Controllers
         {
             _context.Dispose();
         }
-        //for regular request notification
-        public void CreateNotification(Request req, string messageId)
-        {
-            var notif = new Notification()
-            {
-                RecipientUserId = req.UserId,//user 
-                MessageId = messageId,
-                Read = false,
-                //RequestId = req.Id,
-                FileVolumeId = req.FileVolumesId,
-                DateTriggered = DateTime.Now,
-                SenderUserId = req.UserRequestedFromId
-            };
-
-            _context.Notifications.Add(notif);
-            _context.SaveChanges();
-        }
-        //the notification that will be sent to localregistry for external request
-        public void CreateInitialExternalRequest(Request req, string messageId)
-        {
-            var notif = new Notification()
-            {
-                RecipientUserId = req.UserId,//user 
-                MessageId = messageId,
-                Read = false,
-                RecipientBranchId = req.RequesterBranchId,
-                //SenderBranchId = req.RecipientBranchId,
-                //RequestId = req.Id,
-                FileVolumeId = req.FileVolumesId,
-                DateTriggered = DateTime.Now,
-                SenderUserId = req.UserRequestedFromId
-            };
-
-            _context.Notifications.Add(notif);
-            _context.SaveChanges();
-        }
-
-        //for initial transfer request.
-        public void NotificationForInitialTransfer(Request req, string messageId)
-        {
-            
-            var notif = new Notification()
-            {
-                RecipientUserId = req.UserRequestedFromId,//user 
-                MessageId = messageId,
-                Read = false,
-                //RequestId = req.Id,
-                FileVolumeId = req.FileVolumesId,
-                DateTriggered = DateTime.Now,
-                SenderUserId = req.UserId
-            };
-            _context.Notifications.Add(notif);
-            _context.SaveChanges();
-        }
-
-        //creates and sends a request to registry
-        public void NotificationForInitialRequest(Request req, string messageId)
-        {
-
-            var notif = new Notification()
-            {
-                RecipientUserId = null,//user 
-                MessageId = messageId,
-                Read = false,
-                //RequestId = req.Id,
-                RecipientBranchId = req.RecipientBranchId, //imperative, since all branch registry should receive the notif
-                FileVolumeId = req.FileVolumesId,
-                DateTriggered = DateTime.Now,
-                SenderUserId = req.UserId
-            };
-            _context.Notifications.Add(notif);
-            _context.SaveChanges();
-        }
+       
 
         public ActionResult VolumeStateNotValid()
         {
@@ -184,7 +112,8 @@ namespace FileTracking.Controllers
             if (_context.SaveChanges() > 0)
             {
                 //sending a notification to corresponding registry
-                NotificationForInitialRequest(requestRecord, Message.PendingFile);
+                var notify = new NotificationsController();
+                notify.NotificationForInitialRequest(requestRecord, Message.PendingFile);
                 return true;
             }
            
@@ -218,7 +147,8 @@ namespace FileTracking.Controllers
 
              if (_context.SaveChanges() > 0)
              {
-                 NotificationForInitialRequest(externalRequestRec, Message.ExternalPending);
+                 var notify = new NotificationsController();
+                 notify.NotificationForInitialRequest(externalRequestRec, Message.ExternalPending);
                 return true;
              } //confirms changes
 
@@ -324,9 +254,10 @@ namespace FileTracking.Controllers
                     req.IsRequestActive = false;//here we also need to update the notification system when its implemented (for a later time)
                     req.RequestStatusId = 3; //we set the request status to rejected
                     req.AcceptedDate = DateTime.Now;//get the date denial was made
-                
+
                     //here we need to notify other user, so we call the createNotification() function 
-                    CreateNotification(req, Message.InReject);
+                    var notify = new NotificationsController();
+                    notify.CreateNotification(req, Message.InReject);
 
                     var rejectedRequestOperation = new RejectedRequestController();//saving to new table
                     rejectedRequestOperation.SaveToRejectedRequestTable(req);//deleting from this table
@@ -361,7 +292,8 @@ namespace FileTracking.Controllers
                     _context.SaveChanges();
                     UpdateVolumeState(request.FileVolumesId);
 
-                    CreateNotification(request, Message.InAccept);
+                    var notify = new NotificationsController();
+                    notify.CreateNotification(request, Message.InAccept);
 
                     if (CancelIfOtherRequests(request.FileVolumesId, request.Id))//if true, we have other requests for the same file thus canceling them
                         return this.Json(new { success = false, message = $"File Checked out to {request.User.Name}. Due to requests being made to this same file a reload is necessary." }, JsonRequestBehavior.AllowGet);
@@ -395,11 +327,12 @@ namespace FileTracking.Controllers
 
                     _context.SaveChanges();
                     UpdateVolumeState(request.FileVolumesId);
-                    
-                    CreateNotification(request, Message.ExAccept);//this notification only informs the acting user
+
+                    var notify = new NotificationsController();
+                    notify.CreateNotification(request, Message.ExAccept);//this notification only informs the acting user
 
                     //since it's an external request, the registry also needs to be informed, function below does this.
-                    CreateInitialExternalRequest(request, Message.ExternalRoute);
+                    notify.CreateInitialExternalRequest(request, Message.ExternalRoute);
 
                     //note: this does not cancel this requests, only those who have requested the same file
                     if (CancelIfOtherRequests(request.FileVolumesId, request.Id))
@@ -439,11 +372,14 @@ namespace FileTracking.Controllers
                 request.AcceptedDate = DateTime.Now;
                 _context.SaveChanges();
 
+
                 //creates the notifications based on binder which distinguishes between internal and external requests
+                var notify = new NotificationsController();
+                
                 if (request.RequestBinder == 0)
-                    CreateNotification(request, Message.InReject);
+                    notify.CreateNotification(request, Message.InReject);
                 else if (request.RequestTypeId == RequestType.ExternalRequest)
-                    CreateNotification(request, Message.ExReject);
+                    notify.CreateNotification(request, Message.ExReject);
 
                 //deleting this record and adding to our specially made RejectedRequest Table
                 var rejectedRequestOperation = new RejectedRequestController();
@@ -549,7 +485,9 @@ namespace FileTracking.Controllers
 
            volume.CurrentLocationId = requestInDb.RequesterBranchId; //we must change the volume's current location to the current user's branch
            _context.SaveChanges();
-           CreateNotification(requestInDb, Message.InAccept);//revise
+
+           var notify = new NotificationsController(); 
+           notify.CreateNotification(requestInDb, Message.InAccept);//revise
         }
 
         //now that user's local branch has accepted 
@@ -640,7 +578,8 @@ namespace FileTracking.Controllers
             _context.SaveChanges();
 
             //creating notification for the transfer request
-            NotificationForInitialTransfer(newRequest,Message.TransferRequest);
+            var notify = new NotificationsController();
+            notify.NotificationForInitialTransfer(newRequest,Message.TransferRequest);
 
             return View("RequestSuccessful"); 
         }
@@ -706,7 +645,8 @@ namespace FileTracking.Controllers
                 requestInDb.AcceptedById = userInSessionInDb.Id;
                 requestInDb.RequestBinder = binder;
                 //create ACCEPT NOTIFICATION
-                CreateNotification(requestInDb,Message.TransferAccept);
+                var notify = new NotificationsController();
+                notify.CreateNotification(requestInDb,Message.TransferAccept);
 
                 //now we change the file volume to TRANSFER state (4) since transfer was granted
                 volumeInDb.StatesId = 4;
@@ -734,7 +674,8 @@ namespace FileTracking.Controllers
             var rejectedRequestOperation = new RejectedRequestController();
             rejectedRequestOperation.SaveToRejectedRequestTable(requestInDb);
 
-            CreateNotification(requestInDb, Message.TransferDenied);
+            var notify = new NotificationsController();
+            notify.CreateNotification(requestInDb, Message.TransferDenied);
 
             _context.Requests.Remove(requestInDb);
             _context.SaveChanges();
@@ -852,7 +793,8 @@ namespace FileTracking.Controllers
             var viewModel = new RequestAndUserViewModel()
             {
                 Users = userList,
-                Request = request
+                Request = request,
+                FileVolumes = null
             };
 
             return PartialView("_DirectTransferUsers", viewModel);
@@ -896,9 +838,10 @@ namespace FileTracking.Controllers
                 volumeInDb.StatesId = 4;//indicates that the volumes is being transferred
 
                 _context.SaveChanges();
-                
+
                 //creating notification for a direct transfer
-                CreateNotification(newReq,Message.DirectTransferReq);
+                var notify = new NotificationsController();
+                notify.CreateNotification(newReq,Message.DirectTransferReq);
                 //update volume to transfer
                 
                 return Json(new { success = true, message = $"Transferring to {userInDb.Name}. He/She must further confirm to complete transfer." }, JsonRequestBehavior.AllowGet);
@@ -1003,6 +946,69 @@ namespace FileTracking.Controllers
             catch (Exception e)//DbEntityValidation e
             {
                 return Json(new { success = false, message = $"Something occured with the database. {e.Message}" }, JsonRequestBehavior.AllowGet);
+            }
+
+        }
+
+        //initiating request for a registry direcct transfer
+        [Authorize(Roles = Role.Registry)]
+        [Route("Requests/CreateRegistryTransferRequest/{userId}/{volId}")]
+        public JsonResult CreateRegistryTransferRequest(int userId, int volId)
+        {
+            var adUser = new AdUser(User.Identity.Name);
+
+            try
+            {
+                var userInSession = _context.AdUsers.Single(u => u.Username == adUser.Username);//registry user
+                var regularUser = _context.AdUsers.Single(u => u.Id == userId);
+                var volume = _context.FileVolumes.Single(v => v.Id == volId);
+
+                //Ensuring validity
+                if (userInSession.BranchesId == regularUser.BranchesId &&
+                    userInSession.BranchesId == volume.BranchesId && volume.StatesId == 1)
+                {
+                    var requestTransfer = new Request()
+                    {
+                        UserId = userId,
+                        FileVolumesId = volId,
+                        RecipientBranchId = userInSession.BranchesId,
+                        RequestStatusId = 2,
+                        RequestDate = DateTime.Now,
+                        AcceptedDate = DateTime.Now,
+                        IsConfirmed = false,
+                        ReturnStateId = 1,
+                        IsRequestActive = true,
+                        ReturnedDate = null,
+                        RequestBinder = 0,
+                        RequestTypeId = RequestType.InternalRequest,
+                        UserRequestedFromId = null,
+                        RequesterBranchId = userInSession.BranchesId,
+                        AcceptedById = userInSession.Id,
+                        ReturnAcceptById = null
+
+                    };
+                    _context.Requests.Add(requestTransfer);
+                    _context.SaveChanges();
+
+                    volume.StatesId = 4;//set to transfer
+
+                    _context.SaveChanges();
+
+                    //create notification function here ...
+
+                    return Json(new { success = true, message = $"Transfer was successfully made. Await confirmation from {regularUser.Name}." }, JsonRequestBehavior.AllowGet);
+                }
+                else
+                {
+                    return Json(new { success = false, message = "Cannot perform action. It seems there might be conflict in branches. Or File is in not in a valid state." }, JsonRequestBehavior.AllowGet);
+                }
+
+
+            }
+            catch (Exception exception)
+            {
+                return Json(new { success = false, message = $"Exception Occured: {exception.Message}" }, JsonRequestBehavior.AllowGet);
+
             }
 
         }
