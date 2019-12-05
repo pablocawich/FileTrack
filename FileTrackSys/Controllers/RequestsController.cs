@@ -995,6 +995,8 @@ namespace FileTracking.Controllers
                     _context.SaveChanges();
 
                     //create notification function here ...
+                    var notify = new NotificationsController();
+                    notify.NotifyOfRegistryTransfer(userId, userInSession.Id, userInSession.BranchesId,volId, Message.RegistryTransfer);
 
                     return Json(new { success = true, message = $"Transfer was successfully made. Await confirmation from {regularUser.Name}." }, JsonRequestBehavior.AllowGet);
                 }

@@ -11,6 +11,7 @@ using System.Linq.Dynamic;
 using System.Text.RegularExpressions;
 using System.Web.WebPages;
 using Microsoft.Ajax.Utilities;
+using Microsoft.Owin.Security;
 
 namespace FileTracking.Controllers
 {   
@@ -39,6 +40,7 @@ namespace FileTracking.Controllers
         }
 
         //allow users to view file tables and its linked tables
+        [Authorize(Roles = Role.Registry)]
         public ActionResult SearchFiles()
         {
             var userObj = new AdUser(User.Identity.Name);
@@ -47,17 +49,26 @@ namespace FileTracking.Controllers
             //var file = _context.Files.Include(f => f.Districts).Include(f=>f.FileVolumes).ToList();
             if (User.IsInRole(Role.Registry) && userInDb.IsDisabled == false)
                 return View("RegistryView");
-            else if (User.IsInRole(Role.RegularUser) && userInDb.IsDisabled == false)
+          
+            return View("Locked");
+
+        }
+        [Authorize(Roles = Role.RegularUser)]
+        public ActionResult RegularUserSearch()
+        {
+            var userObj = new AdUser(User.Identity.Name);
+            var userInDb = _context.AdUsers.Single(u => u.Username == userObj.Username);
+
+            if (User.IsInRole(Role.RegularUser) && userInDb.IsDisabled == false)
                 return View("UserView");
 
             return View("Locked");
-
         }
 
         //Will show details for a specific file
         public ActionResult FileDetails(int id)
         {
-            var file = _context.Files.Include(f=>f.Districts).Include(f => f.FileType).
+            var file = _context.Files.AsNoTracking().Include(f=>f.Districts).Include(f => f.FileType).
                 Include(f => f.IdentificationOption).Include(f=>f.FileStatus).Include(f=>f.Location).Single(f => f.Id == id);
             return PartialView(file);
         }
@@ -368,22 +379,19 @@ namespace FileTracking.Controllers
 
             //We retrieve the data from the file database with respect to its table relationships
             List<File> FileList = new List<File>();
-            FileList = _context.Files.ToList<File>();//removed the includes
 
+            //FileList = _context.Files.SqlQuery("select * from dbo.Files").ToList<File>();
+            FileList = _context.Files.AsNoTracking().ToList<File>();//removed the includes
+           
             int totalFiles = FileList.Count;
             //We check if search value if null or otherwise
-            /*if (!string.IsNullOrEmpty(searchValue) && !string.IsNullOrWhiteSpace(searchValue))//filter
-            {
-                FileList = FileList.Where(x => x.FileNumber.ToString().Contains(searchValue) ||
-                                               x.FirstName.ToLower().Contains(searchValue.ToLower())||
-                                               x.LastName.ToLower().Contains(searchValue.ToLower())||
-                                              x.LoanNumber.ToString().Contains(searchValue)||
-                                               x.Districts.District.ToLower().Contains(searchValue.ToLower())).ToList<File>();
-            }*/
+           
             // we no longer need the above since we will implement our custom filter
-            if (!string.IsNullOrEmpty(Request["columns[0][search][value]"]))
-                FileList = FileList.Where(x => (x.FileNumber != 0 && x.FileNumber.ToString().Contains(Request["columns[0][search][value]"]))).ToList<File>();
+          
 
+            if (!string.IsNullOrEmpty(Request["columns[0][search][value]"]))
+                 FileList = FileList.Where(x => (x.FileNumber != 0 && x.FileNumber.ToString().Contains(Request["columns[0][search][value]"]))).ToList<File>();
+                 
 
             if (!string.IsNullOrEmpty(Request["columns[1][search][value]"]))
             {

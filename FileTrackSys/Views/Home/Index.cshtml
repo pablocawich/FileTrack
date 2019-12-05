@@ -1,4 +1,5 @@
 ﻿@model FileTracking.Models.AdUser
+
 @using Microsoft.AspNet.Identity
 @{
     Layout = null;
@@ -63,9 +64,17 @@
                                 Role <span class="sp-1" style="color: #eb862f">@Model.Role</span><br>
                                 Branch<span class="sp-1" style="color: #214674"> @Model.Branches.Branch</span><br>
                             </h3>
-                            <a href="@Url.Action("SearchFiles", "Files")" class="genric-btn primary circle arrow">Enter Application<span class="lnr lnr-arrow-right"></span></a>
+                            @if (User.IsInRole("FMS_Registry"))
+                            {
+                                <a href="@Url.Action("SearchFiles", "Files")" class="genric-btn primary circle arrow">Enter Application<span class="lnr lnr-arrow-right"></span></a>
+                            }
+                            else if (User.IsInRole("FMS_Regular"))
+                            {
+                                <a href="@Url.Action("RegularUserSearch", "Files")" class="genric-btn primary circle arrow">Enter Application<span class="lnr lnr-arrow-right"></span></a>
+                            }
+
                             <a href="http://dfcintranet/" class="genric-btn danger circle">DFC Intranet<span class="lnr lnr-arrow-right"></span></a>
-                           
+
                         </div>
                     </div>
                 </div>

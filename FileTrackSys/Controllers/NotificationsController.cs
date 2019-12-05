@@ -38,7 +38,7 @@ namespace FileTracking.Controllers
                     Where(n => n.RecipientUserId == userInDb.Id).Where(n => n.Read == false).
                     Where(n => n.MessageId == Message.InAccept || n.MessageId == Message.InReject || n.MessageId == Message.TransferRequest
                     ||n.MessageId == Message.TransferAccept || n.MessageId == Message.TransferDenied || n.MessageId == Message.DirectTransferReq
-                    || n.MessageId == Message.ExAccept || n.MessageId == Message.ExReject).ToList();
+                    || n.MessageId == Message.ExAccept || n.MessageId == Message.ExReject || n.MessageId == Message.RegistryTransfer).ToList();
 
                 return PartialView("Notifications", notifications);
             }
@@ -159,6 +159,25 @@ namespace FileTracking.Controllers
                 FileVolumeId = req.FileVolumesId,
                 DateTriggered = DateTime.Now,
                 SenderUserId = req.UserId
+            };
+            _context.Notifications.Add(notif);
+            _context.SaveChanges();
+        }
+
+        //for registry transfer
+        public void NotifyOfRegistryTransfer(int recipient, int sender, byte recipientBranch, int vol,string messageId)
+        {
+
+            var notif = new Notification()
+            {
+                RecipientUserId = recipient,//user 
+                MessageId = messageId,
+                Read = false,
+                //RequestId = req.Id,
+                RecipientBranchId = recipientBranch, //imperative, since all branch registry should receive the notif
+                FileVolumeId = vol,
+                DateTriggered = DateTime.Now,
+                SenderUserId = sender
             };
             _context.Notifications.Add(notif);
             _context.SaveChanges();

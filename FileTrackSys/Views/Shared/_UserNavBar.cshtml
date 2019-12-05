@@ -32,8 +32,9 @@
                     @Html.Action("BranchNavigationBar", "Home")
                     <!-- /input-group -->
                 </li>
-                <li class="nav-links">
-                    <a href="@Url.Action("SearchFiles", "Files")"><i class="fa  fa-search fa-fw"></i>Search</a>
+                <li>
+                    <a href="@Url.Action("RegularUserSearch", "Files")"><i class="fa fa-search fa-fw"></i>Search</a>
+
                 </li>
                 <li>
                     <a href="@Url.Action("ConfirmCheckout","Requests")"><i class="fa fa-check fa-fw"></i>Pending</a>
