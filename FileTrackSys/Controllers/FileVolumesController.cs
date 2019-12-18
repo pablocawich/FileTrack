@@ -263,8 +263,6 @@ namespace FileTracking.Controllers
             _context.SaveChanges();
         }
 
-       
-
         //accepting external return
         [Authorize(Roles = Role.Registry)]
         public void AcceptExternalReturn(int id)

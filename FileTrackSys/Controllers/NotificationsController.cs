@@ -23,6 +23,20 @@ namespace FileTracking.Controllers
         {
             _context.Dispose();
         }
+
+
+        public JsonResult HasRegistryNotifications()
+        {
+            var sessionUser = new AdUser(User.Identity.Name);
+            var userInDb = _context.AdUsers.Single(u => u.Username == sessionUser.Username);
+            var notificaions = _context.Notifications.AsNoTracking().Where(n => n.RecipientBranchId == userInDb.BranchesId).
+                Where(n => n.MessageId == Message.Return || n.MessageId == Message.ExReturn || n.MessageId == Message.PendingFile)
+                .Where(n => n.Read == false).ToList();
+            if(notificaions.Any())
+                return Json(new {  success = true}, JsonRequestBehavior.AllowGet);
+            return Json(new { success = false}, JsonRequestBehavior.AllowGet);
+        }
+
         // GET: Notifications
         [Authorize(Roles = Role.RegularUser)]
         public ActionResult Index()
@@ -34,7 +48,7 @@ namespace FileTracking.Controllers
             {
                 var userInDb = _context.AdUsers.Single(u => u.Username == AdUsername.Username);
 
-                var notifications = _context.Notifications.Include(n => n.RecipientUser).Include(n => n.Message).Include(n=>n.FileVolume).
+                var notifications = _context.Notifications.AsNoTracking().Include(n => n.RecipientUser).Include(n=>n.SenderUser).Include(n => n.Message).Include(n=>n.FileVolume).
                     Where(n => n.RecipientUserId == userInDb.Id).Where(n => n.Read == false).
                     Where(n => n.MessageId == Message.InAccept || n.MessageId == Message.InReject || n.MessageId == Message.TransferRequest
                     ||n.MessageId == Message.TransferAccept || n.MessageId == Message.TransferDenied || n.MessageId == Message.DirectTransferReq
@@ -60,8 +74,8 @@ namespace FileTracking.Controllers
 
             var userInDb = _context.AdUsers.Single(u => u.Username == AdUsername.Username);
 
-            var notifications = _context.Notifications.Include(n => n.RecipientUser).Include(n => n.Message)
-                .Where(n=>n.RecipientBranchId == userInDb.BranchesId).
+            var notifications = _context.Notifications.AsNoTracking().Include(n => n.RecipientUser).Include(n => n.SenderUser).Include(n => n.Message)
+                .Include(n=>n.FileVolume).Where(n=>n.RecipientBranchId == userInDb.BranchesId).
                 Where(n=>n.MessageId == Message.Return || n.MessageId == Message.ExReturn || n.MessageId == Message.PendingFile)
                 .Where(n => n.Read == false).ToList();
             //for internal returns 
@@ -69,8 +83,8 @@ namespace FileTracking.Controllers
             var viewModel = new RegistryNotificationViewModel()
             {
                 RegistryInReturns = notifications,
-                RegistryExReturns = _context.Notifications.Include(n => n.RecipientUser).Include(n => n.Message)
-                .Where(n => n.SenderBranchId == userInDb.BranchesId || n.RecipientBranchId == userInDb.BranchesId).
+                RegistryExReturns = _context.Notifications.AsNoTracking().Include(n => n.RecipientUser).Include(n => n.Message).Include(n => n.SenderUser).Include(n => n.Message)
+                    .Include(n => n.FileVolume).Where(n => n.SenderBranchId == userInDb.BranchesId || n.RecipientBranchId == userInDb.BranchesId).
                 Where(n => n.MessageId == Message.ExReturnApproval || n.MessageId == Message.ExternalPending || n.MessageId == Message.ExternalRoute)
                 .Where(n => n.Read == false).ToList(),//for external returns
             };
@@ -78,15 +92,17 @@ namespace FileTracking.Controllers
 
         }
 
-        public void ChangeToRead(int id)
+        public JsonResult ChangeToRead(int id)
         {
             
             var notifInDb = _context.Notifications.Single(n => n.Id == id);
-
+            string type = notifInDb.MessageId;
            //notifInDb.Read = true;
 
             _context.Notifications.Remove(notifInDb);
             _context.SaveChanges();
+
+            return Json(new { success = true, notifTypeId = type }, JsonRequestBehavior.AllowGet);
         }
         //------------------------------------------NOTIFICATIONS------------------------------------------------------------
         //-------------------------------------------------------------------------------------------------------------------

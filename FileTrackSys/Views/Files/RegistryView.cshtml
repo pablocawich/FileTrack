@@ -34,8 +34,7 @@
                     <th class="searchable" width="60">Name</th>
                     <th class="searchable" width="50" hidden>District</th>
                     <th class="searchable" width="100">Loan Number</th>
-                    <th class="searchable" width="80" hidden>Previous File No.</th>
-               
+                    <th class="searchable" width="80">Previous File No.</th>          
                     <th width="105">Actions</th>
                 </tr>
             </thead>
@@ -72,12 +71,11 @@
                         }
                     },
                     { "data": "FullName" },
-
-                 
+         
                     { "data": "LoanNumber", "name": "LoanNumber" },
-                    /*{
+                    {
                         data: "PreviousFileNumber"
-                    },*/
+                    },
                     //{ "data": "Volume", "name": "Volume" },
                     {
                         data: "Id",
@@ -109,7 +107,7 @@
                 "ordering": false,
                 "processing": "true",
                 "language": {
-                    "processing": "<i class='fa fa-refresh fa-spin'></i>"
+                    "processing": "<strong><i class='fa fa-refresh fa-spin'></i> Processing...</strong>"
                 },
                 "dom": '<"top"l>rt<"bottom"ip><"clear">',
                 

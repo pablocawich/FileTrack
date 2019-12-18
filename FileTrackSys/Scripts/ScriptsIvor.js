@@ -8,15 +8,18 @@
 
         $.ajax({
             url: siteURL+'/Notifications/ChangeToRead/' + notifId,
-            success: function () {
-                list.remove();
-                //alert($(".alertList").length);
-                toastr.info("Notification marked as read. Will be deleted.","Notification",{ positionClass: "toast-bottom-right" });
-                if ($(".alertList").length == 0) {
-                    $("#notifIcon").css('color', 'white'); 
-                    $("#caretIcon").css('color', 'white');
-                }    
-
+            success: function (response) {
+                if (response.success) {
+                    list.remove();
+                    //alert($(".alertList").length);
+                   // toastr.info("Notification marked as read. Will be deleted.", "Notification", { positionClass: "toast-bottom-right" });
+                    if ($(".alertList").length == 0) {
+                        $("#notifIcon").css('color', 'white');
+                        $("#caretIcon").css('color', 'white');
+                    }
+                    determineNotificationType(response.notifTypeId);
+                }
+               
             },
             statusCode: {
                 404: function (content) { alert('cannot find resource'); },
@@ -106,4 +109,64 @@
     });
     //tooltip implementation
     $('[data-toggle="tooltip"]').tooltip();
+
+    //-----------------------------Adding interactivity with notification list-------------------------------
+   /* $("#notifRefId").on('click', function () {
+        if (userRole == "FMS_Registry") {
+            alert("registry");
+            $.ajax({
+                url: `${siteURL}/Notifications/NotificationRegistry`,
+                type: 'GET',
+                dataType: 'json',
+                success: function (data) {
+
+                }
+            });
+        }
+        
+    });*/
+    //selecting the Ul which is parent
+    function determineNotificationType(mssgId) {
+        if (mssgId == 'RET') {
+            alert(`${mssgId}. Loading accept returns page. Notification will be removed`);
+            window.location.href = `${siteURL}/FileVolumes/ReturnApproval`;
+            return;
+        }
+        if (mssgId == 'PENDING') {
+            alert(`${mssgId}. Loading pending page. Notification will be removed.`);
+            window.location.href = `${siteURL}/Requests/PendingFiles`;
+            return;
+        }
+        if (mssgId == 'EX_RET') {
+            alert(`${mssgId}. Loading pending page. Notification will be removed.`);
+            window.location.href = `${siteURL}/Requests/PendingFiles`;
+            return;
+        }
+        if (mssgId == 'RET_ACC') {
+            alert(`${mssgId}. Loading pending page. Notification will be removed.`);
+            window.location.href = `${siteURL}/Requests/PendingFiles`;
+            return;
+        }
+        //-------------external activities ------------------------------------------
+
+        if (mssgId == 'ExRetAcc') {
+            alert(`${mssgId}. Loading pending page. Notification will be removed.`);
+            window.location.href = `${siteURL}/Requests/PendingFiles`;
+            return;
+        }
+        if (mssgId == 'XPENDING') {
+            alert(`${mssgId}. Loading external pending page. Notification will be removed.`);
+            window.location.href = `${siteURL}/Requests/ExternalBranchRequest`;
+            return;
+        }
+        if (mssgId == 'EXROUTE') {
+            alert(`${mssgId}. Redirecting to 'AcceptExtFile' page. Notification will be removed.`);
+            window.location.href = `${siteURL}/Requests/ExternalTransferApproval`;
+            return;
+        }
+
+    }
+
+   
+   
 });

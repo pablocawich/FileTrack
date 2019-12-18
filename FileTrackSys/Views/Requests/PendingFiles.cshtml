@@ -13,15 +13,16 @@
 <p id="showCount"></p>
 <link rel="stylesheet" href="https://cdn.datatables.net/1.10.19/css/dataTables.bootstrap.min.css">
 <div class="row">
+    <p><i>Only local check out requests will be outlined here</i></p>
     <div class="col-lg-12">
-        <table id="pendingTable" class="table table-striped table-bordered table-hover">
+        <table id="pendingTable" class="table table-striped uk-table-condensed table-hover">
             <thead>
             <tr>
                 <th><i class="fa fa-address-book"></i> File Number</th>
-                <th><i class="fa fa-volume-up"></i> Volume No.</th>
-                <th><i class="fa fa-user-circle"></i> Requester User</th>
-                <th><i class="fa fa-map-pin"></i> User Branch</th>
-                <th><i class="fa fa-calendar"></i> Requested Date</th>
+                <th><i class="fa fa-volume-up"></i> Volume</th>
+                <th><i class="fa fa-user-circle"></i> User</th>
+                <th><i class="fa fa-map-pin"></i> Branch</th>
+                <th><i class="fa fa-calendar"></i> Date Requested</th>
                 <th>Action</th>
             </tr>
             </thead>
@@ -57,7 +58,7 @@
                     },
                     {
                         "data": "FileVolumes.Volume",
-                        render: function(data) { return `<strong>Vol. ${data}</strong>`; }
+                        render: function(data) { return `Vol. ${data}`; }
                     },
                     {
                         "data": "User.Name",
@@ -65,21 +66,21 @@
                     },
                     {
                         "data": "User.Branches.Branch",
-                        render: function(data) { return `<strong>${data}</strong>`; }
+                        render: function(data) { return `${data}`; }
                     },
                     {
                         data: "RequestDate",
                         "render": function(data) {
-                            return `<strong>${getDateString(data)}</strong>`;
+                            return `${getDateString(data)}`;
                         }
                     },
                     {
                         data: "Id",
                         "render": function(data, type, req) {
                             var buttonAccept =
-                                `<button class='btn btn-success btn-xs js-accept' data-accept-pending-id='${data}'
-                                 user-attr='${req.User.Name}' vol-number-attr='${req.FileVolumes.Volume
-                                    }'><i class="fa fa-check"></i> Check out</button>`;
+                                `<button class='btn btn-success btn-xs js-accept' data-accept-pending-id='${data
+                                }' data-filno=${req.FileVolumes.FileNumber} user-attr='${req.User.Name}' 
+                                 vol-number-attr='${req.FileVolumes.Volume}'><i class="fa fa-check"></i> Check out</button>`;
                             var buttonDeny =
                                 `<button class='btn btn-danger btn-xs js-reject' data-deny-pending-id='${data}'
                                                vol-rej-attr='${req.FileVolumes.Volume}' req-user-attr='${
@@ -98,8 +99,10 @@
                     var id = button.attr("data-accept-pending-id");
                     var requester = button.attr("user-attr");
                     var volume = button.attr("vol-number-attr");
-                    bootbox.confirm(`You are about to check out volume's <strong>${volume}</strong> file to <strong>
-                        ${requester} </strong>`,
+                    var filNo = button.attr("data-filno");
+                    bootbox.confirm(
+                        `You are about to check out volume's <strong>${volume}</strong> for file: <strong>${filNo}</strong> <br>To: <strong>
+                        <i class='fa fa-user-circle-o'></i> ${requester} </strong>`,
                         function(result) {
                             if (result) {
                                 $.ajax({

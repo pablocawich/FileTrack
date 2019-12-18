@@ -70,6 +70,7 @@ namespace FileTracking.Controllers
                 }
                 else if(user.BranchesId != volume.BranchesId && volume.BranchesId == volume.CurrentLocationId)
                 {
+                    //external request
                     if (PopulateExternalRequests(volume, user))
                         return View("ExternalRequestMade");
                     else
@@ -84,7 +85,7 @@ namespace FileTracking.Controllers
         public bool HasBeenRequested(FileVolumes v, AdUser u)
         {
           //First we query based in current user, then we get the volume id, and finally if the request is active.
-            var userReq = _context.Requests.Where(r => r.UserId == u.Id).Where(r => r.FileVolumesId == v.Id)
+            var userReq = _context.Requests.AsNoTracking().Where(r => r.UserId == u.Id).Where(r => r.FileVolumesId == v.Id)
                 .Where(r=>r.IsRequestActive == true).ToList();
 
             if (userReq.Any())
@@ -182,8 +183,7 @@ namespace FileTracking.Controllers
         //sends all request records with a Request status of pending to be approved by registry
         [Authorize(Roles = Role.Registry)]
         public ActionResult GetPendingFiles()
-        {
-            //for the most part, recipintBranchId will always be the currentLocation Branch
+        {          
             //we must ensure to take into account branches. registry is only to see request from user made within their respective branch
             var userObj = new AdUser(User.Identity.Name);
            
@@ -193,13 +193,14 @@ namespace FileTracking.Controllers
                 return View("Locked");
             
             //PENDING = 1 (RequestStatusID)
-            //where a User RequesteeFrom field is NULL, Registry users in general are represented
+            //where a User RequesteeFrom field is NULL
             var pendingRequests = _context.Requests.Include(r => r.FileVolumes).
-                Include(r => r.User.Branches).Where(r=>r.RecipientBranchId == user.BranchesId).Where(r => r.RequestStatusId == 1).
-                Where(r=>r.IsRequestActive == true).Where(r=>r.RequestTypeId == RequestType.InternalRequest)
+                Include(r => r.User.Branches).Where(r => r.RecipientBranchId == user.BranchesId).Where(r => r.RequestStatusId == 1).
+                Where(r => r.IsRequestActive == true).Where(r => r.RequestTypeId == RequestType.InternalRequest)
                 .Where(r => r.UserRequestedFromId == null).ToList();
 
-            return Json(new { data = pendingRequests }, JsonRequestBehavior.AllowGet);
+            return Json(new { data = pendingRequests}, JsonRequestBehavior.AllowGet);
+           
         }
 
         [Authorize(Roles = Role.Registry)]

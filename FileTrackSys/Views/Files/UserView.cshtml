@@ -33,7 +33,7 @@
                 <th class="searchable2">Name</th>
                 <th class="searchable2" hidden>District</th>
                 <th class="searchable2">Loan No.</th>
-                <th class="searchable2" hidden>Prev. File No.</th> 
+                <th class="searchable2">Prev. File No.</th> 
 
                 <th>Actions</th>
 
@@ -93,7 +93,7 @@
                         }
                     },*/
                     { "data": "LoanNumber", "name": "LoanNumber" },
-                    // { data: "PreviousFileNumber" },
+                    { data: "PreviousFileNumber" },
                     // { "data": "Volume", "name": "Volume" },
                     {
                         data: "Id",
@@ -112,7 +112,7 @@
                 "ordering": false,
                 "processing": "true",
                 "language": {
-                    "processing": "Processing Files... Kindly hold"
+                    "processing": "<strong><i class='fa fa-refresh fa-spin'></i> Processing..</strong>"
                 },
                 "dom": '<"top"l>rt<"bottom"ip><"clear">',
                 "fnInitComplete": function(oSettings, json) {

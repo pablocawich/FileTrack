@@ -387,11 +387,13 @@ namespace FileTracking.Controllers
             //We check if search value if null or otherwise
            
             // we no longer need the above since we will implement our custom filter
-          
+
 
             if (!string.IsNullOrEmpty(Request["columns[0][search][value]"]))
-                 FileList = FileList.Where(x => (x.FileNumber != 0 && x.FileNumber.ToString().Contains(Request["columns[0][search][value]"]))).ToList<File>();
-                 
+            {
+                //List<File> FilesbyName = _context.Files; 
+                FileList = FileList.Where(x => (x.FileNumber != 0 && x.FileNumber.ToString().Contains(Request["columns[0][search][value]"]))).ToList<File>();
+            }
 
             if (!string.IsNullOrEmpty(Request["columns[1][search][value]"]))
             {
@@ -399,9 +401,7 @@ namespace FileTracking.Controllers
                 FileList = FileList.Where(x =>
                     (x.FullName != null &&
                      x.FullName.ToLower().Contains(Request["columns[1][search][value]"].ToLower()))).ToList();
-            }
-
-           
+            }          
 
             if (!string.IsNullOrEmpty(Request["columns[2][search][value]"]))
                 FileList = FileList.Where(x => (x.DistrictsId != null && x.DistrictsId.ToString().Contains(Request["columns[2][search][value]"].ToLower()))).ToList<File>();
@@ -410,7 +410,7 @@ namespace FileTracking.Controllers
                 FileList = FileList.Where(x => (x.LoanNumber != null && x.LoanNumber.ToString().ToLower().Contains(Request["columns[3][search][value]"].ToLower()))).ToList<File>();
 
             if (!string.IsNullOrEmpty(Request["columns[4][search][value]"]))
-                FileList = FileList.Where(x => (x.PreviousFileNumber != null && x.PreviousFileNumber.ToString().ToLower().Contains(Request["columns[4][search][value]"]))).ToList<File>();
+                FileList = FileList.Where(x => (x.PreviousFileNumber != null && x.PreviousFileNumber.ToString().ToLower().Contains(Request["columns[4][search][value]"].ToLower()))).ToList<File>();
 
             int totalFileAfterFilter = FileList.Count;
             //sort Operation

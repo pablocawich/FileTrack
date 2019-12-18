@@ -12,14 +12,14 @@
             <div class="input-group">
                 <span class="input-group-addon"><i class="fa fa-user-circle-o"></i></span>
                 <input class="form-control" type="text" value="@Model.FullName" readonly>
-            </div>            
-        </div>   
+            </div>
+        </div>
         <div class="form-group">
             <label>Street:</label>
             <div class="input-group">
                 <span class="input-group-addon"><i class="fa fa-map-signs"></i></span>
                 <input class="form-control" type="text" value="@Model.Street" readonly>
-            </div>           
+            </div>
         </div>
         @if (Model.LocationId == null)
         {
@@ -27,7 +27,7 @@
             <div class="input-group">
                 <span class="input-group-addon"><i class="fa fa-map-marker"></i></span>
                 <input class="form-control" type="text" value="N/A" readonly>
-            </div>            
+            </div>
         }
         else
         {
@@ -36,27 +36,36 @@
                 <div class="input-group">
                     <span class="input-group-addon"><i class="fa fa-map-marker"></i></span>
                     <input class="form-control" type="text" value="@Model.Location.Name" readonly>
-                </div>                  
+                </div>
             </div>
         }
-        @if (Model.DistrictsId == null)
-        {
-            <label>District</label>
-            <div class="input-group">
-                <span class="input-group-addon"><i class="fa fa-location-arrow"></i></span>
-                <input class="form-control" type="text" value="N/A" readonly>
-            </div>
-        }
-        else
-        {
-            <div class="form-group">
+        <div class="form-group">
+            @if (Model.DistrictsId == null)
+            {
+                <label>District</label>
+                <div class="input-group">
+                    <span class="input-group-addon"><i class="fa fa-location-arrow"></i></span>
+                    <input class="form-control" type="text" value="N/A" readonly>
+                </div>
+            }
+            else
+            {
+
                 <label>District:</label>
                 <div class="input-group">
                     <span class="input-group-addon"><i class="fa fa-location-arrow"></i></span>
                     <input class="form-control" type="text" value="@Model.Districts.District" readonly>
                 </div>
+
+            }
+        </div>
+        <div class="form-group">
+            <label>Previous File Number:</label>
+            <div class="input-group">
+                <span class="input-group-addon"><i class="fa fa-barcode"></i></span>
+                <input class="form-control" type="text" value=" @Model.PreviousFileNumber" readonly>
             </div>
-        }
+        </div>
         <div class="form-group">
             <label>Loan Number/s</label>
             <div class="input-group">
