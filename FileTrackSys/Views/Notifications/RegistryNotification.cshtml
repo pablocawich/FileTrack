@@ -1,6 +1,8 @@
 ﻿@model FileTracking.ViewModels.RegistryNotificationViewModel
 
 @{
+   
+    
     var color = "";
 
     if (Model.RegistryExReturns.Any() || Model.RegistryInReturns.Any())
@@ -16,95 +18,100 @@
     </a>
     <ul class="dropdown-menu dropdown-alerts" id="notifAlert">
         <!--Implementing the internal notification messages-->
-        @foreach (var notif in Model.RegistryInReturns)
+        @if (Model.RegistryExReturns.Any() || Model.RegistryInReturns.Any())
         {
-            switch (notif.MessageId)
+            foreach (var notif in Model.RegistryInReturns)
             {
-                case "RET":
-                    <li class="alertList" notif-id-attr='@notif.Id' mssgId="@notif.MessageId">
-                        <a href="#">
-                            <div>
-                                <i class='fa fa-refresh'></i>@notif.Message.MessageType
-                                <span class='pull-right text-muted small'>@notif.Message.MessageText From: <i class="fa fa-user"></i> @notif.RecipientUser.Name</span>
-                            </div>
-                        </a>
-                    </li>
-                    break;
-                case "EX_RET":
-                    <li class="alertList" notif-id-attr=@notif.Id>
-                        <a href="#">
-                            <div>
-                                <i class='fa fa-refresh'></i>@notif.Message.MessageType
-                                <span class='pull-right text-muted small'>@notif.Message.MessageText From: <i class="fa fa-user"></i> @notif.SenderUser.Name</span>
-                            </div>
-                        </a>
-                    </li>
-                    break;
-                case "RET_ACC":
-                    <li class="alertList" notif-id-attr=@notif.Id>
-                        <a href="#">
-                            <div>
-                                <i class='fa fa-refresh'></i>@notif.Message.MessageType
-                                <span class='pull-right text-muted small'>@notif.Message.MessageText From: <i class="fa fa-user"></i> @notif.SenderUser.Name</span>
-                            </div>
-                        </a>
-                    </li>
-                    break;
-                case "PENDING":
-                    <li class="alertList" notif-id-attr=@notif.Id mssgId="@notif.MessageId">
-                        <a href="#">
-                            <div>
-                                <i class='fa fa-refresh'></i>@notif.Message.MessageType
-                                <span class='pull-right text-muted small'><i class="fa fa-user"></i> @notif.SenderUser.Name is requesting file @notif.FileVolume.FileNumber</span>
-                            </div>
-                        </a>
-                    </li>
-                    break;
+                switch (notif.MessageId)
+                {
+                    case "RET":
+                        <li class="alertList" notif-id-attr='@notif.Id' mssgId="@notif.MessageId">
+                            <a href="#">
+                                <div>
+                                    <i class='fa fa-refresh'></i>@notif.Message.MessageType
+                                    <span class='pull-right text-muted small'>@notif.Message.MessageText From: <i class="fa fa-user"></i> @notif.RecipientUser.Name</span>
+                                </div>
+                            </a>
+                        </li>
+                        break;
+                    case "EX_RET":
+                        <li class="alertList" notif-id-attr=@notif.Id>
+                            <a href="#">
+                                <div>
+                                    <i class='fa fa-mail-reply-all'></i> @notif.Message.MessageType
+                                    <span class='pull-right text-muted small'>@notif.Message.MessageText From: <i class="fa fa-location-arrow"></i> @notif.SenderBranch.Branch</span>
+                                </div>
+                            </a>
+                        </li>
+                        break;
+                    case "RET_ACC":
+                        <li class="alertList" notif-id-attr=@notif.Id>
+                            <a href="#">
+                                <div>
+                                    <i class='fa fa-refresh'></i>@notif.Message.MessageType
+                                    <span class='pull-right text-muted small'>@notif.Message.MessageText From: <i class="fa fa-user"></i> @notif.SenderUser.Name</span>
+                                </div>
+                            </a>
+                        </li>
+                        break;
+                    case "ExRetAcc":
+                        <li class="alertList" notif-id-attr=@notif.Id>
+                            <a href="#">
+                                <div>
+                                    <i class='fa fa-refresh'></i>@notif.Message.MessageType
+                                    <span class='pull-right text-muted small'>File sent back to branch origin has been received by: <i class="fa fa-user"></i> @notif.SenderUser.Name</span>
+                                </div>
+                            </a>
+                        </li>
+                        break;
+                    case "PENDING":
+                        <li class="alertList" notif-id-attr=@notif.Id mssgId="@notif.MessageId">
+                            <a href="#">
+                                <div>
+                                    <i class='fa fa-refresh'></i>@notif.Message.MessageType
+                                    <span class='pull-right text-muted small'><i class="fa fa-user"></i> @notif.SenderUser.Name is requesting file @notif.FileVolume.FileNumber</span>
+                                </div>
+                            </a>
+                        </li>
+                        break;
+                }
+
+
             }
+            foreach (var notif in Model.RegistryExReturns)
+            {
+
+                switch (notif.MessageId)
+                {
+                   
+                    case "XPENDING":
+                        <li class="alertList" notif-id-attr=@notif.Id>
+                            <a href="#">
+                                <div>
+                                    <i class='fa fa-file-excel-o'></i>@notif.Message.MessageType
+                                    <span class='pull-left text-muted small'><i class="fa fa-user"></i> @notif.SenderUser.Name, from an external branch, is requesting file @notif.FileVolume.FileNumber</span>
+                                </div>
+                            </a>
+                        </li>
+                        break;
+                    case "EXROUTE":
+                        <li class="alertList" notif-id-attr=@notif.Id>
+                            <a href="#">
+                                <div>
+                                    <i class='fa fa-refresh'></i>@notif.Message.MessageType
+                                    <span class='pull-left text-muted small'> File <strong>@notif.FileVolume.FileNumber</strong> is being transferred from an external branch</span>
+                                </div>
+                            </a>
+                        </li>
+                        break;
+                }
 
 
+
+            }
         }
-        @foreach (var notif in Model.RegistryExReturns)
-        {
         
-            switch (notif.MessageId)
-            {
-                case "ExRetAcc":
-                    <li class="alertList" notif-id-attr=@notif.Id>
-                        <a href="#">
-                            <div>
-                                <i class='fa fa-refresh'></i>@notif.Message.MessageType
-                                <span class='pull-right text-muted small'>@notif.Message.MessageText From: <i class="fa fa-user"></i> @notif.SenderUser.Name</span>
-                            </div>
-                        </a>
-                    </li>
-                    break;
-                case "XPENDING":
-                    <li class="alertList" notif-id-attr=@notif.Id>
-                        <a href="#">
-                            <div>
-                                <i class='fa fa-refresh'></i>@notif.Message.MessageType
-                                <span class='pull-right text-muted small'>@notif.Message.MessageText From: <i class="fa fa-user"></i> @notif.SenderUser.Name from an external branch is requesting file @notif.FileVolume.FileNumber</span>
-                            </div>
-                        </a>
-                    </li>
-                    break;
-                case "EXROUTE":
-                    <li class="alertList" notif-id-attr=@notif.Id>
-                        <a href="#">
-                            <div>
-                                <i class='fa fa-refresh'></i>@notif.Message.MessageType
-                                <span class='pull-right text-muted small'>@notif.Message.MessageText </span>
-                            </div>
-                        </a>
-                    </li>
-                    break;
-            }
-
-
-
-        }
-        <li class="divider"></li>
+        <li class="divider"><hr /></li>
         <li>
             <a class="text-center" href="#">
                 <strong>The above requires you to take action</strong>

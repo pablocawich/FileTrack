@@ -139,7 +139,7 @@
         }
         if (mssgId == 'EX_RET') {
             alert(`${mssgId}. Loading pending page. Notification will be removed.`);
-            window.location.href = `${siteURL}/Requests/PendingFiles`;
+            window.location.href = `${siteURL}/FileVolumes/ApproveExternalReturns`;
             return;
         }
         if (mssgId == 'RET_ACC') {
@@ -150,8 +150,7 @@
         //-------------external activities ------------------------------------------
 
         if (mssgId == 'ExRetAcc') {
-            alert(`${mssgId}. Loading pending page. Notification will be removed.`);
-            window.location.href = `${siteURL}/Requests/PendingFiles`;
+            toastr.info("Notification marked as read. Will be deleted.", "Notification", { positionClass: "toast-bottom-right" });
             return;
         }
         if (mssgId == 'XPENDING') {

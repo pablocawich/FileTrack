@@ -26,6 +26,25 @@ namespace FileTracking.Controllers
             _context.Dispose();
         }
 
+        public void CreateNotificationForExConfirmation(Request req, string messageId)
+        {
+            var notif = new Notification()
+            {
+                RecipientUserId = req.UserId,
+                MessageId = messageId,
+                Read = false,
+                //RequestId = req.Id,
+                FileVolumeId = req.FileVolumesId,
+                RecipientBranchId = req.RequesterBranchId,
+                //SenderBranchId = req.RequesterBranchId,
+                DateTriggered = DateTime.Now,
+                SenderUserId = req.AcceptedById
+            };
+
+            _context.Notifications.Add(notif);
+            _context.SaveChanges();
+        }
+
         public void CreateNotification(Request req, string messageId)
         {
             var notif = new Notification()
@@ -279,7 +298,7 @@ namespace FileTracking.Controllers
             _context.SaveChanges();
 
             ChangeStateToStored(req.FileVolumesId);
-            CreateNotification(req,Message.ExReturnApproval);
+            CreateNotificationForExConfirmation(req,Message.ExReturnApproval);
 
             var completedRequestOperation = new CompletedRequestController();
             completedRequestOperation.SaveToCompletedRequestTable(req);

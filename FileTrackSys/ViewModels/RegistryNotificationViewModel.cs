@@ -11,5 +11,9 @@ namespace FileTracking.ViewModels
         public IEnumerable<Notification> RegistryInReturns { get; set; }
 
         public IEnumerable<Notification> RegistryExReturns { get; set; }
+
+        public IEnumerable<Notification> RegistryExRetApprove { get; set; }
+
+        public string ExceptionMessage { get; set; }
     }
 }

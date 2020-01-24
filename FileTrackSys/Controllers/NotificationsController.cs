@@ -71,25 +71,41 @@ namespace FileTracking.Controllers
         public ActionResult NotificationRegistry()
         {
             var AdUsername = new AdUser(User.Identity.Name);
-
-            var userInDb = _context.AdUsers.Single(u => u.Username == AdUsername.Username);
-
-            var notifications = _context.Notifications.AsNoTracking().Include(n => n.RecipientUser).Include(n => n.SenderUser).Include(n => n.Message)
-                .Include(n=>n.FileVolume).Where(n=>n.RecipientBranchId == userInDb.BranchesId).
-                Where(n=>n.MessageId == Message.Return || n.MessageId == Message.ExReturn || n.MessageId == Message.PendingFile)
-                .Where(n => n.Read == false).ToList();
-            //for internal returns 
-
-            var viewModel = new RegistryNotificationViewModel()
+            try
             {
-                RegistryInReturns = notifications,
-                RegistryExReturns = _context.Notifications.AsNoTracking().Include(n => n.RecipientUser).Include(n => n.Message).Include(n => n.SenderUser).Include(n => n.Message)
-                    .Include(n => n.FileVolume).Where(n => n.SenderBranchId == userInDb.BranchesId || n.RecipientBranchId == userInDb.BranchesId).
-                Where(n => n.MessageId == Message.ExReturnApproval || n.MessageId == Message.ExternalPending || n.MessageId == Message.ExternalRoute)
-                .Where(n => n.Read == false).ToList(),//for external returns
-            };
-            return PartialView("RegistryNotification",viewModel);
+                var userInDb = _context.AdUsers.Single(u => u.Username == AdUsername.Username);
 
+                var notifications = _context.Notifications.AsNoTracking().Include(n => n.RecipientUser).Include(n => n.SenderUser).Include(n => n.Message)
+                    .Include(n => n.FileVolume).Include(n => n.SenderBranch).Include(n=>n.RecipientBranch)
+                    .Where(n => n.RecipientBranchId == userInDb.BranchesId).
+                    Where(n => n.MessageId == Message.ExReturnApproval || n.MessageId == Message.Return || n.MessageId == Message.ExReturn || n.MessageId == Message.PendingFile)
+                    .Where(n => n.Read == false).ToList();
+                //for internal returns 
+
+                var viewModel = new RegistryNotificationViewModel()
+                {
+                    ExceptionMessage = null,
+                    RegistryInReturns = notifications,
+                    RegistryExReturns = _context.Notifications.AsNoTracking().Include(n => n.RecipientUser).Include(n => n.Message).Include(n => n.SenderUser).Include(n => n.Message)
+                        .Include(n => n.FileVolume).Include(n=>n.SenderBranch).Include(n => n.RecipientBranch)
+                    .Where(n => n.SenderBranchId == userInDb.BranchesId || n.RecipientBranchId == userInDb.BranchesId).//
+                        Where(n=>n.MessageId == Message.ExternalPending || n.MessageId == Message.ExternalRoute)
+                        .Where(n => n.Read == false).ToList(),//for external returns
+                };
+                return PartialView("RegistryNotification", viewModel);
+            }
+            catch (Exception e)
+            {
+                var errViewModel = new RegistryNotificationViewModel()
+                {
+                    ExceptionMessage = e.Message,
+                    RegistryExReturns = null,
+                    RegistryInReturns = null,
+                };
+                
+                return PartialView("RegistryNotification", errViewModel);
+            }
+            
         }
 
         public JsonResult ChangeToRead(int id)

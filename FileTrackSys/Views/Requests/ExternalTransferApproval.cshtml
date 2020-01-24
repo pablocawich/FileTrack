@@ -18,12 +18,12 @@
             <tr>
                 <th>File Number</th>
                 <th>Volume</th>
-                <th>Requesting User</th>
-                <th>User Branch</th>
-                <th>Registry Approval By</th>
-                <th>File Origins</th>
+                <th>File's Branch</th>
+                <th>User</th>
+                <th>User's Branch</th>
                 <th>Requested Date</th>
-                <th width="110">Action</th>
+                <th>Registry Approval By</th>
+                <th>Action</th>
             </tr>
         </thead>
     </table>
@@ -37,130 +37,144 @@
 @section scripts
 {
     <script>
-    $(document).ready(function() {
-        //gets json objects from the request controller in order to populate the dataTable
-        var table = $("#externalBranchTransferTable").DataTable({
-            "ajax": {
-                "url": siteURL + "/Requests/GetExternalTransferRecords",
-                "data": "GET",
-                "datatype": "json"
-            },
-            "columns": [
-                {
-                    "data": "FileVolumes.FileNumber",
-                    render: function(data, type, req) {
-                        var button = `<a href="#" data-fileId=${req.FileVolumes.FileId} 
-                                        class="glyphicon glyphicon-file btn btn-warning btn-block btn-xs extApprovalModal">${
-                            data}</a>`;
+        $(document).ready(function() {
+            //gets json objects from the request controller in order to populate the dataTable
+            var table = $("#externalBranchTransferTable").DataTable({
+                "ajax": {
+                    "url": siteURL + "/Requests/GetExternalTransferRecords",
+                    "data": "GET",
+                    "datatype": "json"
+                },
+                "columns": [
+                    {
+                        "data": "FileVolumes.FileNumber",
+                        render: function(data, type, req) {
+                            var button = `<a href="#" data-fileId=${req.FileVolumes.FileId} 
+                                        class="glyphicon glyphicon-file extApprovalModal">${
+                                data}</a>`;
 
-                        return button;
-                    }
-                },
-                {
-                    "data": "FileVolumes.Volume",
-                    render: function(data) {
-                        return `<strong>Vol. ${data}</strong>`;
-                    }
-                },
-                {
-                    "data": "User.Name",
-                    render: function(data) {
-                        return `<strong><i class='fa fa-user-circle-o'></i> ${data}</strong>`;
-                    }
-                },
-                {
-                    "data": "User.Branches.Branch",
-                    render: function(data) {
-                        return `<strong><i class='fa fa-location-arrow'></i> ${data}</strong>`;
-                    }
-                },
-                {
-                    "data": "AcceptedBy.Name",
-                    render: function(data) {
-                        return `<strong><i class='fa fa-address-book-o'></i> ${data}</strong>`;
-                    }
-                },
-                {
-                    "data": "RecipientBranch.Branch",
-                    render: function(data) {
-                        return `<strong><i class='fa fa-map-pin'></i> ${data}</strong>`;
-                    }
-                }, //please recall here we removed the determine branch function, which was useless
-                {
-                    data: "RequestDate",
-                    "render": function(data) {
-                        return `<strong><i class='fa fa-calendar-check-o'></i> ${getDateString(data)}</strong>`;
-                    }
-                },
-                {
-                    data: "Id",
-                    "render": function(data, type, req) {
-                        var externalTransferOption =
-                            `<a href="#" class='btn js-ext-approve' trans-accept-ext-id=${data} reg-user-attr="${req.User.Name}">Accept
-                                                          <i class="fa fa-check-circle"></i></a>`;
+                            return button;
+                        }
+                    },
+                    {
+                        "data": "FileVolumes.Volume",
+                        render: function(data) {
+                            return `<strong>Vol. ${data}</strong>`;
+                        }
+                    },
+                    {
+                        "data": "RecipientBranch.Branch",
+                        render: function(data) {
+                            return `<i class='fa fa-map-pin'></i> ${data}`;
+                        }
+                    },
+                    {
+                        "data": "User.Name",
+                        render: function(data) {
+                            return `<strong><i class='fa fa-user-circle-o'></i> ${data}</strong>`;
+                        }
+                    },
+                    {
+                        "data": "User.Branches.Branch",
+                        render: function(data) {
+                            return `<strong><i class='fa fa-location-arrow'></i> ${data}</strong>`;
+                        }
+                    },
+                    //please recall here we removed the determine branch function, which was useless
+                    {
+                        data: "RequestDate",
+                        "render": function(data) {
+                            return `<strong><i class='fa fa-calendar-check-o'></i> ${getDateString(data)}</strong>`;
+                        }
+                    },
+                    {
+                        "data": "AcceptedBy.Name",
+                        render: function(data) {
+                            return `<i class='fa fa-address-book-o'></i> ${data}`;
+                        }
+                    },
+                    {
+                        data: "Id",
+                        "render": function(data, type, req) {
+                            var externalTransferOption =
+                                `<div style="text-align: left;"><a href="#" class='btn js-ext-approve' trans-accept-ext-id=${
+                                    data} reg-user-attr="${req.User.Name}"><i class="fa fa-check-circle"></i> Accept
+                                                          </a></div>`;
 
-                        return externalTransferOption;
-                    }
-                }
-            ]
-        });
-        //accept external transfer
-        $("#externalBranchTransferTable").on('click',
-            '.js-ext-approve',
-            function() {
-                var button = $(this);
-                var regUser = $(this).attr('reg-user-attr');
-                var id = $(this).attr('trans-accept-ext-id');
-                bootbox.confirm({
-                    title: "<strong style='color: green'>CONFIRMATION</strong>",
-                    message:
-                        `By accepting you are comfirming handling of the file which should then be retrieved by:<br> <strong>${
-                            regUser} </strong>`,
-                    callback: function(result) {
-                        if (result) {
-                            $.ajax({
-                                url: siteURL + '/Requests/AcceptForeignRegistryTransfer/' + id,
-                                success: function() {
-                                    toastr.success("Accepted",
-                                        "Transfer Approval",
-                                        { positionClass: "toast-bottom-right" });
-                                    //removes row from client side perspective. Not on server side thus 
-                                    //console.log(table.data().count());
-                                    table.row(button.parents('tr')).remove().draw();
-                                    if (table.data().count() == 0) {
-                                        $("#notifIcon").css('color', 'white');
-                                    }
-
-                                },
-                                statusCode: {
-                                    404: function(content) { alert('cannot find resource'); },
-                                    500: function(content) { alert('internal server error'); }
-                                }
-                            });
-
+                            return externalTransferOption;
                         }
                     }
+                ]
+            });
+            //accept external transfer
+            $("#externalBranchTransferTable").on('click',
+                '.js-ext-approve',
+                function() {
+                    var button = $(this);
+                    var regUser = $(this).attr('reg-user-attr');
+                    var id = $(this).attr('trans-accept-ext-id');
+                    bootbox.confirm({
+                        title: "<strong style='color: green'><i class='fa fa-check'></i> CONFIRMATION</strong>",
+                        message:
+                            `By accepting, you are comfirming handling of the file which should then be routed to:<br> <strong>${
+                                regUser} </strong>`,
+                        callback: function(result) {
+                            if (result) {
+                                $.ajax({
+                                    url: siteURL + '/Requests/AcceptForeignRegistryTransfer/' + id,
+                                    success: function(response) {
+                                        if (response.success) {
+                                            toastr.success(response.message,
+                                                "Approved",
+                                                { positionClass: "toast-bottom-right" });
+
+                                            //removing client side table record
+                                            table.row(button.parents('tr')).remove().draw();
+                                        } else {
+                                            toastr.error(response.message,
+                                                "Oops",
+                                                { positionClass: "toast-bottom-right" });
+                                            table.row(button.parents('tr')).remove().draw();
+                                        }
+
+                                        //removes row from client side perspective. Not on server side thus 
+                                        //console.log(table.data().count());
+                                       // 
+                                        /*if (table.data().count() == 0) {
+                                            $("#notifIcon").css('color', 'white');
+                                        }*/
+
+                                    },
+                                    statusCode: {
+                                        404: function(content) { alert('cannot find resource'); },
+                                        500: function(content) { alert('internal server error'); }
+                                    }
+                                });
+
+                            }
+                        }
+                    });
                 });
-            });
 
-        //never received external transfer
-        //function removed as, it wasn't necessary. Decided in meeting with manager
+            //never received external transfer
+            //function removed as, it wasn't necessary. Decided in meeting with manager
 
-        function getDateString(date) {
-            var dateObj = new Date(parseInt(date.substr(6)));
-            return dateObj.toDateString();
-        }
+            function getDateString(date) {
+                var dateObj = new Date(parseInt(date.substr(6)));
+                return dateObj.toDateString();
+            }
 
-        $("#externalBranchTransferTable").on("click",
-            ".extApprovalModal",
-            function() {
-                var id = $(this).attr("data-fileId");
-                var url = siteURL + "/Files/FileDetailsForConfirm/" + id;
-                // alert(url);
+            $("#externalBranchTransferTable").on("click",
+                ".extApprovalModal",
+                function() {
+                    var id = $(this).attr("data-fileId");
+                    var url = siteURL + "/Files/FileDetailsForConfirm/" + id;
+                    // alert(url);
 
-                $('#extApprovalModelContent').load(url);
-                $('#extApprovalModal').modal('show');
-            });
+                    $('#extApprovalModelContent').load(url);
+                    $('#extApprovalModal').modal('show');
+                });
         });
     </script>
+
 }

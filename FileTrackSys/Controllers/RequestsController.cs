@@ -468,27 +468,44 @@ namespace FileTracking.Controllers
 
         //the external registry interaction confirmation for file transfer
         [Authorize(Roles = Role.Registry)]
-        public void AcceptForeignRegistryTransfer(int id)
+        public JsonResult AcceptForeignRegistryTransfer(int id)
         {
             //request binded records that sees to registry to registry operations before initiating the local request it is bound by
-            var requestInDb = _context.Requests.Single(r => r.Id == id);
+            var requestInDb = _context.Requests.Include(r=>r.User).SingleOrDefault(r => r.Id == id);
+            //check if we don't already have a record for this file created so we don't tolerate duplicates
+            
+            if (requestInDb != null && !(HasFileRouteRequestBeenCreated(id, requestInDb.FileVolumesId,requestInDb.UserId)))
+            {
+                requestInDb.IsConfirmed = true;
+                requestInDb.IsRequestActive = false;//mark record temporarily inactive
+                _context.SaveChanges();
 
-            requestInDb.IsConfirmed = true;
-            requestInDb.IsRequestActive = false;//mark record temporarily inactive
-            _context.SaveChanges();
+                //after the above is performed we let its binded request become active in order for the initiating user to go through the local request process   
 
-            //after the above is performed we let its binded request become active in order for the initiating user to go through the local request process
-            //also be reminded to change to volume's current location, as being accepted now signifies the file is at a foreign branch       
+                var volume = _context.FileVolumes.Single(v => v.Id == requestInDb.FileVolumesId);
 
-           var volume = _context.FileVolumes.Single(v => v.Id == requestInDb.FileVolumesId);
+                //creating a new record to track the local processes of the file when in an external branch
+                PopulateNewInternalRequest(requestInDb.UserId, requestInDb.RequesterBranchId, requestInDb.RequestDate, volume, requestInDb.RequestBinder);//both registry passed, now we create an internal request
 
-           PopulateNewInternalRequest(requestInDb.UserId, requestInDb.RequesterBranchId, requestInDb.RequestDate,volume, requestInDb.RequestBinder);//both registry passed, now we create an internal request
+                volume.CurrentLocationId = requestInDb.RequesterBranchId; //we must change the volume's current location to the current user's branch
+                _context.SaveChanges();
 
-           volume.CurrentLocationId = requestInDb.RequesterBranchId; //we must change the volume's current location to the current user's branch
-           _context.SaveChanges();
+                var notify = new NotificationsController();
+                notify.CreateNotification(requestInDb, Message.InAccept);//revise
+                return this.Json(new { success = true, message = $"{requestInDb.User.Name}'s external file transfer has been approved. Kindly await user retrieval" }, JsonRequestBehavior.AllowGet);
+            }
+            return this.Json(new { success = false, message = "Something wrong seems to have occured. try reloading the page and try again." }, JsonRequestBehavior.AllowGet);
 
-           var notify = new NotificationsController(); 
-           notify.CreateNotification(requestInDb, Message.InAccept);//revise
+        }
+
+        //ensures a internal file record for an associated record is not yet created
+        public bool HasFileRouteRequestBeenCreated(int reqId, int volId, int userId)
+        {
+            var requests = _context.Requests.AsNoTracking().Where(r=>r.Id != reqId && r.FileVolumesId == volId && r.UserId == userId && 
+                                                      r.RequestTypeId != RequestType.ExternalRequest && r.IsRequestActive == true).ToList();
+            if(requests.Any())
+                return true;
+            return false;
         }
 
         //now that user's local branch has accepted 
